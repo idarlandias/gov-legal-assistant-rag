@@ -18,5 +18,8 @@ data/cache/
 # Guia de Estudos local (não subir para o GitHub)
 docs/guia_estudo_projeto.md
 docs/guia_estudo_projeto.pdf
+docs/resumo_arquivos_projeto.md
+docs/resumo_arquivos_projeto.pdf
 scratch/convert_md_to_pdf.py
+
 
