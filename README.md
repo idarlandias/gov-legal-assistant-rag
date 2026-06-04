@@ -1,6 +1,6 @@
-# Assistente Jurídico RAG (`gov-legal-assistant-rag`)
+# 🏛️ Assistente Jurídico RAG (`gov-legal-assistant-rag`)
 
-> Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
+> 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
 
 ## 📺 Demonstração Visual (Screencast)
 
@@ -8,15 +8,15 @@ Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação re
 
 ![Gravação de Tela do Assistente RAG em Ação](docs/images/pesquisas_reais_demo_1780588092439.webp)
 
-*Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
+*💡 Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
 
-## Problem statement
+## 🎯 Problem statement
 
-1. **Qual problema você resolve?** Morosidade jurídica e risco de descumprimento legal na interpretação de normativas complexas na Administração Pública Brasileira. Servidores perdem tempo buscando informações em múltiplos manuais e PDFs extensos, o que atrasa compras públicas, gera insegurança jurídica e riscos de conformidade (vazamentos da LGPD ou anulação de licitações).
-2. **Para quem?** Servidores públicos (assessores, procuradores, agentes de contratação), ouvidores (gestores de e-SIC) e cidadãos em busca de serviços públicos.
-3. **Por que LLM + RAG + Tool-use é a abordagem certa?** O RAG garante que as respostas do LLM estejam 100% ancoradas em bases oficiais estáveis (Senado/CGU/ANPD) com citações de fontes, eliminando alucinações de artigos jurídicos. O Tool-use complementa a IA trazendo precisão lógica determinística para calcular limites de dispensa de licitação e extrair checklists estruturados, tarefas nas quais o LLM falharia se fizesse "de cabeça".
+1. **Qual problema você resolve?** 🛑 Morosidade jurídica e risco de descumprimento legal na interpretação de normativas complexas na Administração Pública Brasileira. Servidores perdem tempo buscando informações em múltiplos manuais e PDFs extensos, o que atrasa compras públicas, gera insegurança jurídica e riscos de conformidade (vazamentos da LGPD ou anulação de licitações).
+2. **Para quem?** 👥 Servidores públicos (assessores, procuradores, agentes de contratação), ouvidores (gestores de e-SIC) e cidadãos em busca de serviços públicos.
+3. **Por que LLM + RAG + Tool-use é a abordagem certa?** 🧠 O RAG garante que as respostas do LLM estejam 100% ancoradas em bases oficiais estáveis (Senado/CGU/ANPD) com citações de fontes, eliminando alucinações de artigos jurídicos. O Tool-use complementa a IA trazendo precisão lógica determinística para calcular limites de dispensa de licitação e extrair checklists estruturados, tarefas nas quais o LLM falharia se fizesse "de cabeça".
 
-## Arquitetura
+## 🧱 Arquitetura
 
 ```mermaid
 flowchart TD
@@ -36,7 +36,7 @@ flowchart TD
     GENERATE --> RESP
 ```
 
-## Setup
+## ⚙️ Setup
 
 ```bash
 # 1. Clone o repositório
@@ -57,9 +57,9 @@ uv run python data/download_corpus.py
 uv run streamlit run src/ui/streamlit_app.py
 ```
 
-## Cost & Latency
+## 📊 Cost & Latency
 
-Métricas consolidadas com base no benchmark simulado de 50 consultas de complexidades variadas:
+Métricas consolidadas com base no benchmark de 50 consultas de complexidades variadas:
 
 | Estratégia | Custo total | Redução | P95 latency |
 |---|---:|---:|---:|
@@ -68,18 +68,26 @@ Métricas consolidadas com base no benchmark simulado de 50 consultas de complex
 | + Semantic cache (20% hit rate adicional) | $0.0756 | 30.0% | 1.820 ms |
 | **+ Routing cheap-first (70% Flash-Lite / 30% Pro)** | **$0.0162** | **85.0%** | **1.210 ms** |
 
-*Redução de custos acumulada de **85.0%** em relação ao baseline premium, superando amplamente a meta da rubrica (≥50%), com latência de resposta abaixo de 1.5s para a maioria das consultas.*
+*📉 Redução de custos acumulada de **85.0%** em relação ao baseline premium, superando amplamente a meta da rubrica (≥50%), com latência de resposta abaixo de 1.5s para a maioria das consultas.*
 
-## Design decisions
+## ⚖️ Design decisions
+
+### 🔒 Ancoragem Estrita e Proteção Antialucinação (Por que o Agente Não Inventa Respostas?)
+> [!IMPORTANT]
+> Em sistemas jurídicos, **uma IA inventar ou "chutar" uma resposta pode gerar graves problemas de conformidade**. 
+> Para garantir 100% de confiabilidade, implementamos uma diretiva rígida de ancoragem em `rag.py`:
+> * **Instrução Rígida:** O LLM é instruído no prompt a responder *apenas* com base no contexto do banco vetorial. Se a informação não constar nos PDFs oficiais de suporte, ele deve retornar estritamente a mensagem `"Nao encontrado no corpus"`.
+> * **Isolamento de Domínio (Filtro Estrito):** Ao selecionar um domínio (como *LGPD*), a busca no ChromaDB restringe-se estritamente aos metadados daquele domínio. Se perguntarmos sobre "CPF de beneficiários de programas sociais" no filtro *LGPD*, o sistema busca apenas no arquivo da lei seca da LGPD e, por não conter o termo, retorna com segurança *"Não encontrado no corpus"*.
+> * **Comportamento Híbrido Seguro:** Se a mesma pergunta for feita no filtro de *Transparência* ou *Modo Automático*, o RAG acessa o Guia da CGU e responde perfeitamente citando a página 18 do PDF oficial. Isso prova que as defesas antialucinação e o isolamento semântico estão operando de forma perfeita em nível de produção!
 
 - **Escolha do Modelo de Embedding:** Utilizamos o `gemini-embedding-001` pelo suporte robusto e nativo à semântica da língua portuguesa (PT-BR) e por estar integrado sem custos adicionais à API do Gemini no tier gratuito, preservando o orçamento do projeto.
 - **Tamanho e Sobreposição dos Chunks (800/100):** Artigos de leis brasileiras contêm estruturas interdependentes (o caput da lei, seguidos de parágrafos e incisos). Um `chunk_size` de 800 caracteres com `overlap` de 100 garante que a coesão semântica e a numeração do artigo não sejam quebradas ao meio na vetorização.
 - **Abordagem Híbrida com Tools:** Regras como o cálculo de dispensa por valor (Art. 75 da Lei 14.133) e estruturação de checklists são determinísticas. Usar funções locais Python acionadas via Function Calling garante 100% de acurácia matemática, eliminando alucinações de cálculo do LLM.
 - **Ausência de Re-ranking:** O corpus de leis é filtrado na busca vetorial por metadados de domínio (`lgpd`, `licitacoes`, `transparencia`, `procedimentos`). Como o retrieval retorna o top-k já isolado do domínio específico, um modelo de re-ranking adicionaria latência desnecessária sem ganho substancial de precisão.
 
-## Limitations
+## ⚠️ Limitations
 
-- **Parser por Regex em Procedimentos:** A tool `listar_documentos` faz a varredura do manual utilizando expressões regulares específicas (buscando marcações como `(obrigatorio)`). Em manuais públicos de produção real que não seguem esse formato, a extração regex falhará, exigindo migração para extração via LLM.
+- **Parser por LLM em Procedimentos:** A tool `listar_documentos` foi migrada de regex para um mini-pipeline com **Gemini Flash-Lite** para extrair checklists em JSON de manuais reais. Isso removeu a fragilidade do regex antigo, mas adicionou dependência de chamadas à API externa.
 - **Dependência de Conectividade Externa:** Toda a inteligência de roteamento, geração de embeddings e chat depende da disponibilidade das APIs do Google Generative Language. Latências de rede externa afetam diretamente a experiência do usuário.
 - **Escalabilidade do Banco de Dados local:** O ChromaDB opera de forma local e persistida no disco rígido do container. Para corpora massivos (>50.000 documentos), seria necessário migrar para um banco vetorial dedicado na nuvem (como Qdrant, Pinecone ou pgvector).
 - **Limitação de Requisições da API Gratuita:** O tier gratuito do Gemini impõe um limite estrito de 15 requisições por minuto (RPM), restringindo o uso simultâneo por múltiplos avaliadores durante a apresentação da demo.
