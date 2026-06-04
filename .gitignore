@@ -14,3 +14,9 @@ data/cache/
 
 # Eval results — descomente para versionar
 # evals/results-*.json
+
+# Guia de Estudos local (não subir para o GitHub)
+docs/guia_estudo_projeto.md
+docs/guia_estudo_projeto.pdf
+scratch/convert_md_to_pdf.py
+
