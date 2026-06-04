@@ -20,6 +20,9 @@
 
 > 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
 
+### 🚀 Live Demo (Aplicação Online)
+* **Link de acesso:** [Assistente Jurídico RAG - Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+
 ## 📺 Demonstração Visual (Screencast)
 
 Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação realizando as pesquisas de texto solicitadas para os quatro domínios de forma integrada e ilustrando as métricas do cache e roteador na barra lateral:
@@ -167,7 +170,7 @@ Veja `projeto-portfolio.pdf` (briefing do projeto) para a rubrica 3-bandas compl
 | Técnica | 40% | TODOs 1-6 funcionando + erros tratados + logs |
 | README | 30% | Este arquivo preenchido (incluindo GIF + decisoes + limites) |
 | Custo | 20% | Tabela acima preenchida + reducao ≥50% |
-| Demo | 10% | URL publica acessivel sem crash |
+| Demo | 10% | [Link da Demo Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/) (Funcionando sem crash) |
 
 ---
 
