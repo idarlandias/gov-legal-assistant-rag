@@ -1,5 +1,23 @@
 # 🏛️ Assistente Jurídico RAG (`gov-legal-assistant-rag`)
 
+<div align="center">
+
+# 🏛️ Assistente Jurídico RAG
+
+### 🤖 IA Conversacional Ancorada para a Gestão Pública Brasileira
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+
+*Desenvolvido por **Idarlandias** | Desenvolvedor & Estudante de IA* 🎓👋
+
+---
+
+</div>
+
 > 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
 
 ## 📺 Demonstração Visual (Screencast)
