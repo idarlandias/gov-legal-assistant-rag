@@ -28,25 +28,26 @@ O diagrama abaixo detalha a jornada de uma requisição de usuário, desde o mom
 
 ```mermaid
 flowchart TD
-    USER([Usuário digita a pergunta]) --> UI[Streamlit UI Chat]
-    UI --> EXACT{1. Exact Cache?\nSHA256 da Query}
-    EXACT -->|Hit: Encontrado| RESP[Retorna resposta instantânea]
-    EXACT -->|Miss| SEM{2. Semantic Cache?\nSimilaridade >= 0.93}
+    USER(["Usuário digita a pergunta"]) --> UI["Streamlit UI Chat"]
+    UI --> EXACT{"1. Exact Cache? <br> SHA256 da Query"}
+    EXACT -->|Hit: Encontrado| RESP["Retorna resposta instantânea"]
+    EXACT -->|Miss| SEM{"2. Semantic Cache? <br> Similaridade >= 0.93"}
     SEM -->|Hit: Encontrado| RESP
-    SEM -->|Miss| ROUTE[3. Roteador de Complexidade]
+    SEM -->|Miss| ROUTE["3. Roteador de Complexidade"]
     
-    ROUTE -->|Consulta Simples| FLASH[Gemini 2.5 Flash-Lite\n$0.075 / 1M tokens]
-    ROUTE -->|Consulta Complexa| PRO[Gemini 2.5 Pro\n$1.25 / 1M tokens]
+    ROUTE -->|"Consulta Simples"| FLASH["Gemini 2.5 Flash-Lite <br> Custo: 0.075 por 1M tokens"]
+    ROUTE -->|"Consulta Complexa"| PRO["Gemini 2.5 Pro <br> Custo: 1.25 por 1M tokens"]
     
-    FLASH & PRO --> RETRIEVE[(4. Retrieval:\nChromaDB Vetorial)]
-    RETRIEVE --> PROMPT[5. Prompt Eng\nAncoragem Estrita]
-    PROMPT --> LLM{6. LLM precisa de\numa Tool?}
+    FLASH --> RETRIEVE[("4. Retrieval: <br> ChromaDB Vetorial")]
+    PRO --> RETRIEVE
+    RETRIEVE --> PROMPT["5. Prompt Eng <br> Ancoragem Estrita"]
+    PROMPT --> LLM{"6. LLM precisa de <br> uma Tool?"}
     
-    LLM -->|Sim| RUN_TOOL[7. Executa Código Python\n(Ex: simular_enquadramento)]
-    RUN_TOOL --> CONSOLIDATE[8. Consolidação da Resposta]
+    LLM -->|Sim| RUN_TOOL["7. Executa Código Python <br> Ex: simular_enquadramento"]
+    RUN_TOOL --> CONSOLIDATE["8. Consolidação da Resposta"]
     LLM -->|Não| CONSOLIDATE
     
-    CONSOLIDATE --> SAVE_CACHE[9. Salva nos Caches\nExact & Semantic]
+    CONSOLIDATE --> SAVE_CACHE["9. Salva nos Caches <br> Exact & Semantic"]
     SAVE_CACHE --> RESP
     RESP --> UI
 ```
