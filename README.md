@@ -2,6 +2,14 @@
 
 > Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
 
+## 📺 Demonstração Visual (Screencast)
+
+Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação realizando as pesquisas de texto solicitadas para os quatro domínios de forma integrada e ilustrando as métricas do cache e roteador na barra lateral:
+
+![Gravação de Tela do Assistente RAG em Ação](docs/images/pesquisas_reais_demo_1780588092439.webp)
+
+*Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
+
 ## Problem statement
 
 1. **Qual problema você resolve?** Morosidade jurídica e risco de descumprimento legal na interpretação de normativas complexas na Administração Pública Brasileira. Servidores perdem tempo buscando informações em múltiplos manuais e PDFs extensos, o que atrasa compras públicas, gera insegurança jurídica e riscos de conformidade (vazamentos da LGPD ou anulação de licitações).
