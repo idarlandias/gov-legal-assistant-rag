@@ -240,6 +240,17 @@ class RAGPipeline:
 
         return self.collection.count()
 
+    def reset_database(self) -> int:
+        """Deleta a coleção de forma limpa e a recria, reindexando o corpus sem travar o arquivo SQLite."""
+        try:
+            self.chroma_client.delete_collection(self.collection_name)
+        except Exception:
+            pass
+        self.collection = self.chroma_client.get_or_create_collection(
+            name=self.collection_name, embedding_function=self.embed_fn
+        )
+        return self.ingest_and_index()
+
     # ------------------------------------------------------------------ TODO 2
     def retrieve(self, query: str, k: int = 5, domain: str | None = None) -> list[dict]:
         """Busca top-k chunks similares a query, opcionalmente filtrando por dominio."""

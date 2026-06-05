@@ -72,18 +72,16 @@ with st.sidebar:
 
     if st.button("Reindexar Banco Vetorial"):
         with st.spinner("Apagando e reconstruindo banco vetorial..."):
-            st.cache_resource.clear()
             try:
-                # Usa reset programático do Chroma para evitar travas de permissão/arquivo aberto
-                pipeline.chroma_client.reset()
+                # Limpa caches em memória do Streamlit
+                st.cache_resource.clear()
+                # Executa a limpeza e reindexação de forma segura deletando e recriando a coleção
+                count = pipeline.reset_database()
+                st.success(f"Reindexação concluída! {count} chunks indexados.")
+                st.rerun()
             except Exception as e:
-                st.error(f"Erro ao limpar banco vetorial: {e}")
+                st.error(f"Erro ao limpar e reindexar o banco: {e}")
                 st.info("Caso o erro persista, tente reiniciar a aplicação no painel da nuvem.")
-            
-            # Força a reconstrução chamando o pipeline novamente
-            new_pipeline = get_pipeline()
-            st.success("Reindexação concluída!")
-            st.rerun()
 
 
 # Main — chat interface
