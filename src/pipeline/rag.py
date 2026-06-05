@@ -152,24 +152,45 @@ class RAGPipeline:
 
         # SEU CODIGO AQUI — TODO 1.C
         import time
-        BATCH = 90
+        import sys
+        BATCH = 45
         for start in range(0, len(chunks), BATCH):
             lote = chunks[start : start + BATCH]
-            self.collection.add(
-                ids=[c["id"] for c in lote],
-                documents=[c["text"] for c in lote],
-                metadatas=[
-                    {
-                        "source": c["source"],
-                        "page": c["page"],
-                        "dominio": c["dominio"],
-                        "fonte": c["fonte"],
-                        "tipo_documento": c["tipo_documento"],
-                    }
-                    for c in lote
-                ],
-            )
-            time.sleep(0.5)
+            
+            retries = 5
+            wait_time = 12
+            success = False
+            while retries > 0 and not success:
+                try:
+                    self.collection.add(
+                        ids=[c["id"] for c in lote],
+                        documents=[c["text"] for c in lote],
+                        metadatas=[
+                            {
+                                "source": c["source"],
+                                "page": c["page"],
+                                "dominio": c["dominio"],
+                                "fonte": c["fonte"],
+                                "tipo_documento": c["tipo_documento"],
+                            }
+                            for c in lote
+                        ],
+                    )
+                    success = True
+                except Exception as e:
+                    err_str = str(e)
+                    if "429" in err_str or "rate_limit" in err_str.lower() or "exhausted" in err_str.lower() or "limit" in err_str.lower():
+                        print(f"Rate limit atingido na nuvem. Aguardando {wait_time} segundos... (Tentativas: {retries})")
+                        time.sleep(wait_time)
+                        wait_time = wait_time * 2 + 2
+                        retries -= 1
+                    else:
+                        raise e
+            
+            if not success:
+                raise RuntimeError("Falha de Rate Limit ao indexar no Streamlit Cloud.")
+                
+            time.sleep(1.0)
 
         return self.collection.count()
 
