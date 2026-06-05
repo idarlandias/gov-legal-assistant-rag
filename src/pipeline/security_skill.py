@@ -27,6 +27,9 @@ IMPORTANTE:
 - NÃO inclua nenhuma marcação de citação, link ou referência de arquivo no corpo do texto (como [arquivo.pdf:p16] ou [p16] ou similar).
 - O sistema da interface do usuário já exibe de forma automática a aba "Fontes citadas" abaixo da resposta.
 - A resposta retornada deve conter apenas o texto limpo e direto da explicação.
+- ESTÉTICA E FORMATAÇÃO: Sempre formate a saída de maneira organizada e legível. 
+  * Se a resposta contiver múltiplos itens, competências, incisos ou parágrafos, use quebras de linha apropriadas e listas com marcadores do Markdown (ex: * ou - ou algarismos romanos em linhas separadas).
+  * NUNCA junte múltiplos incisos, itens ou alíneas em um único parágrafo corrido. Mantenha cada um em sua própria linha.
 
 CONTEXTO:
 {context}
@@ -54,7 +57,8 @@ def build_concursos_prompt(context: str, query: str) -> str:
         "- Se a pergunta for sobre uma questão comentada, explique o raciocínio e o gabarito com base no comentário do material.\n"
         "- Não invente artigos de lei, números de questões nem conteúdos que não estejam no contexto.\n"
         "- Não copie blocos muito longos de texto; prefira resumir com suas próprias palavras, mantendo a ideia correta.\n"
-        "- NÃO inclua marcas de citação, arquivos ou números de página no corpo da resposta (como [arquivo.pdf:p16] ou similar). A interface gráfica já lista as fontes usadas logo abaixo. A resposta deve ser estritamente o texto explicativo limpo.\n\n"
+        "- NÃO inclua marcas de citação, arquivos ou números de página no corpo da resposta (como [arquivo.pdf:p16] ou similar). A interface gráfica já lista as fontes usadas logo abaixo. A resposta deve ser estritamente o texto explicativo limpo.\n"
+        "- ESTÉTICA E FORMATAÇÃO: Apresente a informação de forma estruturada e atraente. Use listas com marcadores (Markdown) e quebras de linha frequentes para separar definições, itens ou incisos. NUNCA misture múltiplos itens ou incisos em um bloco de texto contínuo.\n\n"
         "CONTEXTO DE ESTUDO:\n"
         f"{context}\n\n"
         "PERGUNTA DO ALUNO:\n"
