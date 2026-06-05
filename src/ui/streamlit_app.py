@@ -74,7 +74,7 @@ with st.sidebar:
 # Main — chat interface
 domain_option = st.selectbox(
     "Filtro de Domínio (Routing):",
-    options=["Auto (Detecção Automática)", "LGPD", "Licitações", "Transparência", "Procedimentos Internos"],
+    options=["Auto (Detecção Automática)", "LGPD", "Licitações", "Transparência", "Procedimentos Internos", "Concursos públicos"],
     index=0
 )
 
@@ -83,7 +83,8 @@ domain_mapping = {
     "LGPD": "lgpd",
     "Licitações": "licitacoes",
     "Transparência": "transparencia",
-    "Procedimentos Internos": "procedimentos"
+    "Procedimentos Internos": "procedimentos",
+    "Concursos públicos": "concursos"
 }
 selected_domain = domain_mapping[domain_option]
 
@@ -144,6 +145,17 @@ elif selected_domain == "transparencia":
     with col2:
         if st.button("Ex: Link de Despesas no Portal"):
             st.session_state["query_input"] = "Construa o link de despesas de saúde do ano de 2024 para o Brasil"
+            st.rerun()
+elif selected_domain == "concursos":
+    st.info("🎓 **Concursos públicos:** Tutor de concursos públicos que explica conteúdo e questões com base nas apostilas salvas no corpus.")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Ex: Ato vs Fato Contábil"):
+            st.session_state["query_input"] = "Explique a diferença entre ato e fato contábil conforme a aula."
+            st.rerun()
+    with col2:
+        if st.button("Ex: O que é situação líquida"):
+            st.session_state["query_input"] = "Resuma o que é situação líquida segundo o material de contabilidade."
             st.rerun()
 else:
     st.info("🤖 **Modo Automático:** O assistente tentará classificar a sua pergunta e rotear para o domínio e modelo corretos de forma autônoma.")
@@ -242,6 +254,6 @@ if user_query:
 
 st.divider()
 st.caption(
-    "Assistente Jurídico RAG | Domínios: LGPD, Licitações, Transparência e Procedimentos Internos. "
+    "Assistente Jurídico RAG | Domínios: LGPD, Licitações, Transparência, Procedimentos Internos e Concursos Públicos. "
     "Métricas de performance e cache exibidas na barra lateral."
 )

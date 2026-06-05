@@ -15,7 +15,7 @@ from openai import OpenAI
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.pipeline.tools import TOOLS, run_tool_call
-from src.pipeline.security_skill import get_env_secret, build_secure_prompt
+from src.pipeline.security_skill import get_env_secret, build_secure_prompt, build_concursos_prompt
 
 
 def _make_client() -> tuple[OpenAI, str]:
@@ -116,6 +116,10 @@ class RAGPipeline:
                 dominio = "procedimentos"
                 fonte = filename
                 tipo_doc = "manual_servico"
+            elif "concursos" in filepath.lower() or "concursos" in filename.lower():
+                dominio = "concursos"
+                fonte = filename
+                tipo_doc = "apostila"
             elif "LGPD" in filename or "13709" in filename:
                 dominio = "lgpd"
                 fonte = "https://www2.senado.gov.br/bdsf/handle/id/658231"
@@ -202,8 +206,11 @@ class RAGPipeline:
         # 1. Montar contexto concatenando os textos dos hits com cabecalho [source:page]
         context = "\n\n---\n\n".join(f"[{h['source']}:p{h['page']}]\n{h['text']}" for h in hits)
 
-        # 2. Construir prompt seguro via build_secure_prompt
-        prompt = build_secure_prompt(context=context, query=question)
+        # 2. Construir prompt seguro dependendo do dominio
+        if domain == "concursos":
+            prompt = build_concursos_prompt(context=context, query=question)
+        else:
+            prompt = build_secure_prompt(context=context, query=question)
 
         # 3. Chamar self.client.chat.completions.create com suporte a tools
         messages = [{"role": "user", "content": prompt}]
