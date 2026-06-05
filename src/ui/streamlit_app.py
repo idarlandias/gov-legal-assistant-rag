@@ -29,6 +29,58 @@ from src.pipeline.routing import classify_complexity  # noqa: E402
 from src.pipeline.security_skill import log_query, log_model_choice  # noqa: E402
 
 
+# ---------------------------------------------------------------- Utilidades de formatação
+def _format_answer(text: str) -> str:
+    """Pós-processa a resposta do LLM para garantir formatação limpa em Markdown.
+    
+    Expande incisos inline (I - texto; II - texto) em listas com marcadores separados
+    e garante quebras de linha entre parágrafos de artigos legais.
+    """
+    import re
+
+    if not text:
+        return text
+
+    # 1. Substitui incisos romanos separados por ; ou , na mesma linha por listas
+    # Detecta padrões como: "I - texto; II - texto; III - texto"
+    inline_pattern = re.compile(
+        r'(?:^|(?<=\n))'
+        r'([IVXLC]+\s*[-—]\s*.+?)'
+        r'(?:;\s*)'
+        r'(?=[IVXLC]+\s*[-—])',
+        re.MULTILINE
+    )
+    
+    lines = text.split('\n')
+    new_lines = []
+    for line in lines:
+        # Detecta linha com múltiplos incisos romanos inline: "I - x; II - y"
+        if re.search(r'[IVXLC]+\s*[-—]\s*.+;\s*[IVXLC]+\s*[-—]', line):
+            # Divide em cada inciso
+            parts = re.split(r';\s*(?=[IVXLC]+\s*[-—])', line)
+            for part in parts:
+                stripped = part.strip().rstrip(';')
+                if stripped:
+                    # Formata cada inciso como item de lista
+                    inciso_match = re.match(r'^([IVXLC]+)\s*[-—]\s*(.+)$', stripped)
+                    if inciso_match:
+                        new_lines.append(f"- **{inciso_match.group(1)}** — {inciso_match.group(2)}")
+                    else:
+                        new_lines.append(f"- {stripped}")
+        else:
+            new_lines.append(line)
+
+    result = '\n'.join(new_lines)
+    
+    # 2. Garante que parágrafos de lei (§ 1º, § 2º...) estejam em linhas próprias
+    result = re.sub(r'([^\.])\s*(§\s*\d+[°º])', r'\1\n\n\2', result)
+    
+    # 3. Remove citações de arquivo que podem ter escapado do filtro do prompt
+    result = re.sub(r'\[?[A-Za-z0-9_\-]+\.(?:pdf|txt|docx)\:?p?\d*\]?', '', result)
+    
+    return result.strip()
+
+
 # ---------------------------------------------------------------- Streamlit UI
 st.set_page_config(page_title="Assistente Jurídico RAG", page_icon="🏛️", layout="centered")
 
@@ -258,9 +310,10 @@ if user_query:
                             st.error(f"Pipeline nao implementado: {e}")
                             st.stop()
 
-                    st.markdown(result["answer"])
+                    formatted_answer = _format_answer(result["answer"])
+                    st.markdown(formatted_answer)
                     if result.get("sources"):
-                        with st.expander("Fontes citadas"):
+                        with st.expander("📎 Fontes citadas"):
                             for source, page in result["sources"]:
                                 st.write(f"- `{source}:p{page}`")
 

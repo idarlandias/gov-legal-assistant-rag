@@ -20,23 +20,30 @@ def build_secure_prompt(context: str, query: str) -> str:
     # Sanitização básica para evitar injeção simples
     sanitized_query = query.replace("CONTEXTO:", "").replace("PERGUNTA:", "").strip()
     
-    return f"""Voce e um assistente tecnico. Responda APENAS com base no contexto abaixo.
-Se a informacao nao estiver no contexto, diga "Nao encontrado no corpus".
+    return f"""Você é um assistente jurídico técnico. Responda APENAS com base no contexto abaixo.
+Se a informação não estiver no contexto, diga "Não encontrado no corpus".
 
-IMPORTANTE:
-- NÃO inclua nenhuma marcação de citação, link ou referência de arquivo no corpo do texto (como [arquivo.pdf:p16] ou [p16] ou similar).
-- O sistema da interface do usuário já exibe de forma automática a aba "Fontes citadas" abaixo da resposta.
-- A resposta retornada deve conter apenas o texto limpo e direto da explicação.
-- ESTÉTICA E FORMATAÇÃO: Sempre formate a saída de maneira organizada e legível. 
-  * Se a resposta contiver múltiplos itens, competências, incisos ou parágrafos, use quebras de linha apropriadas e listas com marcadores do Markdown (ex: * ou - ou algarismos romanos em linhas separadas).
-  * NUNCA junte múltiplos incisos, itens ou alíneas em um único parágrafo corrido. Mantenha cada um em sua própria linha.
+REGRAS OBRIGATÓRIAS DE FORMATAÇÃO MARKDOWN — SIGA RIGOROSAMENTE:
+1. NÃO inclua citações de arquivo, links ou referências de página no texto (ex: [arquivo.pdf:p16]).
+2. Use **negrito** para termos legais importantes, nomes de artigos e títulos de seção.
+3. Cada inciso (I, II, III...), alínea (a, b, c...) ou parágrafo (§ 1º, § 2º...) DEVE estar em sua PRÓPRIA LINHA separada.
+4. PROIBIDO juntar múltiplos incisos ou itens separados por ponto-e-vírgula ou vírgula em uma mesma linha.
+5. Use `---` para separar seções distintas quando houver cabeçalhos.
+6. Quando listar competências, obrigações ou direitos, use listas com marcador (`-`) ou numeração, uma por linha.
+7. Se o artigo tiver caput + incisos, apresente o caput primeiro em texto normal e os incisos em lista numerada abaixo.
+8. Exemplo CORRETO de formatação de incisos:
+   **Art. 20.** Compete à autoridade de trânsito:
+   - **I** — cumprir e fazer cumprir a legislação;
+   - **II** — fiscalizar o cumprimento das normas;
+   - **III** — aplicar as medidas administrativas cabíveis.
+9. Exemplo PROIBIDO (NUNCA faça isso): "I - cumprir a lei; II - fiscalizar; III - aplicar medidas"
 
 CONTEXTO:
 {context}
 
 PERGUNTA: {sanitized_query}
 
-RESPOSTA:"""
+RESPOSTA (em Markdown bem formatado):"""
 
 def build_concursos_prompt(context: str, query: str) -> str:
     """Monta o prompt para o domínio concursos como tutor didático."""
@@ -48,22 +55,27 @@ def build_concursos_prompt(context: str, query: str) -> str:
         "usando APENAS o material fornecido no contexto.\n\n"
         "O contexto contém apostilas, aulas e questões comentadas de cursos preparatórios "
         "para concursos (por exemplo, PF, Polícia Federal, contabilidade, direito etc.).\n\n"
-        "REGRAS:\n"
+        "REGRAS OBRIGATÓRIAS:\n"
         "- Use somente as informações que aparecem no CONTEXTO abaixo.\n"
         "- Se a resposta não puder ser encontrada no contexto, diga explicitamente: "
         "\"Não encontrado no corpus de estudos\".\n"
-        "- Quando possível, responda em 2 a 5 frases objetivas, como um professor explicando para aluno.\n"
-        "- Se a pergunta for de teoria, foque em explicar o conceito com base nas definições e exemplos do contexto.\n"
-        "- Se a pergunta for sobre uma questão comentada, explique o raciocínio e o gabarito com base no comentário do material.\n"
-        "- Não invente artigos de lei, números de questões nem conteúdos que não estejam no contexto.\n"
-        "- Não copie blocos muito longos de texto; prefira resumir com suas próprias palavras, mantendo a ideia correta.\n"
-        "- NÃO inclua marcas de citação, arquivos ou números de página no corpo da resposta (como [arquivo.pdf:p16] ou similar). A interface gráfica já lista as fontes usadas logo abaixo. A resposta deve ser estritamente o texto explicativo limpo.\n"
-        "- ESTÉTICA E FORMATAÇÃO: Apresente a informação de forma estruturada e atraente. Use listas com marcadores (Markdown) e quebras de linha frequentes para separar definições, itens ou incisos. NUNCA misture múltiplos itens ou incisos em um bloco de texto contínuo.\n\n"
+        "- Responda como um professor explicando para aluno, de forma didática e organizada.\n"
+        "- Se a pergunta for de teoria, explique o conceito com exemplos do contexto.\n"
+        "- Se a pergunta for sobre questão comentada, explique o raciocínio e o gabarito.\n"
+        "- Não invente artigos de lei, números de questões nem conteúdos fora do contexto.\n"
+        "- NÃO inclua marcas de citação como [arquivo.pdf:p16] no corpo da resposta.\n\n"
+        "REGRAS OBRIGATÓRIAS DE FORMATAÇÃO MARKDOWN:\n"
+        "- Use **negrito** para conceitos-chave, definições importantes e termos técnicos.\n"
+        "- Cada item de uma lista DEVE estar em sua PRÓPRIA LINHA com marcador (- ou número).\n"
+        "- PROIBIDO juntar múltiplos itens separados por ponto-e-vírgula em uma mesma linha.\n"
+        "- Use `>` para blockquotes quando citar trechos do material.\n"
+        "- Use `---` para separar seções distintas da resposta.\n"
+        "- Para definições, use o formato: **Termo:** Explicação na linha de baixo.\n\n"
         "CONTEXTO DE ESTUDO:\n"
         f"{context}\n\n"
         "PERGUNTA DO ALUNO:\n"
         f"{sanitized_query}\n\n"
-        "RESPOSTA DO TUTOR:"
+        "RESPOSTA DO TUTOR (em Markdown bem formatado):"
     )
 
 
