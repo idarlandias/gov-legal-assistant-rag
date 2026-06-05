@@ -22,7 +22,7 @@
 
 </div>
 
-> 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública e Procedimentos Internos.
+> 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública, Procedimentos Internos e Código de Trânsito Brasileiro (CTB).
 
 ### 🚀 Live Demo (Aplicação Online)
 * **Link de acesso:** [Assistente Jurídico RAG - Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
@@ -127,6 +127,13 @@ O sistema retornou estritamente: **`"Nao encontrado no corpus."`** com referênc
 - **Abordagem Híbrida com Tools:** Regras como o cálculo de dispensa por valor (Art. 75 da Lei 14.133) e estruturação de checklists são determinísticas. Usar funções locais Python acionadas via Function Calling garante 100% de acurácia matemática, eliminando alucinações de cálculo do LLM.
 - **Ausência de Re-ranking:** O corpus de leis é filtrado na busca vetorial por metadados de domínio (`lgpd`, `licitacoes`, `transparencia`, `procedimentos`). Como o retrieval retorna o top-k já isolado do domínio específico, um modelo de re-ranking adicionaria latência desnecessária sem ganho substancial de precisão.
 
+### 🔄 Automação e Atualização Contínua das Leis (GitHub Actions)
+> [!TIP]
+> Leis e normativas sofrem alterações frequentes. Para garantir a conformidade jurídica das respostas sem exigir manutenção manual, implementamos um fluxo de automação serverless:
+> * **Verificação Inteligente por Assinatura Digital (Hash):** O script `update_laws.py` monitora periodicamente as URLs oficiais (como as leis compiladas do Planalto e Senado Federal). Ele realiza chamadas rápidas do tipo `HEAD` e, em caso de novos uploads, verifica se o hash SHA256 do arquivo mudou para evitar downloads redundantes.
+> * **Parser de HTML do Planalto para Texto:** Como o Código de Trânsito Brasileiro (CTB) é publicado como HTML dinâmico, o script converte de forma limpa o HTML em texto estruturado (`.txt`) antes de salvar, permitindo que a ingestão de dados trate documentos de texto e PDFs de forma unificada.
+> * **Integração de CI/CD (GitHub Actions + Streamlit Cloud):** Um workflow configurado em `.github/workflows/auto_update.yml` roda todo domingo à meia-noite (UTC). Havendo novidades, ele faz o download, atualiza a tabela de metadados (`data/corpus_metadata.json`), executa o commit e realiza o push. O Streamlit Cloud detecta a alteração no repositório e reinicia o contêiner com as leis vigentes de forma autônoma.
+
 ## ⚠️ Limitations
 
 - **Parser por LLM em Procedimentos:** A tool `listar_documentos` foi migrada de regex para um mini-pipeline com **Gemini Flash-Lite** para extrair checklists em JSON de manuais reais. Isso removeu a fragilidade do regex antigo, mas adicionou dependência de chamadas à API externa.
@@ -147,26 +154,31 @@ O sistema retornou estritamente: **`"Nao encontrado no corpus."`** com referênc
 
 ```
 projeto-portfolio/
+├── .github/
+│   └── workflows/
+│       └── auto_update.yml   # Workflow do GitHub Actions para atualização semanal
 ├── data/
-│   ├── corpus/           # PDFs oficiais (LGPD, Licitações, Transparência, Procedimentos)
-│   └── chroma/           # Banco de dados vetorial local (gitignored)
+│   ├── corpus/               # PDFs e TXTs oficiais (LGPD, Licitações, Transparência, Procedimentos, CTB)
+│   ├── chroma/               # Banco de dados vetorial local (gitignored)
+│   └── corpus_metadata.json  # Tabela de controle de versão (hashes/datas) das leis
 ├── docs/
 │   └── guia_estudo_projeto.md # Manual completo de estudo e deploy do projeto
 ├── src/
 │   ├── ui/streamlit_app.py     # Frontend em formato de Chat interativo
 │   ├── pipeline/
-│   │   ├── rag.py        # Pipeline de Ingestão, Retrieval e Generation
-│   │   ├── tools.py      # Implementação e Registro das 5 Tools programáticas
-│   │   ├── cache.py      # Cache em dois níveis (Exact e Semantic)
-│   │   ├── routing.py    # Classificador de complexidade de consultas
-│   │   └── security_skill.py # Secrets manager, Prompt Builder e logs estruturados
+│   │   ├── rag.py            # Pipeline de Ingestão (suporta PDF e TXT), Retrieval e Generation
+│   │   ├── tools.py          # Implementação e Registro das 5 Tools programáticas
+│   │   ├── cache.py          # Cache em dois níveis (Exact e Semantic)
+│   │   ├── routing.py        # Classificador de complexidade de consultas
+│   │   ├── security_skill.py # Secrets manager, Prompt Builder e logs estruturados
+│   │   └── update_laws.py    # Script de monitoramento de alterações nas leis
 │   └── observability/trace.py # Tracing de logs estruturados e trace_id
-├── tests/test_smoke.py   # Testes automatizados do pytest
-├── pyproject.toml        # Dependências do projeto
-├── .dockerignore         # Bloqueio de arquivos desnecessários no build do Docker
-├── Dockerfile            # Arquivo de encapsulamento da aplicação
-├── .env.example          # Exemplo de configuração de variáveis
-└── README.md             # Documento de apresentação (este arquivo)
+├── tests/test_smoke.py       # Testes automatizados do pytest
+├── pyproject.toml            # Dependências do projeto
+├── .dockerignore             # Bloqueio de arquivos desnecessários no build do Docker
+├── Dockerfile                # Arquivo de encapsulamento da aplicação
+├── .env.example              # Exemplo de configuração de variáveis
+└── README.md                 # Documento de apresentação (este arquivo)
 ```
 
 ## Os 6 TODOs (mapa rapido)
