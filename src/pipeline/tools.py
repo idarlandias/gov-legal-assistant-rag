@@ -72,6 +72,48 @@ def cite_14133_article(numero_artigo: int) -> str:
     return f"Artigo {numero_artigo} não encontrado na Lei 14.133."
 
 
+def cite_ctb_article(numero_artigo: int) -> str:
+    """Busca o texto integral de um artigo específico do Código de Trânsito Brasileiro (CTB) diretamente do arquivo de texto para evitar fragmentação e alucinações."""
+    import re
+    from pathlib import Path
+    
+    file_path = Path("data/corpus/ctb/CTB_compilado.txt")
+    if not file_path.exists():
+        # Fallback para caminho absoluto se o relativo falhar
+        file_path = Path(__file__).resolve().parents[2] / "data" / "corpus" / "ctb" / "CTB_compilado.txt"
+        
+    if not file_path.exists():
+        return f"Arquivo do CTB não encontrado localmente para extrair o Artigo {numero_artigo}."
+        
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except Exception as e:
+        return f"Erro ao ler o arquivo do CTB: {e}"
+        
+    # Regex para localizar: Art. <numero_artigo> (ex: Art. 20.)
+    pattern = re.compile(rf"\b(Art\.|Artigo)\s*{numero_artigo}\b", re.IGNORECASE)
+    match = pattern.search(content)
+    if not match:
+        return f"Artigo {numero_artigo} não encontrado no Código de Trânsito Brasileiro."
+        
+    start_pos = match.start()
+    
+    # Encontra o início do próximo artigo (Art. <qualquer_numero>) para definir o fim deste artigo
+    next_pattern = re.compile(rf"\b(Art\.|Artigo)\s*\d+\b", re.IGNORECASE)
+    next_match = None
+    for m in next_pattern.finditer(content, pos=start_pos + 10):
+        next_match = m
+        break
+        
+    if next_match:
+        end_pos = next_match.start()
+        article_text = content[start_pos:end_pos].strip()
+    else:
+        article_text = content[start_pos:].strip()
+        
+    return article_text
+
+
 def simular_enquadramento(valor: float, objeto: str) -> str:
     """Simula se uma contratação pública enquadra-se em dispensa por valor ou exige licitação."""
     objeto_lower = objeto.lower()
@@ -330,12 +372,30 @@ TOOLS: list[dict[str, Any]] = [
                 "required": ["servico"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "cite_ctb_article",
+            "description": "Retorna o texto integral de um artigo específico do Código de Trânsito Brasileiro (CTB) para responder com todas as competências sem fragmentação.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "numero_artigo": {
+                        "type": "integer",
+                        "description": "O número do artigo do CTB que se deseja citar (ex: 20, 24, 29)."
+                    }
+                },
+                "required": ["numero_artigo"]
+            }
+        }
     }
 ]
 
 TOOL_REGISTRY: dict[str, Callable[..., str]] = {
     "cite_lgpd_article": cite_lgpd_article,
     "cite_14133_article": cite_14133_article,
+    "cite_ctb_article": cite_ctb_article,
     "simular_enquadramento": simular_enquadramento,
     "build_transparency_link": build_transparency_link,
     "listar_documentos": listar_documentos,
