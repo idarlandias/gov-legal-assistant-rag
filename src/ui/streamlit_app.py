@@ -72,15 +72,13 @@ with st.sidebar:
 
     if st.button("Reindexar Banco Vetorial"):
         with st.spinner("Apagando e reconstruindo banco vetorial..."):
-            import shutil
-            import os
             st.cache_resource.clear()
-            persist_dir = str(_ROOT / "data" / "chroma")
-            if os.path.exists(persist_dir):
-                try:
-                    shutil.rmtree(persist_dir)
-                except Exception as e:
-                    st.error(f"Erro ao deletar banco local: {e}")
+            try:
+                # Usa reset programático do Chroma para evitar travas de permissão/arquivo aberto
+                pipeline.chroma_client.reset()
+            except Exception as e:
+                st.error(f"Erro ao limpar banco vetorial: {e}")
+                st.info("Caso o erro persista, tente reiniciar a aplicação no painel da nuvem.")
             
             # Força a reconstrução chamando o pipeline novamente
             new_pipeline = get_pipeline()

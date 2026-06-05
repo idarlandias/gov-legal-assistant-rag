@@ -73,10 +73,14 @@ class RAGPipeline:
         self.collection_name = collection_name
 
         import shutil
+        from chromadb.config import Settings
         os.makedirs(persist_dir, exist_ok=True)
         try:
-            chroma = chromadb.PersistentClient(path=persist_dir)
-            self.collection = chroma.get_or_create_collection(
+            self.chroma_client = chromadb.PersistentClient(
+                path=persist_dir,
+                settings=Settings(allow_reset=True)
+            )
+            self.collection = self.chroma_client.get_or_create_collection(
                 name=collection_name, embedding_function=self.embed_fn
             )
             # Valida se o banco consegue contar (verifica corrupção ou incompatibilidade)
@@ -90,8 +94,11 @@ class RAGPipeline:
                 print(f"Erro ao remover diretorio do banco: {rm_err}")
                 
             os.makedirs(persist_dir, exist_ok=True)
-            chroma = chromadb.PersistentClient(path=persist_dir)
-            self.collection = chroma.get_or_create_collection(
+            self.chroma_client = chromadb.PersistentClient(
+                path=persist_dir,
+                settings=Settings(allow_reset=True)
+            )
+            self.collection = self.chroma_client.get_or_create_collection(
                 name=collection_name, embedding_function=self.embed_fn
             )
 
