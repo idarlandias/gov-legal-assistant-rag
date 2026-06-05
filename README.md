@@ -6,6 +6,10 @@
 
 ### 🤖 IA Conversacional Ancorada para a Gestão Pública Brasileira
 
+<img src="docs/images/banner.png" alt="Inteligência Artificial Jurídica" width="600"/>
+
+<br/>
+
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
@@ -32,6 +36,10 @@ Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação re
 *💡 Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
 
 ## 🎯 Problem statement
+
+<div align="center">
+  <img src="docs/images/smartphone_demo.png" alt="Demonstração do Assistente Jurídico no Celular" width="400"/>
+</div>
 
 1. **Qual problema você resolve?** 🛑 Morosidade jurídica e risco de descumprimento legal na interpretação de normativas complexas na Administração Pública Brasileira. Servidores perdem tempo buscando informações em múltiplos manuais e PDFs extensos, o que atrasa compras públicas, gera insegurança jurídica e riscos de conformidade (vazamentos da LGPD ou anulação de licitações).
 2. **Para quem?** 👥 Servidores públicos (assessores, procuradores, agentes de contratação), ouvidores (gestores de e-SIC) e cidadãos em busca de serviços públicos.
@@ -90,6 +98,10 @@ Métricas consolidadas com base no benchmark de 50 consultas de complexidades va
 | **+ Routing cheap-first (70% Flash-Lite / 30% Pro)** | **$0.0162** | **85.0%** | **1.210 ms** |
 
 *📉 Redução de custos acumulada de **85.0%** em relação ao baseline premium, superando amplamente a meta da rubrica (≥50%), com latência de resposta abaixo de 1.5s para a maioria das consultas.*
+
+<div align="center">
+  <img src="docs/images/metrics_dashboard.png" alt="Métricas de Custo e Latência" width="500"/>
+</div>
 
 ## ⚖️ Design decisions
 

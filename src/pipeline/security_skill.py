@@ -22,7 +22,11 @@ def build_secure_prompt(context: str, query: str) -> str:
     
     return f"""Voce e um assistente tecnico. Responda APENAS com base no contexto abaixo.
 Se a informacao nao estiver no contexto, diga "Nao encontrado no corpus".
-Sempre cite a fonte usando o formato [arquivo:pagina].
+
+IMPORTANTE:
+- NÃO inclua nenhuma marcação de citação, link ou referência de arquivo no corpo do texto (como [arquivo.pdf:p16] ou [p16] ou similar).
+- O sistema da interface do usuário já exibe de forma automática a aba "Fontes citadas" abaixo da resposta.
+- A resposta retornada deve conter apenas o texto limpo e direto da explicação.
 
 CONTEXTO:
 {context}
@@ -49,7 +53,8 @@ def build_concursos_prompt(context: str, query: str) -> str:
         "- Se a pergunta for de teoria, foque em explicar o conceito com base nas definições e exemplos do contexto.\n"
         "- Se a pergunta for sobre uma questão comentada, explique o raciocínio e o gabarito com base no comentário do material.\n"
         "- Não invente artigos de lei, números de questões nem conteúdos que não estejam no contexto.\n"
-        "- Não copie blocos muito longos de texto; prefira resumir com suas próprias palavras, mantendo a ideia correta.\n\n"
+        "- Não copie blocos muito longos de texto; prefira resumir com suas próprias palavras, mantendo a ideia correta.\n"
+        "- NÃO inclua marcas de citação, arquivos ou números de página no corpo da resposta (como [arquivo.pdf:p16] ou similar). A interface gráfica já lista as fontes usadas logo abaixo. A resposta deve ser estritamente o texto explicativo limpo.\n\n"
         "CONTEXTO DE ESTUDO:\n"
         f"{context}\n\n"
         "PERGUNTA DO ALUNO:\n"
