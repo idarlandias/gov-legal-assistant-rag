@@ -72,10 +72,26 @@ class RAGPipeline:
         self.persist_dir = persist_dir
         self.collection_name = collection_name
 
-        chroma = chromadb.PersistentClient(path=persist_dir)
-        self.collection = chroma.get_or_create_collection(
-            name=collection_name, embedding_function=self.embed_fn
-        )
+        import shutil
+        try:
+            chroma = chromadb.PersistentClient(path=persist_dir)
+            self.collection = chroma.get_or_create_collection(
+                name=collection_name, embedding_function=self.embed_fn
+            )
+            # Valida se o banco consegue contar (verifica corrupção ou incompatibilidade)
+            self.collection.count()
+        except Exception as e:
+            print(f"Aviso: Falha ao carregar ChromaDB ({e}). Limpando cache e recriando do zero...")
+            try:
+                if os.path.exists(persist_dir):
+                    shutil.rmtree(persist_dir)
+            except Exception as rm_err:
+                print(f"Erro ao remover diretorio do banco: {rm_err}")
+                
+            chroma = chromadb.PersistentClient(path=persist_dir)
+            self.collection = chroma.get_or_create_collection(
+                name=collection_name, embedding_function=self.embed_fn
+            )
 
     # ------------------------------------------------------------------ TODO 1
     def ingest_and_index(self) -> int:
