@@ -43,9 +43,9 @@ def test_concursos_resposta_negativa_fora_de_escopo(pipeline):
 
 def test_concursos_comportamento_didatico_se_tiver_dados(pipeline):
     """Se houver dados de concurso, valida se o RAG executa. Se não, valida o retorno antialucinação padrão."""
-    result = pipeline.answer("Explique a diferença entre ativo e passivo segundo a aula.", domain="concursos")
+    result = pipeline.answer("Qual a velocidade máxima permitida em vias de trânsito rápido segundo a aula?", domain="concursos")
     # Caso não haja arquivos indexados no domínio concursos:
-    if not pipeline.retrieve("ativo passivo", domain="concursos"):
+    if not pipeline.retrieve("velocidade máxima vias trânsito rápido", domain="concursos"):
         assert "Não encontrado no corpus de estudos" in result["answer"]
     else:
         # Se houver, a resposta não deve ser vazia
