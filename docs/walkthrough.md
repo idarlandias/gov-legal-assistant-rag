@@ -96,6 +96,38 @@ Para a apresentação ao professor, geramos uma gravação de tela interativa co
 
 *O vídeo demonstra a transição fluida entre os domínios seguindo o cronograma de 0:00 a 3:00, mostrando a digitação das perguntas exatas, as fontes citadas expandidas e as ferramentas acionadas.*
 
+---
+
+## 🎓 7. Extensão: Domínio Concursos Públicos (Tutor Didático)
+
+Adicionamos com sucesso o suporte ao novo domínio **`concursos`** para funcionar como um assistente de estudos a partir de apostilas e aulas preparatórias em PDF.
+
+### O que foi desenvolvido nesta extensão:
+* **Ingestão Inteligente por Pasta (`rag.py`):** Estendemos o processador do RAG para identificar e inferir o domínio `concursos` a partir da estrutura de pastas `data/corpus/concursos/` e classificar o tipo de documento como `apostila`.
+* **Prompt com Foco Didático e Direitos Autorais (`security_skill.py`):** Criamos a função `build_concursos_prompt`. O prompt instrui a IA a agir como um tutor acolhedor e conciso (respostas de 2 a 5 frases), proíbe a cópia verbatim de blocos muito longos de texto (respeito a direitos autorais) e aplica a ancoragem estrita (retornando `"Não encontrado no corpus de estudos"` se a resposta não estiver nos PDFs fornecidos).
+* **UI com Sugestões Rápidas (`streamlit_app.py`):** Adicionamos a opção *"Concursos públicos"* no seletor de domínios, com textos informativos específicos e atalhos rápidos para perguntas sugeridas sobre atos/fatos contábeis e situação líquida patrimonial.
+* **Testes de Isolamento e Validação (`tests/test_domains.py`):** Criamos um novo arquivo de testes que valida no framework `pytest` se as buscas de cada domínio estão isoladas do ChromaDB e se as regras de ancoragem do tutor estão operacionais.
+
+### 🔬 Resultados dos Testes de Integração Atualizados:
+Rodamos a suíte de testes completa, validando 100% de sucesso nos domínios novos e antigos:
+```bash
+uv run pytest tests/ -v
+```
+
+**Log do console:**
+```text
+tests/test_domains.py::test_isolamento_dominio_lgpd PASSED              [ 14%]
+tests/test_domains.py::test_isolamento_dominio_licitacoes PASSED        [ 28%]
+tests/test_domains.py::test_concursos_resposta_negativa_fora_de_escopo PASSED [ 42%]
+tests/test_domains.py::test_concursos_comportamento_didatico_se_tiver_dados PASSED [ 57%]
+tests/test_smoke.py::test_pipeline_indexa_chunks PASSED                  [ 71%]
+tests/test_smoke.py::test_retrieve_top_k PASSED                          [ 85%]
+tests/test_smoke.py::test_answer_retorna_resposta_com_fonte PASSED       [100%]
+
+============================== 7 passed in 7.02s ==============================
+```
+
+
 
 
 
