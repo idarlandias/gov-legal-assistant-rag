@@ -1,0 +1,44 @@
+{
+  "lgpd/LGPD-2023-ANPD.pdf": {
+    "url": "https://www2.senado.gov.br/bdsf/bitstream/handle/id/658231/Lei_geral_protecao_dados_pessoais_1ed.pdf",
+    "last_modified": null,
+    "etag": null,
+    "length": null,
+    "hash": "0d392a818fc8689867e1c04a511baa037617e9212b433255643885dc32ef62b9"
+  },
+  "licitacoes/Lei_licitacoes_contratos_administrativos_4ed.pdf": {
+    "url": "https://www2.senado.gov.br/bdsf/bitstream/handle/id/656845/Lei_licitacoes_contratos_administrativos_4ed.pdf",
+    "last_modified": null,
+    "etag": null,
+    "length": null,
+    "hash": "e83ffe44498e1bd14daf4c0a0082e5b6af15f3cd0f1e3b51994c1bb89d0a90bc"
+  },
+  "transparencia/gta_executivo_federal_7ed.pdf": {
+    "url": "https://www.gov.br/acessoainformacao/pt-br/central-de-conteudo/publicacoes/gta-7-guia-de-transparencia-ativa-final.pdf",
+    "last_modified": null,
+    "etag": null,
+    "length": null,
+    "hash": "5ded4a38b63019463286c98839b847490f103bfbd7c21c6db3cf354c24a45f77"
+  },
+  "procedimentos/manual_praticas_cartorarias_1_grau.pdf": {
+    "url": "https://www.tjba.jus.br/portal/wp-content/uploads/2017/10/manual_praticas_cartorarias_1_grau.pdf",
+    "last_modified": "Tue, 17 Oct 2017 17:28:54 GMT",
+    "etag": "\"3e28c7-55bc1750aa180\"",
+    "length": "4073671",
+    "hash": "87178a2dfe828f9966d9011560fa7ce2c992469515458237caffc04f06a37de5"
+  },
+  "procedimentos/cartilha_inss_digital_oabsp.pdf": {
+    "url": "https://www.oabsp.org.br/upload/2587661560.pdf",
+    "last_modified": "Tue, 03 Dec 2024 16:23:00 GMT",
+    "etag": null,
+    "length": "8804665",
+    "hash": "074b9df9985278e9e23db4f99cf82ddb4d4b20b8760d4b92f5d6f7861275b0c0"
+  },
+  "procedimentos/cartilha_licenciamento_alvara_prefeitura_sp.pdf": {
+    "url": "https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/licenciamento/manual_usuario_licenciamento.pdf",
+    "last_modified": null,
+    "etag": null,
+    "length": null,
+    "hash": "119d957fd4516fd08f3fad21653644ac29a7d7f6f700a2b5570852092150cac9"
+  }
+}
