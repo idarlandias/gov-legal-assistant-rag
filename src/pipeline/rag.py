@@ -269,7 +269,10 @@ class RAGPipeline:
     def answer(self, question: str, k: int = 5, domain: str | None = None) -> dict:
         """Pipeline completo: retrieve + augment + generate. Retorna {answer, sources}."""
         # Roteamento determinístico para citação exata de artigos do CTB (evita fragmentação de incisos)
-        if domain == "ctb":
+        is_ctb_query = (domain == "ctb") or (
+            domain == "auto" and any(keyword in question.lower() for keyword in ["ctb", "trânsito", "transito", "rodoviário", "rodoviario", "multa", "velocidade"])
+        )
+        if is_ctb_query:
             import re
             match = re.search(r'\b(?:art\.|artigo)\s*(\d+(?:-[a-zA-Z]+)?)\b', question, re.IGNORECASE)
             if match:

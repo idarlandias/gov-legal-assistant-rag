@@ -72,7 +72,7 @@ def cite_14133_article(numero_artigo: int) -> str:
     return f"Artigo {numero_artigo} não encontrado na Lei 14.133."
 
 
-def cite_ctb_article(numero_artigo: int) -> str:
+def cite_ctb_article(numero_artigo: int | str) -> str:
     """Busca o texto integral de um artigo específico do Código de Trânsito Brasileiro (CTB) diretamente do arquivo de texto para evitar fragmentação e alucinações."""
     import re
     from pathlib import Path
@@ -99,7 +99,8 @@ def cite_ctb_article(numero_artigo: int) -> str:
     start_pos = match.start()
     
     # Encontra o início do próximo artigo (Art. <qualquer_numero>) para definir o fim deste artigo
-    next_pattern = re.compile(rf"\b(Art\.|Artigo)\s*\d+\b", re.IGNORECASE)
+    # Usa re.MULTILINE e ^ para garantir que só casa no início da linha (evitando referências no meio de incisos)
+    next_pattern = re.compile(r"^\s*(?:Art\.|Artigo)\s*\d+", re.MULTILINE | re.IGNORECASE)
     next_match = None
     for m in next_pattern.finditer(content, pos=start_pos + 10):
         next_match = m
