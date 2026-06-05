@@ -74,7 +74,7 @@ with st.sidebar:
 # Main — chat interface
 domain_option = st.selectbox(
     "Filtro de Domínio (Routing):",
-    options=["Auto (Detecção Automática)", "LGPD", "Licitações", "Transparência", "Procedimentos Internos", "Concursos públicos"],
+    options=["Auto (Detecção Automática)", "LGPD", "Licitações", "Transparência", "Procedimentos Internos", "Concursos públicos", "Código de Trânsito (CTB)"],
     index=0
 )
 
@@ -84,7 +84,8 @@ domain_mapping = {
     "Licitações": "licitacoes",
     "Transparência": "transparencia",
     "Procedimentos Internos": "procedimentos",
-    "Concursos públicos": "concursos"
+    "Concursos públicos": "concursos",
+    "Código de Trânsito (CTB)": "ctb"
 }
 selected_domain = domain_mapping[domain_option]
 
@@ -156,6 +157,17 @@ elif selected_domain == "concursos":
     with col2:
         if st.button("Ex: O que é situação líquida"):
             st.session_state["query_input"] = "Resuma o que é situação líquida segundo o material de contabilidade."
+            st.rerun()
+elif selected_domain == "ctb":
+    st.info("🚗 **Código de Trânsito Brasileiro (CTB):** Pergunte sobre regras de trânsito, infrações, multas e habilitação com base na Lei 9.503/1997.")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Ex: Limite de velocidade"):
+            st.session_state["query_input"] = "Qual a velocidade máxima permitida em rodovias de pista dupla para carros?"
+            st.rerun()
+    with col2:
+        if st.button("Ex: Infração por celular"):
+            st.session_state["query_input"] = "Qual a gravidade da infração por dirigir manuseando o telefone celular?"
             st.rerun()
 else:
     st.info("🤖 **Modo Automático:** O assistente tentará classificar a sua pergunta e rotear para o domínio e modelo corretos de forma autônoma.")
