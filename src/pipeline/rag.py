@@ -268,6 +268,27 @@ class RAGPipeline:
     # ------------------------------------------------------------------ TODO 3
     def answer(self, question: str, k: int = 5, domain: str | None = None) -> dict:
         """Pipeline completo: retrieve + augment + generate. Retorna {answer, sources}."""
+        # Roteamento determinístico para citação exata de artigos do CTB (evita fragmentação de incisos)
+        if domain == "ctb":
+            import re
+            match = re.search(r'\b(?:art\.|artigo)\s*(\d+(?:-[a-zA-Z]+)?)\b', question, re.IGNORECASE)
+            if match:
+                art_num = match.group(1)
+                from src.pipeline.tools import cite_ctb_article
+                art_text = cite_ctb_article(art_num)
+                if "não encontrado" not in art_text.lower():
+                    prompt = build_secure_prompt(context=art_text, query=question)
+                    messages = [{"role": "user", "content": prompt}]
+                    response = self.client.chat.completions.create(
+                        model=self.llm_model,
+                        messages=messages,
+                        temperature=0.0
+                    )
+                    return {
+                        "answer": response.choices[0].message.content or "",
+                        "sources": [("CTB_compilado.txt", 1)]
+                    }
+
         hits = self.retrieve(question, k=k, domain=domain)
 
         # 1. Montar contexto concatenando os textos dos hits com cabecalho [source:page]
