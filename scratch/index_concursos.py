@@ -59,12 +59,12 @@ def main():
 
     print(f"Gerados {len(chunks)} chunks de concursos.")
 
-    BATCH = 30 # Lote seguro
+    BATCH = 50 # Lote seguro
     for start in range(0, len(chunks), BATCH):
         lote = chunks[start : start + BATCH]
         
         retries = 5
-        wait_time = 6
+        wait_time = 12
         success = False
         while retries > 0 and not success:
             try:
@@ -99,7 +99,7 @@ def main():
             print("Falha ao indexar lote apos varias tentativas devido a Rate Limit.")
             sys.exit(1)
             
-        time.sleep(5.0) # Evita 429 da API Gemini (15 RPM de embeddings)
+        time.sleep(7.0) # Evita 429 da API Gemini (15 RPM de embeddings)
 
     print("Total de chunks depois:", pipeline.collection.count())
 
