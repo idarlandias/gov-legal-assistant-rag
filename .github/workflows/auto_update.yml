@@ -1,0 +1,56 @@
+name: Auto Update Laws and PDFs
+
+on:
+  schedule:
+    # Roda todo domingo à meia-noite (UTC)
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    # Permite execução manual pela interface do GitHub
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    
+    # Dá permissão para fazer push no repositório
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        uv sync
+
+    - name: Run update script
+      run: |
+        uv run python src/pipeline/update_laws.py
+
+    - name: Commit and Push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Adiciona os PDFs atualizados e o arquivo de metadados
+        git add data/corpus/ data/corpus_metadata.json
+        
+        # Verifica se há algo para commitar
+        if git diff --cached --quiet; then
+          echo "Nenhuma alteração detectada nas leis."
+        else
+          git commit -m "chore: auto-update laws and metadata [skip ci]"
+          git push origin main
+        fi
