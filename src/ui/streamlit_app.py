@@ -70,6 +70,23 @@ with st.sidebar:
         get_semantic_cache.clear()
         st.success("Caches limpos. Recarregue a pagina.")
 
+    if st.button("Reindexar Banco Vetorial"):
+        with st.spinner("Apagando e reconstruindo banco vetorial..."):
+            import shutil
+            import os
+            st.cache_resource.clear()
+            persist_dir = str(_ROOT / "data" / "chroma")
+            if os.path.exists(persist_dir):
+                try:
+                    shutil.rmtree(persist_dir)
+                except Exception as e:
+                    st.error(f"Erro ao deletar banco local: {e}")
+            
+            # Força a reconstrução chamando o pipeline novamente
+            new_pipeline = get_pipeline()
+            st.success("Reindexação concluída!")
+            st.rerun()
+
 
 # Main — chat interface
 domain_option = st.selectbox(
