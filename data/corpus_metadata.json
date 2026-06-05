@@ -40,5 +40,12 @@
     "etag": null,
     "length": null,
     "hash": "119d957fd4516fd08f3fad21653644ac29a7d7f6f700a2b5570852092150cac9"
+  },
+  "ctb/CTB_compilado.txt": {
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm",
+    "last_modified": "Fri, 05 Jun 2026 17:14:41 GMT",
+    "etag": "\"bfcf1-65384cbdeb1a9\"",
+    "length": "785649",
+    "hash": "14daf5a4d2d8ce0dd892e44181f761e44d40bfd7d9b1a2a30626dc438743fc9b"
   }
 }

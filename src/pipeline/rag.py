@@ -116,6 +116,23 @@ class RAGPipeline:
                             "filepath": str(pdf_path),
                         }
                     )
+        
+        # Suporte a arquivos TXT (como o CTB do Planalto)
+        for txt_path in sorted(self.corpus_dir.rglob("*.txt")):
+            try:
+                with open(txt_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                if text.strip():
+                    docs.append(
+                        {
+                            "text": text,
+                            "source": txt_path.name,
+                            "page": 1,
+                            "filepath": str(txt_path),
+                        }
+                    )
+            except Exception as e:
+                print(f"Erro ao ler TXT {txt_path}: {e}")
 
         # SEU CODIGO AQUI — TODO 1.B
         splitter = RecursiveCharacterTextSplitter(
@@ -132,6 +149,10 @@ class RAGPipeline:
                 dominio = "procedimentos"
                 fonte = filename
                 tipo_doc = "manual_servico"
+            elif "ctb" in filepath.lower() or "ctb" in filename.lower():
+                dominio = "ctb"
+                fonte = "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"
+                tipo_doc = "lei"
             elif "concursos" in filepath.lower() or "concursos" in filename.lower():
                 dominio = "concursos"
                 fonte = filename

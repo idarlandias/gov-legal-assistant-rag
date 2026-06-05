@@ -46,7 +46,36 @@ DOCS = [
         "url": "https://www.prefeitura.sp.gov.br/cidade/secretarias/upload/licenciamento/manual_usuario_licenciamento.pdf",
         "filename": "cartilha_licenciamento_alvara_prefeitura_sp.pdf",
     },
+    {
+        "domain": "ctb",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm",
+        "filename": "CTB_compilado.txt",
+    },
 ]
+
+
+def html_to_text(html_content: bytes) -> str:
+    """Extrai texto limpo de uma página HTML/HTM."""
+    import html.parser
+    class HTMLTextStripper(html.parser.HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.reset()
+            self.fed = []
+        def handle_data(self, d):
+            self.fed.append(d)
+        def get_data(self):
+            return "".join(self.fed)
+            
+    # Tenta decodificar. O site do Planalto costuma usar iso-8859-1 (latin1)
+    try:
+        text = html_content.decode("utf-8")
+    except UnicodeDecodeError:
+        text = html_content.decode("iso-8859-1", errors="ignore")
+        
+    stripper = HTMLTextStripper()
+    stripper.feed(text)
+    return stripper.get_data()
 
 
 def calculate_file_hash(filepath: Path) -> str:
@@ -139,9 +168,17 @@ def check_and_update() -> bool:
             get_resp = requests.get(url, headers=headers, verify=False, timeout=45)
             get_resp.raise_for_status()
             
-            # Calcula hash do conteúdo baixado
+            # Se for um arquivo HTML (como o do Planalto), extrai apenas o texto
+            is_html = url.endswith(".htm") or url.endswith(".html") or "planalto.gov.br" in url
             downloaded_content = get_resp.content
-            downloaded_hash = hashlib.sha256(downloaded_content).hexdigest()
+            
+            if is_html:
+                plain_text = html_to_text(downloaded_content)
+                downloaded_content_to_save = plain_text.encode("utf-8")
+            else:
+                downloaded_content_to_save = downloaded_content
+
+            downloaded_hash = hashlib.sha256(downloaded_content_to_save).hexdigest()
             local_hash = calculate_file_hash(dest_path)
 
             if downloaded_hash == local_hash:
@@ -157,7 +194,10 @@ def check_and_update() -> bool:
 
             # Se o conteúdo for diferente, salva no destino
             dest_dir.mkdir(parents=True, exist_ok=True)
-            dest_path.write_bytes(downloaded_content)
+            if is_html:
+                dest_path.write_text(plain_text, encoding="utf-8")
+            else:
+                dest_path.write_bytes(downloaded_content)
             
             # Atualiza metadados com as informações da versão atualizada
             metadata[meta_key] = {
