@@ -136,7 +136,7 @@ class RAGPipeline:
             # Se estiver no Streamlit Cloud, limita o número de PDFs de concursos para evitar rate limits
             if "concursos" in str(pdf_path).lower():
                 if is_streamlit_cloud:
-                    if concursos_count >= 3:
+                    if concursos_count >= 1:
                         continue  # pula os demais PDFs de concurso na nuvem
                     concursos_count += 1
                     
@@ -226,12 +226,12 @@ class RAGPipeline:
         # SEU CODIGO AQUI — TODO 1.C
         import time
         import sys
-        BATCH = 100
+        BATCH = 500
         for start in range(0, len(chunks), BATCH):
             lote = chunks[start : start + BATCH]
             
-            retries = 7
-            wait_time = 15
+            retries = 5
+            wait_time = 3
             success = False
             while retries > 0 and not success:
                 try:
@@ -255,7 +255,7 @@ class RAGPipeline:
                     if "429" in err_str or "rate_limit" in err_str.lower() or "exhausted" in err_str.lower() or "limit" in err_str.lower():
                         print(f"Rate limit atingido na nuvem. Aguardando {wait_time} segundos... (Tentativas restantes: {retries})")
                         time.sleep(wait_time)
-                        wait_time = wait_time * 2 + 5
+                        wait_time = wait_time * 2
                         retries -= 1
                     else:
                         raise e
@@ -263,7 +263,7 @@ class RAGPipeline:
             if not success:
                 raise RuntimeError("Falha de Rate Limit ao indexar no Streamlit Cloud.")
                 
-            time.sleep(5.0)
+            time.sleep(2.0)
 
         return self.collection.count()
 
