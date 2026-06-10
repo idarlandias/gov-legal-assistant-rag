@@ -59,32 +59,34 @@ class SemanticCache:
             except RuntimeError:
                 raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env")
 
-    import time
-def _embed(self, text: str) -> np.ndarray | None:
-    """Gera embedding com retry em caso de RateLimitError. Retorna None em falha."""
-    from openai import RateLimitError, APIError
-    
-    for attempt in range(3):
-        try:
-            r = self._client.embeddings.create(model=self._embed_model, input=text)
-            return np.array(r.data[0].embedding, dtype=float)
-        except RateLimitError:
-            if attempt < 2:
-                time.sleep(2 ** attempt)  # backoff: 1s, 2s
-                continue
-            return None  # esgotou retries — cache miss gracioso
-        except Exception:
-            return None  # qualquer outro erro — cache miss gracioso
-    return None
+    def _embed(self, text: str) -> np.ndarray | None:
+        """Gera embedding com retry em caso de RateLimitError. Retorna None em falha."""
+        import time
+        from openai import RateLimitError
+        
+        for attempt in range(3):
+            try:
+                r = self._client.embeddings.create(model=self._embed_model, input=text)
+                return np.array(r.data[0].embedding, dtype=float)
+            except RateLimitError:
+                if attempt < 2:
+                    time.sleep(2 ** attempt)  # backoff: 1s, 2s
+                    continue
+                return None  # esgotou retries — cache miss gracioso
+            except Exception:
+                return None  # qualquer outro erro — cache miss gracioso
+        return None
 
     # ------------------------------------------------------------------ TODO 5
     def get(self, query: str) -> str | None:
-    e = self._embed(query)
-    if e is None:          # ← linha nova
-        return None        # ← cache miss gracioso, RAG 
+        """Retorna resposta cacheada se similar a query alguma anterior, OU None."""
+        if not self._queries:
+            return None
 
         # 1. Embedar a query
         e = self._embed(query)
+        if e is None:
+            return None  # cache miss gracioso
 
         # 2. Calcular similaridade cosseno contra todos os embeddings em cache
         sims = []
@@ -93,6 +95,9 @@ def _embed(self, text: str) -> np.ndarray | None:
             return None
 
         for em in self._embeddings:
+            if em is None:
+                sims.append(0.0)
+                continue
             norm_em = np.linalg.norm(em)
             if norm_em == 0:
                 sims.append(0.0)
@@ -110,9 +115,11 @@ def _embed(self, text: str) -> np.ndarray | None:
         return None
 
     def put(self, query: str, answer: str) -> None:
-        self._queries.append(query)
-        self._embeddings.append(self._embed(query))
-        self._answers.append(answer)
+        emb = self._embed(query)
+        if emb is not None:
+            self._queries.append(query)
+            self._embeddings.append(emb)
+            self._answers.append(answer)
 
     def stats(self) -> dict[str, Any]:
         return {"size": len(self._queries), "threshold": self.threshold}
