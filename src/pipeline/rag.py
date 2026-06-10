@@ -102,6 +102,23 @@ class RAGPipeline:
                 name=collection_name, embedding_function=self.embed_fn
             )
 
+    def _call_chat_completions(self, **kwargs) -> Any:
+        """Wrapper para chamar chat.completions.create com retry exponencial em caso de RateLimitError."""
+        import time
+        from openai import RateLimitError
+        
+        wait_time = 2
+        for attempt in range(4):
+            try:
+                return self.client.chat.completions.create(**kwargs)
+            except RateLimitError as e:
+                if attempt < 3:
+                    print(f"Rate limit em chat completion. Aguardando {wait_time}s... (Tentativa {attempt + 1})")
+                    time.sleep(wait_time)
+                    wait_time = wait_time * 2 + 2
+                    continue
+                raise e
+
     # ------------------------------------------------------------------ TODO 1
     def ingest_and_index(self) -> int:
         """Le PDFs de `corpus_dir`, faz chunking e indexa em Chroma.
@@ -293,7 +310,7 @@ class RAGPipeline:
                 if "não encontrado" not in art_text.lower():
                     prompt = build_secure_prompt(context=art_text, query=question)
                     messages = [{"role": "user", "content": prompt}]
-                    response = self.client.chat.completions.create(
+                    response = self._call_chat_completions(
                         model=self.llm_model,
                         messages=messages,
                         temperature=0.0
@@ -324,7 +341,7 @@ class RAGPipeline:
         if TOOLS:
             api_kwargs["tools"] = TOOLS
 
-        response = self.client.chat.completions.create(**api_kwargs)
+        response = self._call_chat_completions(**api_kwargs)
         message = response.choices[0].message
         tool_calls = getattr(message, "tool_calls", None)
 
@@ -356,7 +373,7 @@ class RAGPipeline:
                 })
 
             # Segunda chamada para o LLM gerar a resposta com base nos retornos das tools
-            second_response = self.client.chat.completions.create(
+            second_response = self._call_chat_completions(
                 model=self.llm_model,
                 messages=messages,
                 temperature=0.0
