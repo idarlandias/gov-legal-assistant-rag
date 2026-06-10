@@ -254,20 +254,21 @@ else:
     st.info("🤖 **Modo Automático:** O assistente tentará classificar a sua pergunta e rotear para o domínio e modelo corretos de forma autônoma.")
 
 if faq_options:
-    faq_index_key = f"faq_index_{selected_domain}"
-    if faq_index_key not in st.session_state:
-        st.session_state[faq_index_key] = 0
+    faq_key = f"faq_select_{selected_domain}"
+    
+    # Se o usuário escolheu uma dúvida (diferente da opção padrão),
+    # capturamos e resetamos o estado do widget no session state ANTES de renderizá-lo.
+    if faq_key in st.session_state and st.session_state[faq_key] != "Selecione uma pergunta...":
+        st.session_state["query_input"] = st.session_state[faq_key]
+        st.session_state[faq_key] = "Selecione uma pergunta..."
+        st.rerun()
 
-    selected_faq = st.selectbox(
+    st.selectbox(
         "💡 **Dúvidas frequentes recomendadas para este domínio:**", 
         options=faq_options, 
-        index=st.session_state[faq_index_key]
+        key=faq_key
     )
-    if selected_faq != "Selecione uma pergunta...":
-        st.session_state["query_input"] = selected_faq
-        # Reseta o índice de seleção para a opção padrão (0) no próximo rerun
-        st.session_state[faq_index_key] = 0
-        st.rerun()
+
 
 # Tratamento do atalho ou chat input
 if "query_input" not in st.session_state:
