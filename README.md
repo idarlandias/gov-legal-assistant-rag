@@ -10,9 +10,11 @@
 
 <br/>
 
-### 📺 Demonstração Visual (Screencast)
+### 📺 Vídeo de Demonstração (Screencast)
 
-<video src="https://github.com/idarlandias/gov-legal-assistant-rag/raw/main/docs/demo_video.mp4" width="100%" controls></video>
+[![Assista ao Vídeo de Demonstração em MP4](docs/images/banner.png)](https://github.com/idarlandias/gov-legal-assistant-rag/raw/main/docs/demo_video.mp4)
+
+*👆 Clique na imagem acima para abrir e reproduzir o vídeo de demonstração (MP4) diretamente.*
 
 <br/>
 
