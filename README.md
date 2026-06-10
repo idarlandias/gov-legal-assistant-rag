@@ -24,16 +24,16 @@
 
 > 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública, Procedimentos Internos e Código de Trânsito Brasileiro (CTB).
 
-### 🚀 Live Demo (Aplicação Online)
-* **Link de acesso:** [Assistente Jurídico RAG - Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+## 🚀 Acesso & Demonstração (Links Rápidos)
 
-## 📺 Demonstração Visual (Screencast)
+Para avaliar a aplicação em funcionamento e revisar os critérios de avaliação solicitados, utilize os seguintes acessos diretos:
 
-Abaixo está o link para o vídeo de demonstração contínua de 3 minutos da aplicação realizando as pesquisas de texto solicitadas para os quatro domínios de forma integrada e ilustrando as métricas do cache e roteador na barra lateral:
+* 🌐 **Aplicação Hospedada (Live Demo):** [Acessar Assistente Jurídico RAG](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+* 🎬 **Vídeo de Apresentação (Google Drive - Recomendado):** [Assistir ao Vídeo de Demonstração (3 min)](https://drive.google.com/file/d/1ncu_JE-jup984In4-zPoItrpYJEbwCJh/view?usp=sharing)
+* 📁 **Vídeo no Repositório (Alternativo):** [Visualizar demo_video.mp4](docs/demo_video.mp4)
 
-* **[🎥 Clique aqui para assistir ao Vídeo de Demonstração (MP4)](docs/demo_video.mp4)**
+*💡 Para uma análise de engenharia detalhada, testes automatizados e observability, consulte o [Walkthrough de Validação](docs/walkthrough.md).*
 
-*💡 Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
 
 ## 🎯 Problem statement
 
