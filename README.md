@@ -10,14 +10,6 @@
 
 <br/>
 
-### 📺 Vídeo de Demonstração (Screencast)
-
-[![Assista ao Vídeo de Demonstração em MP4](docs/images/banner.png)](https://github.com/idarlandias/gov-legal-assistant-rag/raw/main/docs/demo_video.mp4)
-
-*👆 Clique na imagem acima para abrir e reproduzir o vídeo de demonstração (MP4) diretamente.*
-
-<br/>
-
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
@@ -34,6 +26,13 @@
 
 ### 🚀 Live Demo (Aplicação Online)
 * **Link de acesso:** [Assistente Jurídico RAG - Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+
+## 📺 Demonstração Visual (Screencast)
+
+Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação realizando as pesquisas de texto solicitadas para os quatro domínios de forma integrada e ilustrando as métricas do cache e roteador na barra lateral:
+
+![Gravação de Tela do Assistente RAG em Ação](docs/images/pesquisas_reais_demo_1780588092439.webp)
+
 *💡 Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
 
 ## 🎯 Problem statement
