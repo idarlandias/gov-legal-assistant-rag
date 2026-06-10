@@ -43,24 +43,33 @@ class SemanticCache:
         self._embeddings: list[np.ndarray] = []
         self._answers: list[str] = []
 
-        # Inicializa cliente para embeddings (mesmo provider do RAG)
-        try:
-            gemini_key = get_env_secret("GEMINI_API_KEY")
-            self._client = OpenAI(
-                api_key=gemini_key,
-                base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-            )
-            self._embed_model = os.environ.get("EMBED_MODEL", "gemini-embedding-001")
-        except RuntimeError:
+        self._embed_model = os.environ.get("EMBED_MODEL", "local").lower()
+        if self._embed_model == "local":
+            import chromadb.utils.embedding_functions as ef
+            self._local_embed_fn = ef.DefaultEmbeddingFunction()
+        else:
+            # Inicializa cliente para embeddings remotos (Gemini ou OpenAI)
             try:
-                openai_key = get_env_secret("OPENAI_API_KEY")
-                self._client = OpenAI(api_key=openai_key)
-                self._embed_model = "text-embedding-3-small"
+                gemini_key = get_env_secret("GEMINI_API_KEY")
+                self._client = OpenAI(
+                    api_key=gemini_key,
+                    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+                )
             except RuntimeError:
-                raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env")
+                try:
+                    openai_key = get_env_secret("OPENAI_API_KEY")
+                    self._client = OpenAI(api_key=openai_key)
+                except RuntimeError:
+                    raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env para embeddings remotos")
 
     def _embed(self, text: str) -> np.ndarray | None:
         """Gera embedding com retry em caso de RateLimitError. Retorna None em falha."""
+        if self._embed_model == "local":
+            try:
+                return np.array(self._local_embed_fn([text])[0], dtype=float)
+            except Exception:
+                return None
+
         import time
         from openai import RateLimitError
         

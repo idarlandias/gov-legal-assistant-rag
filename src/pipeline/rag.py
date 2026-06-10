@@ -18,8 +18,32 @@ from src.pipeline.tools import TOOLS, run_tool_call
 from src.pipeline.security_skill import get_env_secret, build_secure_prompt, build_concursos_prompt
 
 
-def _make_client() -> tuple[OpenAI, str]:
+def _make_client() -> tuple[OpenAI, str | None]:
     """Inicializa cliente OpenAI-compatible conforme provider escolhido no .env."""
+    provider = os.environ.get("LLM_PROVIDER", "gemini").lower()
+    
+    if provider == "groq":
+        try:
+            api_key = get_env_secret("GROQ_API_KEY")
+            client = OpenAI(
+                api_key=api_key,
+                base_url="https://api.groq.com/openai/v1",
+            )
+            return client, None
+        except RuntimeError:
+            pass
+            
+    if provider == "deepseek":
+        try:
+            api_key = get_env_secret("DEEPSEEK_API_KEY")
+            client = OpenAI(
+                api_key=api_key,
+                base_url="https://api.deepseek.com/v1",
+            )
+            return client, None
+        except RuntimeError:
+            pass
+
     try:
         api_key = get_env_secret("GEMINI_API_KEY")
         client = OpenAI(
@@ -33,7 +57,7 @@ def _make_client() -> tuple[OpenAI, str]:
             client = OpenAI(api_key=api_key)
             embed_api_base = None
         except RuntimeError:
-            raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env")
+            raise RuntimeError("Configure GEMINI_API_KEY, OPENAI_API_KEY, DEEPSEEK_API_KEY ou GROQ_API_KEY no .env")
     return client, embed_api_base
 
 
@@ -49,24 +73,36 @@ class RAGPipeline:
         embed_model: str | None = None,
     ) -> None:
         self.client, embed_api_base = _make_client()
-        self.llm_model = llm_model or os.environ.get("LLM_MODEL", "gemini-2.5-flash-lite")
-        self.embed_model = embed_model or os.environ.get("EMBED_MODEL", "gemini-embedding-001")
+        provider = os.environ.get("LLM_PROVIDER", "gemini").lower()
+        if provider == "deepseek":
+            default_llm = "deepseek-chat"
+        elif provider == "groq":
+            default_llm = "llama-3.3-70b-versatile"
+        else:
+            default_llm = "gemini-2.5-flash-lite"
+            
+        self.llm_model = llm_model or os.environ.get("CHEAP_MODEL", default_llm)
+        self.embed_model = embed_model or os.environ.get("EMBED_MODEL", "local").lower()
 
-        try:
-            api_key = get_env_secret("GEMINI_API_KEY")
-        except RuntimeError:
+        if self.embed_model == "local":
+            import chromadb.utils.embedding_functions as ef
+            self.embed_fn = ef.DefaultEmbeddingFunction()
+        else:
             try:
-                api_key = get_env_secret("OPENAI_API_KEY")
+                api_key = get_env_secret("GEMINI_API_KEY")
             except RuntimeError:
-                raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env")
+                try:
+                    api_key = get_env_secret("OPENAI_API_KEY")
+                except RuntimeError:
+                    raise RuntimeError("Configure GEMINI_API_KEY ou OPENAI_API_KEY no .env para embeddings remotos")
 
-        embed_kwargs: dict[str, Any] = {
-            "api_key": api_key,
-            "model_name": self.embed_model,
-        }
-        if embed_api_base:
-            embed_kwargs["api_base"] = embed_api_base
-        self.embed_fn = OpenAIEmbeddingFunction(**embed_kwargs)
+            embed_kwargs: dict[str, Any] = {
+                "api_key": api_key,
+                "model_name": self.embed_model,
+            }
+            if embed_api_base:
+                embed_kwargs["api_base"] = embed_api_base
+            self.embed_fn = OpenAIEmbeddingFunction(**embed_kwargs)
 
         self.corpus_dir = Path(corpus_dir)
         self.persist_dir = persist_dir
@@ -320,11 +356,16 @@ class RAGPipeline:
                 if "não encontrado" not in art_text.lower():
                     prompt = build_secure_prompt(context=art_text, query=question)
                     messages = [{"role": "user", "content": prompt}]
-                    response = self._call_chat_completions(
-                        model=self.llm_model,
-                        messages=messages,
-                        temperature=0.0
-                    )
+                    
+                    is_reasoner = ("reasoner" in self.llm_model.lower() or "deepseek-r1" in self.llm_model.lower())
+                    api_kwargs = {
+                        "model": self.llm_model,
+                        "messages": messages,
+                    }
+                    if not is_reasoner:
+                        api_kwargs["temperature"] = 0.0
+                        
+                    response = self._call_chat_completions(**api_kwargs)
                     return {
                         "answer": response.choices[0].message.content or "",
                         "sources": [("CTB_compilado.txt", 1)]
@@ -343,13 +384,16 @@ class RAGPipeline:
 
         # 3. Chamar self.client.chat.completions.create com suporte a tools
         messages = [{"role": "user", "content": prompt}]
+        
+        is_reasoner = ("reasoner" in self.llm_model.lower() or "deepseek-r1" in self.llm_model.lower())
         api_kwargs = {
             "model": self.llm_model,
             "messages": messages,
-            "temperature": 0.0,
         }
-        if TOOLS:
-            api_kwargs["tools"] = TOOLS
+        if not is_reasoner:
+            api_kwargs["temperature"] = 0.0
+            if TOOLS:
+                api_kwargs["tools"] = TOOLS
 
         response = self._call_chat_completions(**api_kwargs)
         message = response.choices[0].message
@@ -383,11 +427,14 @@ class RAGPipeline:
                 })
 
             # Segunda chamada para o LLM gerar a resposta com base nos retornos das tools
-            second_response = self._call_chat_completions(
-                model=self.llm_model,
-                messages=messages,
-                temperature=0.0
-            )
+            second_api_kwargs = {
+                "model": self.llm_model,
+                "messages": messages,
+            }
+            if not is_reasoner:
+                second_api_kwargs["temperature"] = 0.0
+                
+            second_response = self._call_chat_completions(**second_api_kwargs)
             answer_text = second_response.choices[0].message.content or ""
         else:
             answer_text = message.content or ""

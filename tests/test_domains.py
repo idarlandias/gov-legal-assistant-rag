@@ -15,7 +15,7 @@ def pipeline():
     from dotenv import load_dotenv
     load_dotenv()
 
-    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")):
+    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("DEEPSEEK_API_KEY") or os.environ.get("GROQ_API_KEY")):
         pytest.skip("API key nao configurada em .env")
 
     from src.pipeline.rag import build_rag_pipeline
