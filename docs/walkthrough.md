@@ -6,7 +6,7 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
 
 ## 🛠️ 1. O que foi Implementado
 
-### 1. Ingestão de Corpus e Downloads
+### 1.1. Ingestão de Corpus e Downloads
 * **`download_corpus.py` (Script de Download):** Criado para buscar os PDFs oficiais e legítimos da LGPD (Senado), Lei 14.133 (Senado) e o Guia de Transparência Ativa (CGU).
 * **`ingest_and_index` (RAG Pipeline - TODO 1):**
   * Leitura e processamento de textos dos PDFs usando `pypdf`.
@@ -14,11 +14,11 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
   * Indexação segura no **ChromaDB** em lotes de 90 chunks para respeitar os limites de requisições do Gemini.
   * Suporte para subdiretórios recursivos via `rglob` para capturar os manuais de procedimentos em `data/corpus/procedimentos/`.
 
-### 2. Retrieval & Generation com Filtro
+### 1.2. Retrieval & Generation com Filtro
 * **`retrieve` (TODO 2):** Implementado suporte para buscas semânticas tradicionais e filtragem opcional via metadados por domínio (`where={"dominio": ...}`).
 * **`answer` (TODO 3):** Implementado o fluxo principal de RAG (Retrieve + Augment + Generate) usando prompt de ancoragem estrita e citations.
 
-### 3. Ferramentas de Domínio & Function Calling
+### 1.3. Ferramentas de Domínio & Function Calling
 * **`tools.py` (TODO 4):**
   * `cite_lgpd_article` e `cite_14133_article`: Ferramentas que consultam diretamente o ChromaDB pelo texto oficial exato do artigo solicitado para evitar alucinações de numeração de lei.
   * `simular_enquadramento`: Regra de decisão determinística baseada no Art. 75 da Lei 14.133 para verificar dispensa por valor.
@@ -26,11 +26,11 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
   * `listar_documentos`: Refatorada de expressões regulares rígidas para um **mini-pipeline de extração estruturada via LLM (Gemini Flash-Lite)**. A ferramenta agora faz a busca vetorial no domínio `procedimentos`, consolida os trechos mais relevantes do manual e envia para o Gemini Flash-Lite extrair e organizar um JSON com a lista de requisitos de documentos (indicando obrigatoriedade). Isso tornou o sistema robusto contra mudanças de formatação nos manuais públicos de produção real.
 * **Function Calling Loop (TODO 3 - Integração):** O pipeline agora detecta chamadas de ferramentas geradas pelo modelo Gemini, executa-as via `run_tool_call`, injeta o retorno no histórico e devolve a resposta final consolidada ao usuário.
 
-### 4. Otimização de Custo & Latência
+### 1.4. Otimização de Custo & Latência
 * **`SemanticCache.get` (TODO 5):** Cache semântico usando similaridade de cosseno nos embeddings das queries de entrada. Retorna respostas instantâneas e gratuitas para consultas semanticamente parecidas (acima de `0.93` de similaridade).
 * **`classify_complexity` (TODO 6):** Roteamento inteligente de modelos (cheap-first) que analisa complexidade (tamanho de texto e palavras-chave específicas) para direcionar queries simples ao `gemini-2.5-flash-lite` (mais barato) e consultas robustas ao `gemini-2.5-pro` (premium).
 
-### 5. Streamlit UI
+### 1.5. Streamlit UI
 * **`streamlit_app.py`:** 
   * Customização completa do título, pitch e ícone do app focados na administração pública.
   * Dropdown para seleção de domínio de interesse (Auto, LGPD, Licitações, Transparência, Procedimentos Internos).
@@ -38,7 +38,7 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
   * Adição de blocos de contexto informativo e botões rápidos com atalhos de consulta com exemplos para os 4 domínios (LGPD, Licitações, Transparência e Procedimentos Internos).
   * Exibição das fontes citadas e informações sobre as chamadas de ferramentas.
 
-### 6. Encapsulamento com Docker
+### 1.6. Encapsulamento com Docker
 * **`Dockerfile` & `.dockerignore`:** Criados na raiz do repositório para isolar e empacotar toda a aplicação e suas dependências de produção de forma portátil e limpa, permitindo injeção dinâmica da chave de API e build rápido via `uv`.
 
 ---
