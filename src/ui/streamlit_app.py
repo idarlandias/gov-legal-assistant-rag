@@ -254,9 +254,16 @@ else:
     st.info("🤖 **Modo Automático:** O assistente tentará classificar a sua pergunta e rotear para o domínio e modelo corretos de forma autônoma.")
 
 if faq_options:
-    selected_faq = st.selectbox("💡 **Dúvidas frequentes recomendadas para este domínio:**", options=faq_options, index=0)
+    faq_key = f"faq_select_{selected_domain}"
+    selected_faq = st.selectbox(
+        "💡 **Dúvidas frequentes recomendadas para este domínio:**", 
+        options=faq_options, 
+        key=faq_key
+    )
     if selected_faq != "Selecione uma pergunta...":
         st.session_state["query_input"] = selected_faq
+        # Reseta o selectbox de volta para a opção padrão
+        st.session_state[faq_key] = "Selecione uma pergunta..."
         st.rerun()
 
 # Tratamento do atalho ou chat input
