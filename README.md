@@ -31,7 +31,7 @@
 
 Abaixo está o vídeo de demonstração contínua de 3 minutos da aplicação realizando as pesquisas de texto solicitadas para os quatro domínios de forma integrada e ilustrando as métricas do cache e roteador na barra lateral:
 
-![Gravação de Tela do Assistente RAG em Ação](docs/images/pesquisas_reais_demo_1780588092439.webp)
+<video src="docs/demo_video.mp4" width="100%" controls></video>
 
 *💡 Para uma análise detalhada dos testes unitários, pipeline estruturado e observability, consulte o relatório completo de documentação em [Walkthrough de Validação](docs/walkthrough.md).*
 
