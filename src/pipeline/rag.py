@@ -414,6 +414,8 @@ RESPOSTA:"""
 def build_rag_pipeline(corpus_dir: str = "data/corpus") -> RAGPipeline:
     """Factory: cria pipeline e indexa corpus se ainda nao indexado."""
     pipeline = RAGPipeline(corpus_dir=corpus_dir)
-    if pipeline.collection.count() == 0:
-        pipeline.ingest_and_index()
+    # Se o banco tiver menos de 500 chunks, indica que a indexação anterior foi interrompida/incompleta.
+    # Forçamos um reset automático para indexar todos os PDFs corretamente.
+    if pipeline.collection.count() < 500:
+        pipeline.reset_database()
     return pipeline
