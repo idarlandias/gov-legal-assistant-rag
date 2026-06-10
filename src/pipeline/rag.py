@@ -216,12 +216,12 @@ class RAGPipeline:
         # SEU CODIGO AQUI — TODO 1.C
         import time
         import sys
-        BATCH = 45
+        BATCH = 100
         for start in range(0, len(chunks), BATCH):
             lote = chunks[start : start + BATCH]
             
-            retries = 5
-            wait_time = 12
+            retries = 7
+            wait_time = 15
             success = False
             while retries > 0 and not success:
                 try:
@@ -243,9 +243,9 @@ class RAGPipeline:
                 except Exception as e:
                     err_str = str(e)
                     if "429" in err_str or "rate_limit" in err_str.lower() or "exhausted" in err_str.lower() or "limit" in err_str.lower():
-                        print(f"Rate limit atingido na nuvem. Aguardando {wait_time} segundos... (Tentativas: {retries})")
+                        print(f"Rate limit atingido na nuvem. Aguardando {wait_time} segundos... (Tentativas restantes: {retries})")
                         time.sleep(wait_time)
-                        wait_time = wait_time * 2 + 2
+                        wait_time = wait_time * 2 + 5
                         retries -= 1
                     else:
                         raise e
@@ -253,7 +253,7 @@ class RAGPipeline:
             if not success:
                 raise RuntimeError("Falha de Rate Limit ao indexar no Streamlit Cloud.")
                 
-            time.sleep(1.0)
+            time.sleep(5.0)
 
         return self.collection.count()
 
