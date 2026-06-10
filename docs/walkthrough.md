@@ -88,15 +88,9 @@ Abaixo está o registro visual do teste do assistente em produção rodando dent
 ![Vídeo de Demonstração e Limpeza de Caches no Docker](images/verify_llm_tool_success_1780590077506.webp)
 ````
 
-### 🎥 Gravação de Tela Completa (Demo de 3 Minutos)
-
-Para a apresentação ao professor, geramos uma gravação de tela interativa completa no navegador simulando exatamente o roteiro de fala e as pesquisas de texto solicitadas:
-
-![Vídeo Demonstrativo de 3 Minutos da Aplicação](images/pesquisas_reais_demo_1780588092439.webp)
-
-*O vídeo demonstra a transição fluida entre os domínios seguindo o cronograma de 0:00 a 3:00, mostrando a digitação das perguntas exatas, as fontes citadas expandidas e as ferramentas acionadas.*
 
 ---
+
 
 ## 🎓 7. Extensão: Domínio Concursos Públicos (Tutor Didático)
 
