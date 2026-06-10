@@ -104,8 +104,13 @@ def get_semantic_cache():
     return SemanticCache(threshold=0.93)
 
 
+pipeline_error = None
 with st.spinner("Inicializando pipeline RAG..."):
-    pipeline = get_pipeline()
+    try:
+        pipeline = get_pipeline()
+    except Exception as e:
+        pipeline = None
+        pipeline_error = e
     exact_cache = get_exact_cache()
     semantic_cache = get_semantic_cache()
 
@@ -113,7 +118,10 @@ with st.spinner("Inicializando pipeline RAG..."):
 # Sidebar — metricas e debug
 with st.sidebar:
     st.header("Metricas")
-    st.metric("Chunks indexados", pipeline.collection.count())
+    if pipeline:
+        st.metric("Chunks indexados", pipeline.collection.count())
+    else:
+        st.metric("Chunks indexados", "Erro")
     st.metric("Exact cache", exact_cache.stats()["size"])
     st.metric("Semantic cache", semantic_cache.stats()["size"])
 
@@ -123,17 +131,30 @@ with st.sidebar:
         st.success("Caches limpos. Recarregue a pagina.")
 
     if st.button("Reindexar Banco Vetorial"):
-        with st.spinner("Apagando e reconstruindo banco vetorial..."):
-            try:
-                # Limpa caches em memória do Streamlit
-                st.cache_resource.clear()
-                # Executa a limpeza e reindexação de forma segura deletando e recriando a coleção
-                count = pipeline.reset_database()
-                st.success(f"Reindexação concluída! {count} chunks indexados.")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Erro ao limpar e reindexar o banco: {e}")
-                st.info("Caso o erro persista, tente reiniciar a aplicação no painel da nuvem.")
+        if not pipeline:
+            st.error("Não é possível reindexar: Pipeline RAG não foi inicializado.")
+        else:
+            with st.spinner("Apagando e reconstruindo banco vetorial..."):
+                try:
+                    # Limpa caches em memória do Streamlit
+                    st.cache_resource.clear()
+                    # Executa a limpeza e reindexação de forma segura deletando e recriando a coleção
+                    count = pipeline.reset_database()
+                    st.success(f"Reindexação concluída! {count} chunks indexados.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Erro ao limpar e reindexar o banco: {e}")
+                    st.info("Caso o erro persista, tente reiniciar a aplicação no painel da nuvem.")
+
+if pipeline_error:
+    st.error("⚠️ Falha ao inicializar o banco de dados RAG!")
+    st.error(f"Erro detalhado: {pipeline_error}")
+    st.warning(
+        "💡 **Dica de Solução:** Isso geralmente ocorre quando a sua chave `GEMINI_API_KEY` "
+        "excedeu o limite diário de uso (cota de requisições de embeddings). "
+        "Por favor, crie uma **nova chave de API** gratuita em [Google AI Studio](https://aistudio.google.com/) "
+        "e atualize os Secrets no painel de controle do seu app no Streamlit Cloud."
+    )
 
 
 # Main — chat interface
@@ -304,6 +325,10 @@ if user_query:
                         st.warning("Routing nao implementado (TODO 6). Usando modelo default.")
 
                     with st.spinner("Consultando corpus e gerando resposta..."):
+                        if not pipeline:
+                            st.error("Erro: O banco RAG não pôde ser carregado devido à falha de Rate Limit/Cota da chave da API.")
+                            st.info("Por favor, atualize sua GEMINI_API_KEY no Streamlit Cloud.")
+                            st.stop()
                         try:
                             result = pipeline.answer(user_query, domain=selected_domain)
                         except NotImplementedError as e:
