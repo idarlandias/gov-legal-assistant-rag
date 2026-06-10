@@ -30,7 +30,6 @@ Para avaliar a aplicação em funcionamento e revisar os critérios de avaliaç�
 
 * 🌐 **Aplicação Hospedada (Live Demo):** [Acessar Assistente Jurídico RAG](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
 * 🎬 **Vídeo de Apresentação (Google Drive - Recomendado):** [Assistir ao Vídeo de Demonstração (3 min)](https://drive.google.com/file/d/1ncu_JE-jup984In4-zPoItrpYJEbwCJh/view?usp=sharing)
-* 📁 **Vídeo no Repositório (Alternativo):** [Visualizar demo_video.mp4](docs/demo_video.mp4)
 
 *💡 Para uma análise de engenharia detalhada, testes automatizados e observability, consulte o [Walkthrough de Validação](docs/walkthrough.md).*
 
