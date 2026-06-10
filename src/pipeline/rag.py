@@ -231,7 +231,7 @@ class RAGPipeline:
             lote = chunks[start : start + BATCH]
             
             retries = 5
-            wait_time = 3
+            wait_time = 15
             success = False
             while retries > 0 and not success:
                 try:
@@ -263,7 +263,7 @@ class RAGPipeline:
             if not success:
                 raise RuntimeError("Falha de Rate Limit ao indexar no Streamlit Cloud.")
                 
-            time.sleep(4.0)
+            time.sleep(6.0)
 
         return self.collection.count()
 
