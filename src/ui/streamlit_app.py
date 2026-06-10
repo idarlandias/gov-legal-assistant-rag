@@ -206,74 +206,58 @@ for msg in st.session_state["messages"]:
                     st.write(f"- `{source}:p{page}`")
 
 # Caixa de atalhos/exemplos com base no domínio selecionado
+# Perguntas Frequentes (FAQ) sugeridas com base no domínio
+faq_options = []
 if selected_domain == "procedimentos":
-    st.info("🏛️ **Procedimentos Internos:** Pergunte sobre documentos e prazos para serviços de cartório, prefeitura e INSS simulado, com base nos manuais do corpus.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: Documentos para Auxílio-Doença"):
-            st.session_state["query_input"] = "Quais documentos preciso para pedir auxílio-doença?"
-            st.rerun()
-    with col2:
-        if st.button("Ex: Documentos para Certidão de Nascimento"):
-            st.session_state["query_input"] = "Quais documentos preciso para tirar 2ª via da certidão de nascimento?"
-            st.rerun()
+    st.info("🏛️ **Procedimentos Internos:** Pergunte sobre documentos e prazos para serviços de cartório, prefeitura e INSS simulado.")
+    faq_options = [
+        "Selecione uma pergunta...",
+        "Quais documentos preciso para pedir auxílio-doença?",
+        "Quais documentos preciso para tirar 2ª via da certidão de nascimento?"
+    ]
 elif selected_domain == "lgpd":
     st.info("🔒 **LGPD:** Pergunte sobre tratamento de dados, direitos do titular e obrigações do poder público.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: Consentimento no setor público"):
-            st.session_state["query_input"] = "O setor público precisa de consentimento para tratar dados?"
-            st.rerun()
-    with col2:
-        if st.button("Ex: Divulgação de CPF de beneficiários"):
-            st.session_state["query_input"] = "Posso divulgar o CPF de beneficiários de programas sociais no Portal?"
-            st.rerun()
+    faq_options = [
+        "Selecione uma pergunta...",
+        "O setor público precisa de consentimento para tratar dados?",
+        "Posso divulgar o CPF de beneficiários de programas sociais no Portal?"
+    ]
 elif selected_domain == "licitacoes":
     st.info("📄 **Licitações:** Pergunte sobre modalidades, prazos, penalidades e dispensa com base na Lei 14.133.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: Limites de dispensa por valor"):
-            st.session_state["query_input"] = "Quais são os limites para dispensa de licitação por valor?"
-            st.rerun()
-    with col2:
-        if st.button("Ex: Modalidade Diálogo Competitivo"):
-            st.session_state["query_input"] = "Como funciona a modalidade diálogo competitivo na lei 14.133?"
-            st.rerun()
+    faq_options = [
+        "Selecione uma pergunta...",
+        "Quais são os limites para dispensa de licitação por valor?",
+        "Como funciona a modalidade diálogo competitivo na lei 14.133?"
+    ]
 elif selected_domain == "transparencia":
     st.info("📊 **Transparência Pública:** Pergunte sobre transparência ativa, passiva e portal da transparência.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: O que é transparência ativa"):
-            st.session_state["query_input"] = "O que deve constar obrigatoriamente no portal de transparência ativa?"
-            st.rerun()
-    with col2:
-        if st.button("Ex: Link de Despesas no Portal"):
-            st.session_state["query_input"] = "Construa o link de despesas de saúde do ano de 2024 para o Brasil"
-            st.rerun()
+    faq_options = [
+        "Selecione uma pergunta...",
+        "O que deve constar obrigatoriamente no portal de transparência ativa?",
+        "Construa o link de despesas de saúde do ano de 2024 para o Brasil"
+    ]
 elif selected_domain == "concursos":
-    st.info("🎓 **Concursos públicos:** Tutor de concursos públicos que explica conteúdo e questões com base nas apostilas salvas no corpus.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: Ato vs Fato Contábil"):
-            st.session_state["query_input"] = "Explique a diferença entre ato e fato contábil conforme a aula."
-            st.rerun()
-    with col2:
-        if st.button("Ex: O que é situação líquida"):
-            st.session_state["query_input"] = "Resuma o que é situação líquida segundo o material de contabilidade."
-            st.rerun()
+    st.info("🎓 **Concursos públicos:** Explicações com base nas apostilas do material de estudo.")
+    faq_options = [
+        "Selecione uma pergunta...",
+        "Explique a diferença entre ato e fato contábil conforme a aula.",
+        "Resuma o que é situação líquida segundo o material de contabilidade."
+    ]
 elif selected_domain == "ctb":
-    st.info("🚗 **Código de Trânsito Brasileiro (CTB):** Pergunte sobre regras de trânsito, infrações, multas e habilitação com base na Lei 9.503/1997.")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Ex: Limite de velocidade"):
-            st.session_state["query_input"] = "Qual a velocidade máxima permitida em rodovias de pista dupla para carros?"
-            st.rerun()
-    with col2:
-        if st.button("Ex: Infração por celular"):
-            st.session_state["query_input"] = "Qual a gravidade da infração por dirigir manuseando o telefone celular?"
-            st.rerun()
+    st.info("🚗 **Código de Trânsito Brasileiro (CTB):** Pergunte sobre regras de trânsito, infrações e multas.")
+    faq_options = [
+        "Selecione uma pergunta...",
+        "Qual a velocidade máxima permitida em rodovias de pista dupla para carros?",
+        "Qual a gravidade da infração por dirigir manuseando o telefone celular?"
+    ]
 else:
     st.info("🤖 **Modo Automático:** O assistente tentará classificar a sua pergunta e rotear para o domínio e modelo corretos de forma autônoma.")
+
+if faq_options:
+    selected_faq = st.selectbox("💡 **Dúvidas frequentes recomendadas para este domínio:**", options=faq_options, index=0)
+    if selected_faq != "Selecione uma pergunta...":
+        st.session_state["query_input"] = selected_faq
+        st.rerun()
 
 # Tratamento do atalho ou chat input
 if "query_input" not in st.session_state:
