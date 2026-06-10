@@ -11,11 +11,8 @@
 <br/>
 
 ### 📺 Demonstração Visual (Screencast)
-*(Clique no screencast animado abaixo para abrir o vídeo completo em alta qualidade com áudio)*
 
-<a href="docs/demo_video.mp4">
-  <img src="docs/images/pesquisas_reais_demo_1780588092439.webp" alt="Demonstração em Vídeo (Screencast)" width="640"/>
-</a>
+<video src="https://github.com/idarlandias/gov-legal-assistant-rag/raw/main/docs/demo_video.mp4" width="100%" controls></video>
 
 <br/>
 
