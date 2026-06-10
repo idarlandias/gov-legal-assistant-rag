@@ -149,6 +149,16 @@ with st.sidebar:
 if pipeline_error:
     st.error("⚠️ Falha ao inicializar o banco de dados RAG!")
     st.error(f"Erro detalhado: {pipeline_error}")
+    
+    # Diagnóstico de chave ativa
+    try:
+        from src.pipeline.security_skill import get_env_secret
+        key = get_env_secret("GEMINI_API_KEY")
+        masked_key = f"{key[:12]}...{key[-8:]}" if len(key) > 20 else "Chave curta"
+        st.info(f"🔑 **Chave ativa detectada no contêiner:** `{masked_key}`")
+    except Exception:
+        st.info("🔑 **Chave ativa detectada no contêiner:** Não encontrada")
+
     st.warning(
         "💡 **Dica de Solução:** Isso geralmente ocorre quando a sua chave `GEMINI_API_KEY` "
         "excedeu o limite diário de uso (cota de requisições de embeddings). "
