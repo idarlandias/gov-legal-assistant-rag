@@ -4,7 +4,7 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
 
 ---
 
-## 🛠️ O que foi Implementado
+## 🛠️ 1. O que foi Implementado
 
 ### 1. Ingestão de Corpus e Downloads
 * **`download_corpus.py` (Script de Download):** Criado para buscar os PDFs oficiais e legítimos da LGPD (Senado), Lei 14.133 (Senado) e o Guia de Transparência Ativa (CGU).
@@ -43,7 +43,7 @@ Implementamos com sucesso a Skill do **Assistente Jurídico RAG** (`gov-legal-as
 
 ---
 
-## 🔬 Resultados da Verificação
+## 🔬 2. Resultados da Verificação
 
 Rodamos os testes automatizados com sucesso na raiz do projeto após a refatoração:
 
@@ -62,7 +62,7 @@ tests\test_smoke.py ...                                                  [100%]
 
 ---
 
-## 🔒 Segurança & Observabilidade Consolidadas
+## 🔒 3. Segurança & Observabilidade Consolidadas
 
 1. **Gestão Segura de Chaves**:
    * O módulo `src/pipeline/security_skill.py` foi estabelecido como a única fonte para segredos usando a função `get_env_secret`.
@@ -76,23 +76,7 @@ tests\test_smoke.py ...                                                  [100%]
 
 ---
 
-## 📸 Validação Visual
-
-Abaixo está o registro visual do teste do assistente em produção rodando dentro do container Docker (porta 8505) com a base ChromaDB pré-indexada e a nova extração estruturada de documentos baseada no LLM (Gemini Flash-Lite):
-
-````carousel
-![Tela Inicial com Banco Pré-Indexado](images/initial_screen_1780537885376.png)
-<!-- slide -->
-![Resposta Estruturada da Nova Tool LLM](images/response_chat_with_sources_1780590314568.png)
-<!-- slide -->
-![Vídeo de Demonstração e Limpeza de Caches no Docker](images/verify_llm_tool_success_1780590077506.webp)
-````
-
-
----
-
-
-## 🎓 7. Extensão: Domínio Concursos Públicos (Tutor Didático)
+## 🎓 4. Extensão: Domínio Concursos Públicos (Tutor Didático)
 
 Adicionamos com sucesso o suporte ao novo domínio **`concursos`** para funcionar como um assistente de estudos a partir de apostilas e aulas preparatórias em PDF.
 
