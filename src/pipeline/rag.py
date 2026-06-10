@@ -129,7 +129,17 @@ class RAGPipeline:
         """
         # SEU CODIGO AQUI — TODO 1.A
         docs: list[dict] = []
+        is_streamlit_cloud = os.path.exists("/mount/src")
+        concursos_count = 0
+        
         for pdf_path in sorted(self.corpus_dir.rglob("*.pdf")):
+            # Se estiver no Streamlit Cloud, limita o número de PDFs de concursos para evitar rate limits
+            if "concursos" in str(pdf_path).lower():
+                if is_streamlit_cloud:
+                    if concursos_count >= 3:
+                        continue  # pula os demais PDFs de concurso na nuvem
+                    concursos_count += 1
+                    
             reader = PdfReader(pdf_path)
             for page_idx, page in enumerate(reader.pages):
                 text = page.extract_text() or ""
