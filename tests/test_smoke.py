@@ -24,7 +24,7 @@ def pipeline():
 
     load_dotenv()
 
-    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")):
+    if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("DEEPSEEK_API_KEY") or os.environ.get("GROQ_API_KEY")):
         pytest.skip("API key nao configurada em .env")
 
     corpus_dir = Path("data/corpus")

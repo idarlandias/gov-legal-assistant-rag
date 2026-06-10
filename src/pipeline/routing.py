@@ -22,8 +22,20 @@ class RouteDecision:
 # ------------------------------------------------------------------ TODO 6
 def classify_complexity(query: str) -> RouteDecision:
     """Classifica complexidade da query para escolher modelo (cheap vs premium)."""
-    cheap_model = os.environ.get("CHEAP_MODEL", "gemini-2.5-flash-lite")
-    premium_model = os.environ.get("PREMIUM_MODEL", "gemini-2.5-pro")
+    provider = os.environ.get("LLM_PROVIDER", "gemini").lower()
+    
+    if provider == "deepseek":
+        default_cheap = "deepseek-chat"
+        default_premium = "deepseek-reasoner"
+    elif provider == "groq":
+        default_cheap = "llama-3.3-70b-versatile"
+        default_premium = "deepseek-r1-distill-llama-70b"
+    else:
+        default_cheap = "gemini-2.5-flash-lite"
+        default_premium = "gemini-2.5-pro"
+
+    cheap_model = os.environ.get("CHEAP_MODEL", default_cheap)
+    premium_model = os.environ.get("PREMIUM_MODEL", default_premium)
 
     query_lower = query.lower()
 
@@ -42,6 +54,29 @@ def classify_complexity(query: str) -> RouteDecision:
 
 def make_client() -> OpenAI:
     """Cliente OpenAI-compatible para o provider configurado."""
+    provider = os.environ.get("LLM_PROVIDER", "gemini").lower()
+    
+    if provider == "groq":
+        try:
+            groq_key = get_env_secret("GROQ_API_KEY")
+            return OpenAI(
+                api_key=groq_key,
+                base_url="https://api.groq.com/openai/v1",
+            )
+        except RuntimeError:
+            pass
+            
+    if provider == "deepseek":
+        try:
+            deepseek_key = get_env_secret("DEEPSEEK_API_KEY")
+            return OpenAI(
+                api_key=deepseek_key,
+                base_url="https://api.deepseek.com/v1",
+            )
+        except RuntimeError:
+            pass
+
+    # Fallbacks ou se provider for gemini/openai
     try:
         gemini_key = get_env_secret("GEMINI_API_KEY")
         return OpenAI(

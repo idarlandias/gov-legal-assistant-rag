@@ -150,20 +150,27 @@ if pipeline_error:
     st.error("⚠️ Falha ao inicializar o banco de dados RAG!")
     st.error(f"Erro detalhado: {pipeline_error}")
     
-    # Diagnóstico de chave ativa
+    # Diagnóstico de chave ativa conforme provider
+    import os
+    provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+    if provider == "groq":
+        key_name = "GROQ_API_KEY"
+    elif provider == "deepseek":
+        key_name = "DEEPSEEK_API_KEY"
+    else:
+        key_name = "GEMINI_API_KEY"
     try:
         from src.pipeline.security_skill import get_env_secret
-        key = get_env_secret("GEMINI_API_KEY")
+        key = get_env_secret(key_name)
         masked_key = f"{key[:12]}...{key[-8:]}" if len(key) > 20 else "Chave curta"
-        st.info(f"🔑 **Chave ativa detectada no contêiner:** `{masked_key}`")
+        st.info(f"🔑 **Chave ativa detectada no contêiner ({key_name}):** `{masked_key}`")
     except Exception:
-        st.info("🔑 **Chave ativa detectada no contêiner:** Não encontrada")
+        st.info(f"🔑 **Chave ativa detectada no contêiner ({key_name}):** Não encontrada")
 
     st.warning(
-        "💡 **Dica de Solução:** Isso geralmente ocorre quando a sua chave `GEMINI_API_KEY` "
-        "excedeu o limite diário de uso (cota de requisições de embeddings). "
-        "Por favor, crie uma **nova chave de API** gratuita em [Google AI Studio](https://aistudio.google.com/) "
-        "e atualize os Secrets no painel de controle do seu app no Streamlit Cloud."
+        f"💡 **Dica de Solução:** Isso geralmente ocorre quando a sua chave `{key_name}` "
+        "está ausente, incorreta ou excedeu o limite de uso. "
+        "Por favor, verifique suas configurações e atualize os Secrets no painel de controle do seu app no Streamlit Cloud."
     )
 
 
@@ -329,15 +336,17 @@ if user_query:
                     try:
                         decision = classify_complexity(user_query)
                         st.info(f"Routing: {decision.complexity} -> {decision.model}")
+                        if pipeline:
+                            pipeline.llm_model = decision.model
                         log_event("route_decision", trace_id=trace_id, **decision.__dict__)
                         log_model_choice(decision.model)
                     except NotImplementedError:
                         st.warning("Routing nao implementado (TODO 6). Usando modelo default.")
-
+ 
                     with st.spinner("Consultando corpus e gerando resposta..."):
                         if not pipeline:
-                            st.error("Erro: O banco RAG não pôde ser carregado devido à falha de Rate Limit/Cota da chave da API.")
-                            st.info("Por favor, atualize sua GEMINI_API_KEY no Streamlit Cloud.")
+                            st.error(f"Erro: O banco RAG não pôde ser carregado devido à falha de chave/cota da API.")
+                            st.info("Por favor, atualize suas credenciais no Streamlit Cloud.")
                             st.stop()
                         try:
                             result = pipeline.answer(user_query, domain=selected_domain)
