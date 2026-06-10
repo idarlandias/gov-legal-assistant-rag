@@ -226,7 +226,7 @@ class RAGPipeline:
         # SEU CODIGO AQUI — TODO 1.C
         import time
         import sys
-        BATCH = 500
+        BATCH = 100
         for start in range(0, len(chunks), BATCH):
             lote = chunks[start : start + BATCH]
             
@@ -263,7 +263,7 @@ class RAGPipeline:
             if not success:
                 raise RuntimeError("Falha de Rate Limit ao indexar no Streamlit Cloud.")
                 
-            time.sleep(2.0)
+            time.sleep(4.0)
 
         return self.collection.count()
 
