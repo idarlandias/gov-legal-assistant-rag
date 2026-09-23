@@ -76,7 +76,8 @@ def fmt_sources(sources: list) -> str:
 
 
 def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: bool = True,
-        collection: str = "docs", ferramenta: str = RAG_TOOL) -> tuple[dict, list[dict]]:
+        collection: str = "docs", ferramenta: str = RAG_TOOL,
+        modo: str = "hibrido") -> tuple[dict, list[dict]]:
     from dotenv import load_dotenv
 
     load_dotenv(ROOT / ".env")
@@ -85,9 +86,14 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
     from src.pipeline.routing import classify_complexity
 
     # RAGPipeline direto (não build_rag_pipeline) para nunca resetar/reindexar o banco aqui
-    pipeline = RAGPipeline(corpus_dir=str(ROOT / "data" / "corpus"),
-                           persist_dir=str(ROOT / "data" / "chroma"),
-                           collection_name=collection)
+    if collection == "fase3":
+        from src.fase3.pipeline import Fase3Pipeline
+
+        pipeline = Fase3Pipeline(modo=modo)  # E5 multilíngue + BM25
+    else:
+        pipeline = RAGPipeline(corpus_dir=str(ROOT / "data" / "corpus"),
+                               persist_dir=str(ROOT / "data" / "chroma"),
+                               collection_name=collection)
     n_chunks = pipeline.collection.count()
     if n_chunks == 0:
         raise SystemExit(f"ERRO: coleção Chroma '{collection}' vazia. Indexe o corpus antes "
@@ -97,6 +103,7 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
     meta = {
         "ferramenta": ferramenta,
         "collection": collection,
+        "retrieval": modo if collection == "fase3" else "denso",
         "data": datetime.now().isoformat(timespec="seconds"),
         "provider": os.environ.get("LLM_PROVIDER", "gemini").lower(),
         "llm_model": pipeline.llm_model,
@@ -188,6 +195,8 @@ def main() -> int:
                     help="coleção Chroma: docs (Fase 2) ou fase3 (corpus vertical)")
     ap.add_argument("--ferramenta",
                     help="nome na planilha (padrão: 'RAG Fase 3' se --collection fase3, senão 'RAG atual')")
+    ap.add_argument("--modo", default="hibrido", choices=["hibrido", "denso", "bm25"],
+                    help="recuperação da coleção fase3 (padrão: hibrido = E5 + BM25)")
     ap.add_argument("--from-json", type=Path,
                     help="não roda o RAG: preenche a planilha a partir de um results/*.json salvo")
     ap.add_argument("--overwrite", action="store_true", help="sobrescreve respostas já preenchidas")
@@ -217,7 +226,7 @@ def main() -> int:
         ferramenta = args.ferramenta or ("RAG Fase 3" if args.collection == "fase3" else RAG_TOOL)
         meta, resultados = run(perguntas, args.k, args.domain, args.sleep,
                                routing=not args.no_routing, collection=args.collection,
-                               ferramenta=ferramenta)
+                               ferramenta=ferramenta, modo=args.modo)
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         out = RESULTS_DIR / f"rag-{args.collection}-{datetime.now():%Y%m%d-%H%M%S}.json"
         out.write_text(json.dumps({"meta": meta, "resultados": resultados}, ensure_ascii=False,

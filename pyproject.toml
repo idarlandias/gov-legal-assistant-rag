@@ -15,6 +15,11 @@ dependencies = [
     "pandas>=2.0",
     "numpy>=1.26",
     "reportlab>=4.5.1",
+    # Fase 3: embedding E5 em ONNX (já vinham como dependências do chromadb; agora explícitas)
+    "onnxruntime>=1.17",
+    "tokenizers>=0.15",
+    "huggingface-hub>=0.20",
+    "requests>=2.31",
 ]
 
 [project.optional-dependencies]
