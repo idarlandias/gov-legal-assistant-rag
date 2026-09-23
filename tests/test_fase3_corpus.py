@@ -69,7 +69,36 @@ def test_reinicio_no_codigo_anexo_marca_ato_de_aprovacao():
 def test_titulo_entre_artigos_vai_para_o_artigo_seguinte():
     ds = segment_articles("x", [(1, "Art. 1º Um.\nCAPÍTULO II\nDOS REGISTROS\nArt. 2º Dois.")])
     assert "CAPÍTULO II" not in ds[0].texto
-    assert ds[1].texto.startswith("CAPÍTULO II") and ds[1].secao == "CAPÍTULO II"
+    assert ds[1].texto.startswith("CAPÍTULO II") and ds[1].secao == "CAPÍTULO II DOS REGISTROS"
+
+
+def test_trilha_de_titulos_e_especialidade_herdada():
+    pags = [(1, "TÍTULO II\nDO REGISTRO CIVIL DE PESSOAS NATURAIS\nCAPÍTULO I\nDA CERTIDÃO\n"
+                "Art. 1º Civil.\nTÍTULO VII DOS OFÍCIOS DE REGISTRO DE IMÓVEIS\n"
+                "CAPÍTULO IV\nDAS CERTIDÕES\nArt. 2º Imóveis.")]
+    d1, d2 = segment_articles("x", pags)
+    assert d1.secao == "TÍTULO II DO REGISTRO CIVIL DE PESSOAS NATURAIS > CAPÍTULO I DA CERTIDÃO"
+    assert d1.especialidade == "registro_civil"
+    # novo TÍTULO descarta o CAPÍTULO anterior da trilha
+    assert d2.secao == "TÍTULO VII DOS OFÍCIOS DE REGISTRO DE IMÓVEIS > CAPÍTULO IV DAS CERTIDÕES"
+    assert d2.especialidade == "registro_imoveis"
+
+
+def test_classificar_usa_o_cabecalho_mais_alto():
+    # CE: a seção fala de escritura, mas o Título é Registro de Imóveis
+    assert corpus.classificar(["TÍTULO VII DOS OFÍCIOS DE REGISTRO DE IMÓVEIS",
+                               "Seção II Da Escritura de Compra e Venda"]) == "registro_imoveis"
+    # CNJ: níveis altos temáticos; a especialidade vem da seção
+    assert corpus.classificar(["TÍTULO VI DA PROTEÇÃO DE DADOS PESSOAIS",
+                               "Seção XIII Do Registro Civil de Pessoas Naturais"]) == "registro_civil"
+    assert corpus.classificar(["TÍTULO VI DA PROTEÇÃO DE DADOS PESSOAIS"]) == "geral"
+
+
+def test_classificar_casos_que_ja_erraram():
+    # "escrituração" não é Tabelionato de Notas
+    assert corpus.classificar(["CAPÍTULO III DOS LIVROS, SUA ESCRITURAÇÃO"]) == "geral"
+    # RCPJ não é Registro Civil de pessoas naturais
+    assert corpus.classificar(["TÍTULO III DO REGISTRO CIVIL DE PESSOAS JURÍDICAS"]) == "rtd_rcpj"
 
 
 def test_remove_linhas_de_sumario():
@@ -87,4 +116,5 @@ def test_chunks_tem_cabecalho_de_citacao_e_metadados():
     md = chunks[0].metadata
     assert md["source"] == "Lei 6.015/1973, Art. 17"
     assert md["dominio"] == "fase3" and md["esfera"] == "federal" and md["dispositivo"] == "Art. 17"
+    assert md["especialidade"] == "geral"
     assert all(isinstance(v, (str, int)) for v in md.values())  # tipos aceitos pelo Chroma

@@ -183,20 +183,77 @@ _ART = re.compile(r"^Art\.?\s*(\d{1,3}(?:\.\d{3})+|\d{1,4})(?:\s*[º°o])?\.?(?:
                   re.MULTILINE)
 _HEADING = re.compile(
     r"^(LIVRO|PARTE|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|Se[çc][ãa]o|SUBSE[ÇC][ÃA]O|Subse[çc][ãa]o)"
-    r"\s+[IVXLCDM\d]+[\w\-]*\b.*$", re.MULTILINE)
+    r"\s+([IVXLCDM\d]+(?:-[A-Z])?)\b[ \t]*(.*)$", re.MULTILINE)
+_NIVEL = {"PARTE": 0, "LIVRO": 1, "TITULO": 2, "CAPITULO": 3, "SECAO": 4, "SUBSECAO": 5}
+_NOTA = re.compile(r"\((?:inclu[íi]d|renumerad|alterad|revogad|acrescid|reda[çc][ãa]o)[^)]*\)", re.I)
 MAX_SALTO = 25  # número de artigo que pula mais que isso é citação, não início de artigo
 # Ato de aprovação (Art. 1-4) seguido do Código anexo, que recomeça no Art. 1
 _RESTART = re.compile(r"^C[ÓO]DIGO\b[^\n]{0,80}NORMAS", re.MULTILINE)
 ATO_APROVACAO = " (ato de aprovação)"
+
+# ---------------------------------------------------------------- especialidade
+# Os Códigos (CNJ 149 e CGJ-CE) misturam todas as especialidades; sem isto a busca
+# respondia pergunta de Registro de Imóveis com regra de Registro Civil.
+REGISTRO_IMOVEIS = "registro_imoveis"
+GERAL = "geral"
+_ESPECIALIDADES: list[tuple[str, re.Pattern]] = [
+    # a ordem importa: "registro civil de pessoas juridicas" antes de "registro civil"
+    ("rtd_rcpj", re.compile(r"titulos e documentos|pessoas? juridicas?")),
+    ("registro_civil", re.compile(
+        r"registro civil|pessoas? naturais|nascimento|casamento|obito|\bcrc\b|filiacao|socioafetiv"
+        r"|mudanca de (?:nome|genero)|natimorto")),
+    (REGISTRO_IMOVEIS, re.compile(
+        r"imove(?:l|is)|\bsrei\b|\bonr\b|matricula|incorporac|loteament|usucapiao"
+        r"|regularizacao fundiaria|georreferenc|condominio|alienacao fiduciaria")),
+    ("notas", re.compile(
+        r"tabelionatos? de notas|escrituras?\b|testamento|procurac|ata notarial|censec|e-notariado"
+        r"|inventario|divorcio")),  # apostila fica "geral": qualquer serventia pode apostilar
+    ("protesto", re.compile(r"protest|cenprot")),
+    ("outros", re.compile(r"distribuic|mediacao|conciliacao")),
+]
+
+
+def _sem_acento(text: str) -> str:
+    import unicodedata
+
+    return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
+
+
+def classificar(cabecalhos: list[str]) -> str:
+    """Especialidade do cabeçalho MAIS ALTO que menciona alguma; senão "geral".
+
+    No Código do CE o Título já é a especialidade ("DOS OFÍCIOS DE REGISTRO DE IMÓVEIS") e
+    uma seção interna ("Da Escritura de Compra e Venda de Imóveis") não deve sobrepô-lo.
+    No CNJ 149 os níveis altos são temáticos (proteção de dados, sistemas digitais) e a
+    especialidade só aparece na seção, que então decide.
+    """
+    for nome in cabecalhos:
+        n = _sem_acento(nome.lower())
+        for esp, padrao in _ESPECIALIDADES:
+            if padrao.search(n):
+                return esp
+    return GERAL
 
 
 @dataclass
 class Dispositivo:
     fonte_id: str
     dispositivo: str  # "Art. 17", "Art. 213-A", "Preâmbulo", "p. 12"
-    secao: str  # último título/capítulo/seção visto
+    secao: str  # trilha de títulos: "TÍTULO VII Dos Ofícios de Registro de Imóveis > Seção II ..."
     pagina: int
     texto: str
+    especialidade: str = GERAL
+
+
+def _nome_cabecalho(m: re.Match, texto: str) -> tuple[int, str]:
+    """(nível, "TÍTULO VII Dos Ofícios de Registro de Imóveis"): o nome vem na mesma linha ou na seguinte."""
+    rotulo = _sem_acento(m.group(1)).upper()
+    nome = _NOTA.sub("", m.group(3)).strip()
+    if len(nome) < 3:
+        resto = texto[m.end():].lstrip("\n").split("\n", 1)[0].strip()
+        if resto and not _ART.match(resto) and not _HEADING.match(resto):
+            nome = _NOTA.sub("", resto).strip()
+    return _NIVEL[rotulo], f"{m.group(1)} {m.group(2)} {nome[:100]}".strip()
 
 
 def _art_key(num: int, suf: str | None) -> tuple[int, int, str]:
@@ -209,7 +266,7 @@ def segment_articles(fonte_id: str, pages: list[tuple[int, str]]) -> list[Dispos
     out: list[Dispositivo] = []
     atual = Dispositivo(fonte_id, "Preâmbulo", "", pages[0][0] if pages else 0, "")
     ultimo = (0, 0, "")
-    secao = ""
+    trilha: dict[int, str] = {}  # nível -> cabeçalho vigente
     pode_reiniciar = False
 
     for pagina, texto in pages:
@@ -228,7 +285,9 @@ def segment_articles(fonte_id: str, pages: list[tuple[int, str]]) -> list[Dispos
             if kind == "head":
                 if head_start is None:
                     head_start = start
-                secao = m.group(0).strip()[:120]
+                nivel, nome = _nome_cabecalho(m, texto)
+                trilha = {n: v for n, v in trilha.items() if n < nivel}
+                trilha[nivel] = nome
                 continue
             num, suf = int(m.group(1).replace(".", "")), m.group(2)
             key = _art_key(num, suf)
@@ -244,7 +303,9 @@ def segment_articles(fonte_id: str, pages: list[tuple[int, str]]) -> list[Dispos
             if atual.texto.strip():
                 out.append(atual)
             rotulo = f"Art. {num}" + (f"-{suf}" if suf else "")
-            atual = Dispositivo(fonte_id, rotulo, secao, pagina, texto[corte:start])
+            cabecalhos = [trilha[n] for n in sorted(trilha)]
+            atual = Dispositivo(fonte_id, rotulo, " > ".join(cabecalhos), pagina,
+                                texto[corte:start], classificar(cabecalhos))
             ultimo = key
             pos, head_start = start, None
         atual.texto += texto[pos:] + "\n"

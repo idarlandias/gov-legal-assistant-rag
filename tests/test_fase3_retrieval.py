@@ -27,6 +27,29 @@ def test_bm25_consulta_sem_termo_conhecido_devolve_vazio():
     assert BM25(["texto qualquer"]).top("xyzabc", 5) == []
 
 
+class _ColecaoFalsa:
+    def get(self, include):
+        return {
+            "ids": ["civil", "imoveis", "lgpd"],
+            "documents": ["certidão de inteiro teor de nascimento",
+                          "certidão de inteiro teor da matrícula",
+                          "certidão e dados pessoais"],
+            "metadatas": [{"source": s, "page": 0, "especialidade": e} for s, e in
+                          [("CNJ Art. 114", "registro_civil"), ("CE Art. 1131", "registro_imoveis"),
+                           ("LGPD Art. 7", "geral")]],
+        }
+
+
+def test_bm25_respeita_filtro_de_especialidade():
+    from src.fase3.retrieval import HybridRetriever
+
+    ret = HybridRetriever(_ColecaoFalsa(), embedder=None)
+    q = "certidão de inteiro teor"
+    assert "civil" in ret.sparse(q, 10)
+    filtrado = ret.sparse(q, 10, especialidades={"registro_imoveis", "geral"})
+    assert "civil" not in filtrado and filtrado[0] == "imoveis"
+
+
 def test_rrf_premia_quem_aparece_bem_nas_duas_listas():
     fused = [doc for doc, _ in rrf([["a", "b", "c"], ["d", "b", "e"]])]
     assert fused[0] == "b"  # 2º nas duas listas vence 1º em uma só

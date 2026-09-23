@@ -177,25 +177,33 @@ class HybridRetriever:
         self.metas: dict[str, dict] = dict(zip(data["ids"], data["metadatas"]))
         self.bm25 = BM25(data["documents"])
 
-    def dense(self, query: str, n: int) -> list[str]:
+    def _permitido(self, doc_id: str, especialidades: set[str] | None) -> bool:
+        return especialidades is None or self.metas[doc_id].get("especialidade") in especialidades
+
+    def dense(self, query: str, n: int, especialidades: set[str] | None = None) -> list[str]:
         qv = self.embedder.embed_query(query)
-        res = self.collection.query(query_embeddings=[qv.tolist()], n_results=n, include=[])
+        where = {"especialidade": {"$in": sorted(especialidades)}} if especialidades else None
+        res = self.collection.query(query_embeddings=[qv.tolist()], n_results=n, where=where, include=[])
         return res["ids"][0]
 
-    def sparse(self, query: str, n: int) -> list[str]:
-        return [self.ids[i] for i in self.bm25.top(query, n)]
+    def sparse(self, query: str, n: int, especialidades: set[str] | None = None) -> list[str]:
+        s = self.bm25.scores(query)
+        ordem = sorted(s, key=lambda i: -s[i])
+        return [self.ids[i] for i in ordem if self._permitido(self.ids[i], especialidades)][:n]
 
-    def search(self, query: str, k: int = 5, modo: str = "hibrido") -> list[dict[str, Any]]:
+    def search(self, query: str, k: int = 5, modo: str = "hibrido",
+               especialidades: set[str] | None = None) -> list[dict[str, Any]]:
+        """`especialidades`: restringe a busca (ex.: {"registro_imoveis", "geral"}); None = tudo."""
         if modo == "denso":
-            fused = [(i, 0.0) for i in self.dense(query, k)]
+            fused = [(i, 0.0) for i in self.dense(query, k, especialidades)]
         elif modo == "bm25":
-            fused = [(i, 0.0) for i in self.sparse(query, k)]
+            fused = [(i, 0.0) for i in self.sparse(query, k, especialidades)]
         else:
-            fused = rrf([self.dense(query, self.candidatos), self.sparse(query, self.candidatos)],
-                        k=self.rrf_k)
+            fused = rrf([self.dense(query, self.candidatos, especialidades),
+                         self.sparse(query, self.candidatos, especialidades)], k=self.rrf_k)
         return [
             {"id": i, "text": self.docs[i], "source": self.metas[i]["source"],
              "page": self.metas[i]["page"], "distance": -score, **{
-                 key: self.metas[i].get(key) for key in ("fonte_id", "dispositivo")}}
+                 key: self.metas[i].get(key) for key in ("fonte_id", "dispositivo", "especialidade")}}
             for i, score in fused[:k]
         ]

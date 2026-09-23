@@ -77,7 +77,7 @@ def fmt_sources(sources: list) -> str:
 
 def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: bool = True,
         collection: str = "docs", ferramenta: str = RAG_TOOL,
-        modo: str = "hibrido") -> tuple[dict, list[dict]]:
+        modo: str = "hibrido", filtro_ri: bool = True) -> tuple[dict, list[dict]]:
     from dotenv import load_dotenv
 
     load_dotenv(ROOT / ".env")
@@ -87,9 +87,10 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
 
     # RAGPipeline direto (não build_rag_pipeline) para nunca resetar/reindexar o banco aqui
     if collection == "fase3":
-        from src.fase3.pipeline import Fase3Pipeline
+        from src.fase3.pipeline import ESPECIALIDADES_RI, Fase3Pipeline
 
-        pipeline = Fase3Pipeline(modo=modo)  # E5 multilíngue + BM25
+        # E5 multilíngue + BM25, restrito a Registro de Imóveis + normas gerais
+        pipeline = Fase3Pipeline(modo=modo, especialidades=ESPECIALIDADES_RI if filtro_ri else None)
     else:
         pipeline = RAGPipeline(corpus_dir=str(ROOT / "data" / "corpus"),
                                persist_dir=str(ROOT / "data" / "chroma"),
@@ -104,6 +105,7 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
         "ferramenta": ferramenta,
         "collection": collection,
         "retrieval": modo if collection == "fase3" else "denso",
+        "filtro_especialidade": "registro_imoveis+geral" if collection == "fase3" and filtro_ri else None,
         "data": datetime.now().isoformat(timespec="seconds"),
         "provider": os.environ.get("LLM_PROVIDER", "gemini").lower(),
         "llm_model": pipeline.llm_model,
@@ -197,6 +199,8 @@ def main() -> int:
                     help="nome na planilha (padrão: 'RAG Fase 3' se --collection fase3, senão 'RAG atual')")
     ap.add_argument("--modo", default="hibrido", choices=["hibrido", "denso", "bm25"],
                     help="recuperação da coleção fase3 (padrão: hibrido = E5 + BM25)")
+    ap.add_argument("--sem-filtro", action="store_true",
+                    help="fase3: busca em todas as especialidades (padrão: só Registro de Imóveis + geral)")
     ap.add_argument("--from-json", type=Path,
                     help="não roda o RAG: preenche a planilha a partir de um results/*.json salvo")
     ap.add_argument("--overwrite", action="store_true", help="sobrescreve respostas já preenchidas")
@@ -226,7 +230,7 @@ def main() -> int:
         ferramenta = args.ferramenta or ("RAG Fase 3" if args.collection == "fase3" else RAG_TOOL)
         meta, resultados = run(perguntas, args.k, args.domain, args.sleep,
                                routing=not args.no_routing, collection=args.collection,
-                               ferramenta=ferramenta, modo=args.modo)
+                               ferramenta=ferramenta, modo=args.modo, filtro_ri=not args.sem_filtro)
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         out = RESULTS_DIR / f"rag-{args.collection}-{datetime.now():%Y%m%d-%H%M%S}.json"
         out.write_text(json.dumps({"meta": meta, "resultados": resultados}, ensure_ascii=False,

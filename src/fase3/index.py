@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -11,6 +12,9 @@ from src.fase3.sources import FONTES, Fonte
 
 CHROMA_DIR = ROOT / "data" / "chroma"
 COLLECTION = "fase3"
+# Suba quando mudar os metadados: filtrar por um campo que o índice antigo não tem
+# devolveria zero resultados sem erro. 2 = metadado "especialidade".
+INDEX_SCHEMA = 2
 DOMINIO = "fase3"
 JSONL = CORPUS_DIR / "dispositivos.jsonl"
 
@@ -31,10 +35,17 @@ def citacao(fonte: Fonte, d: Dispositivo) -> str:
     return f"{fonte.sigla}, {d.dispositivo}"
 
 
+def _trilha_curta(secao: str, max_nivel: int = 60) -> str:
+    return " > ".join(n[:max_nivel] for n in secao.split(" > ")) if secao else ""
+
+
 def build_chunks(fonte: Fonte, dispositivos: list[Dispositivo]) -> list[Chunk]:
     chunks: list[Chunk] = []
     for i, d in enumerate(dispositivos):
-        cab = citacao(fonte, d) + (f" ({d.secao})" if d.secao else "")
+        # a trilha de títulos ("TÍTULO V Do Registro de Imóveis > ...") vai no texto para o
+        # embedding e o BM25 também enxergarem a especialidade
+        trilha = _trilha_curta(d.secao)
+        cab = citacao(fonte, d) + (f" ({trilha})" if trilha else "")
         partes = _splitter.split_text(d.texto) or [d.texto]
         for j, parte in enumerate(partes):
             sufixo = f" [parte {j + 1}/{len(partes)}]" if len(partes) > 1 else ""
@@ -52,6 +63,7 @@ def build_chunks(fonte: Fonte, dispositivos: list[Dispositivo]) -> list[Chunk]:
                     "fonte_id": fonte.id,
                     "dispositivo": d.dispositivo,
                     "secao": d.secao,
+                    "especialidade": d.especialidade,
                 },
             ))
     return chunks
@@ -71,6 +83,7 @@ def build_all(fontes: list[Fonte] = FONTES) -> tuple[list[Chunk], dict[str, dict
         chunks.extend(cs)
         stats[fonte.id] = {
             "dispositivos": len(ds),
+            "especialidades": dict(Counter(d.especialidade for d in ds)),
             "artigos": sum(d.dispositivo.startswith("Art.") for d in ds),
             "chunks": len(cs),
             "caracteres": sum(len(d.texto) for d in ds),
@@ -110,13 +123,15 @@ def open_collection(embedder=None, create: bool = False):
         except Exception:
             pass  # coleção ainda não existia
         col = client.create_collection(COLLECTION, embedding_function=ef,
-                                       metadata={"embed_model": EMBED_REPO})
+                                       metadata={"embed_model": EMBED_REPO, "schema": INDEX_SCHEMA})
     else:
         col = client.get_collection(COLLECTION, embedding_function=ef)
-        modelo = (col.metadata or {}).get("embed_model")
-        if modelo != EMBED_REPO:
-            raise RuntimeError(f"Coleção '{COLLECTION}' foi indexada com '{modelo}', não '{EMBED_REPO}'. "
-                               "Rode: python scripts/fase3/build_corpus.py index")
+        meta = col.metadata or {}
+        if meta.get("embed_model") != EMBED_REPO or meta.get("schema") != INDEX_SCHEMA:
+            raise RuntimeError(
+                f"Coleção '{COLLECTION}' está desatualizada (modelo={meta.get('embed_model')}, "
+                f"schema={meta.get('schema')}; esperado {EMBED_REPO}, schema {INDEX_SCHEMA}). "
+                "Rode: python scripts/fase3/build_corpus.py index")
     return col, embedder
 
 
