@@ -37,6 +37,11 @@ WRAP = Alignment(wrap_text=True, vertical="top")
 
 RAG_TOOL = "RAG atual"
 
+
+def is_rag(tool: str) -> bool:
+    """Ferramentas nossas ("RAG atual", "RAG Fase 3"): custo vem dos tokens, não de assinatura."""
+    return tool.startswith("RAG")
+
 # Colunas da aba Respostas (letra, cabecalho, largura, tipo)
 RESP_COLS = [
     ("A", "ID", 6, "key"),
@@ -97,12 +102,12 @@ def build_leia_me(wb: Workbook, n_perg: int, ferramentas: list[str]) -> None:
     ws["A1"] = "Benchmark Fase 3: RAG jurídico × concorrentes"
     ws["A1"].font = F_TITLE
     linhas = [
-        f"Objetivo: medir se {', '.join(ferramentas[:-1])} já respondem bem às {n_perg} "
+        f"Objetivo: medir se {', '.join(t for t in ferramentas if not is_rag(t))} já respondem bem às {n_perg} "
         "perguntas de balcão (Registro de Imóveis × LAI × LGPD). O resultado alimenta o Gate 1.",
         "1. Aba Perguntas: o oficial/DPO preenche o gabarito (colunas amarelas) ANTES de avaliar.",
         "2. Aba Respostas: uma linha por pergunta × ferramenta. Cole a resposta integral, sem editar.",
         "3. Mesma redação, sessão nova, sem contexto extra em cada ferramenta.",
-        f"4. As linhas '{RAG_TOOL}' são preenchidas pelo script run_rag_benchmark.py (--xlsx).",
+        "4. As linhas 'RAG atual' e 'RAG Fase 3' são preenchidas pelo script run_rag_benchmark.py (--xlsx).",
         "5. Dê a nota de 0 a 2 em cada critério comparando com o gabarito. A Nota (0-10) só "
         "aparece com os 5 critérios preenchidos.",
         "6. Aba Parametros: preencha a assinatura mensal dos concorrentes e confira preço/câmbio.",
@@ -223,12 +228,12 @@ def build_parametros(wb: Workbook, ferramentas: list[str]) -> None:
     ws.column_dimensions["D"].width = 60
     _header(ws, 1, ["Parâmetro", "Valor", "", "Fonte / observação"])
     params = [
-        ("Modelo do RAG", "gemini-2.5-flash-lite",
-         "CHEAP_MODEL do .env; o script registra o modelo real em 'Versão / plano'"),
-        ("Preço entrada (US$ / 1M tokens)", 0.10,
-         "Premissa: tabela pública do Gemini 2.5 Flash-Lite. Conferir em ai.google.dev/pricing"),
-        ("Preço saída (US$ / 1M tokens)", 0.40,
-         "Premissa: tabela pública do Gemini 2.5 Flash-Lite. Conferir em ai.google.dev/pricing"),
+        ("Modelo do RAG", "Groq openai/gpt-oss-20b / 120b",
+         "CHEAP/PREMIUM_MODEL do .env; o script registra o modelo real em 'Versão / plano'"),
+        ("Preço entrada (US$ / 1M tokens)", 0.15,
+         "Premissa: preço do gpt-oss-120b na Groq (teto; o 20b é mais barato). Conferir em groq.com/pricing"),
+        ("Preço saída (US$ / 1M tokens)", 0.60,
+         "Premissa: preço do gpt-oss-120b na Groq (teto; o 20b é mais barato). Conferir em groq.com/pricing"),
         ("Câmbio (R$ / US$)", 5.50, "Premissa: atualizar com a cotação do dia da coleta"),
     ]
     for r, (k, v, note) in enumerate(params, start=2):
@@ -241,7 +246,7 @@ def build_parametros(wb: Workbook, ferramentas: list[str]) -> None:
     ws["A8"].font = F_BOLD
     _header(ws, 9, ["Ferramenta", "Assinatura mensal (R$)", "Consultas / mês estimadas",
                     "Custo por consulta (R$)"])
-    for r, tool in enumerate([t for t in ferramentas if t != RAG_TOOL], start=10):
+    for r, tool in enumerate([t for t in ferramentas if not is_rag(t)], start=10):
         _style(ws.cell(row=r, column=1, value=tool), "key")
         _style(ws.cell(row=r, column=2), "input")
         _style(ws.cell(row=r, column=3), "input")
@@ -249,8 +254,8 @@ def build_parametros(wb: Workbook, ferramentas: list[str]) -> None:
                     value=f'=IF(AND(ISNUMBER(B{r}),ISNUMBER(C{r}),C{r}>0),B{r}/C{r},"")')
         _style(c, "formula")
         c.number_format = "0.00"
-    ws.cell(row=14, column=1,
-            value=f"O custo por consulta do '{RAG_TOOL}' vem dos tokens medidos (aba Respostas).").font = F_BASE
+    ws.cell(row=10 + len([t for t in ferramentas if not is_rag(t)]) + 1, column=1,
+            value="O custo por consulta dos RAGs vem dos tokens medidos (aba Respostas).").font = F_BASE
 
 
 def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], last: int) -> None:
@@ -268,7 +273,7 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
     ws.row_dimensions[3].height = 30
 
     rng = lambda col: f"Respostas!${col}$2:${col}${last}"  # noqa: E731
-    comp = [t for t in ferramentas if t != RAG_TOOL]
+    comp = [t for t in ferramentas if not is_rag(t)]
     for r, tool in enumerate(ferramentas, start=4):
         crit = {"D": "M", "E": "N", "F": "O", "G": "P", "H": "Q"}
         cells = {
@@ -283,7 +288,7 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
         for dst, src in crit.items():
             cells[dst] = (f'=IF(B{r}=0,"",'
                           f'AVERAGEIFS({rng(src)},{rng("B")},$A{r},{rng("R")},">=0"))')
-        if tool == RAG_TOOL:
+        if is_rag(tool):
             cells["K"] = (f'=IF(COUNTIFS({rng("B")},$A{r},{rng("L")},">=0")=0,"",'
                           f'AVERAGEIFS({rng("L")},{rng("B")},$A{r}))')
         else:
@@ -300,13 +305,14 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
             if col == "K":
                 c.number_format = "0.0000"
     last_tool_row = 3 + len(ferramentas)
-    comp_last = 3 + len(comp)
+    comp_cells = ",".join(f"C{4 + ferramentas.index(t)}" for t in comp)
 
     # Gate 1
     g = last_tool_row + 2
     ws.cell(row=g, column=1, value="Gate 1: sinal do benchmark").font = F_BOLD
     ws.cell(row=g + 1, column=1, value="Melhor concorrente").font = F_BASE
-    best = ws.cell(row=g + 1, column=2, value=f'=IF(COUNT(C4:C{comp_last})=0,"",MAX(C4:C{comp_last}))')
+    best = ws.cell(row=g + 1, column=2,
+                   value=f'=IF(COUNT({comp_cells})=0,"",MAX({comp_cells}))')
     _style(best, "formula")
     best.number_format = "0.00"
     ws.cell(row=g + 2, column=1, value="Sinal").font = F_BASE

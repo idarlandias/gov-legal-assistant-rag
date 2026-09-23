@@ -3,7 +3,7 @@
 | Arquivo | Papel |
 |---|---|
 | `perguntas.json` | Fonte única das 25 perguntas e da lista de ferramentas |
-| `planilha_benchmark.xlsx` | Coleta e avaliação: Perguntas (gabarito), Respostas (100 linhas), Parametros, Resumo e Gate 1 |
+| `planilha_benchmark.xlsx` | Coleta e avaliação: Perguntas (gabarito), Respostas (125 linhas = 25 × 5 ferramentas), Parametros, Resumo e Gate 1 |
 | `results/rag-*.json` | Saídas brutas do RAG, com modelo, commit, latência e tokens |
 
 ## Fluxo
@@ -16,6 +16,8 @@
    python scripts/benchmark/run_rag_benchmark.py --xlsx
    ```
    Opções: `--ids 1,2,11`, `--k 5`, `--sleep 2`, `--overwrite`. Feche a planilha no Excel antes de rodar.
+   - Corpus da Fase 3: `--collection fase3`, que preenche as linhas "RAG Fase 3".
+   - Repor um resultado salvo sem chamar o LLM: `--xlsx --from-json results/<arquivo>.json`.
 4. Dê as notas da rubrica (0 a 2) em todas as linhas. **Resumo** e **Gate 1** se calculam sozinhos.
 
 ## Regras

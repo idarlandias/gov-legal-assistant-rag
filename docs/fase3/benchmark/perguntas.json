@@ -1,7 +1,7 @@
 {
   "versao": "v0",
   "fonte": "docs/fase3/04_benchmark_perguntas.md",
-  "ferramentas": ["Jus IA", "Jurídico AI", "LLM genérico", "RAG atual"],
+  "ferramentas": ["Jus IA", "Jurídico AI", "LLM genérico", "RAG atual", "RAG Fase 3"],
   "perguntas": [
     {"id": 1, "categoria": "Certidão", "pergunta": "Um terceiro sem vínculo pede certidão de inteiro teor de uma matrícula. Posso emitir sem exigir motivo?"},
     {"id": 2, "categoria": "Certidão", "pergunta": "A certidão de inteiro teor deve exibir o CPF completo dos proprietários?"},
