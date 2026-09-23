@@ -77,7 +77,7 @@ class RAGPipeline:
         if provider == "deepseek":
             default_llm = "deepseek-chat"
         elif provider == "groq":
-            default_llm = "llama-3.3-70b-versatile"
+            default_llm = "openai/gpt-oss-20b"
         else:
             default_llm = "gemini-2.5-flash-lite"
             

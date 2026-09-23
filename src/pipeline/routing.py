@@ -28,8 +28,8 @@ def classify_complexity(query: str) -> RouteDecision:
         default_cheap = "deepseek-chat"
         default_premium = "deepseek-reasoner"
     elif provider == "groq":
-        default_cheap = "llama-3.3-70b-versatile"
-        default_premium = "deepseek-r1-distill-llama-70b"
+        default_cheap = "openai/gpt-oss-20b"
+        default_premium = "openai/gpt-oss-120b"
     else:
         default_cheap = "gemini-2.5-flash-lite"
         default_premium = "gemini-2.5-pro"
