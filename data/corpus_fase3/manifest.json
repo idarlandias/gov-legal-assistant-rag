@@ -1,0 +1,178 @@
+{
+  "lei_6015_1973": {
+    "sigla": "Lei 6.015/1973",
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/l6015compilada.htm",
+    "arquivo": "lei_6015_1973.html",
+    "bytes": 494081,
+    "sha256": "0bcd0cd0acf8d12b5ff0e2b6bb34cb8fc50c40183498c0301d7031f8f389ffef",
+    "last_modified": "Thu, 23 Apr 2026 23:00:40 GMT",
+    "baixado_em": "2026-09-23T10:59:42",
+    "indice": {
+      "dispositivos": 318,
+      "artigos": 317,
+      "chunks": 410,
+      "caracteres": 228861,
+      "embed_model": "local"
+    }
+  },
+  "lei_13709_2018": {
+    "sigla": "LGPD (Lei 13.709/2018)",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm",
+    "arquivo": "lei_13709_2018.html",
+    "bytes": 230913,
+    "sha256": "2229e6a92947f5618c12b4cf42e58959bf2fc302573a3bedcee46fd73ff229ff",
+    "last_modified": "Thu, 23 Apr 2026 23:33:33 GMT",
+    "baixado_em": "2026-09-23T10:59:43",
+    "indice": {
+      "dispositivos": 80,
+      "artigos": 79,
+      "chunks": 119,
+      "caracteres": 80000,
+      "embed_model": "local"
+    }
+  },
+  "lei_12527_2011": {
+    "sigla": "LAI (Lei 12.527/2011)",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm",
+    "arquivo": "lei_12527_2011.html",
+    "bytes": 109489,
+    "sha256": "dc61178d29562dfa4aa0fe3d31e85a5979619368cfddc7be27b709d95b91191d",
+    "last_modified": "Thu, 23 Apr 2026 23:31:57 GMT",
+    "baixado_em": "2026-09-23T10:59:44",
+    "indice": {
+      "dispositivos": 50,
+      "artigos": 49,
+      "chunks": 65,
+      "caracteres": 42081,
+      "embed_model": "local"
+    }
+  },
+  "decreto_7724_2012": {
+    "sigla": "Decreto 7.724/2012",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/decreto/d7724.htm",
+    "arquivo": "decreto_7724_2012.html",
+    "bytes": 249908,
+    "sha256": "b7add03d50870a45e43c14fdc11cb94ee109f0f8a4749cbc228ee890fa1a8e2e",
+    "last_modified": "Thu, 23 Apr 2026 23:32:01 GMT",
+    "baixado_em": "2026-09-23T10:59:44",
+    "indice": {
+      "dispositivos": 79,
+      "artigos": 78,
+      "chunks": 105,
+      "caracteres": 66950,
+      "embed_model": "local"
+    }
+  },
+  "lei_8935_1994": {
+    "sigla": "Lei 8.935/1994",
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/l8935.htm",
+    "arquivo": "lei_8935_1994.html",
+    "bytes": 68570,
+    "sha256": "846a6ec9d4e91a87eb39427971fc15162c840b5f4148cc7ff06cb79b4ebadf43",
+    "last_modified": "Tue, 22 Sep 2026 10:20:55 GMT",
+    "baixado_em": "2026-09-23T10:59:45",
+    "indice": {
+      "dispositivos": 59,
+      "artigos": 58,
+      "chunks": 63,
+      "caracteres": 28674,
+      "embed_model": "local"
+    }
+  },
+  "prov_cnj_149_2023": {
+    "sigla": "Provimento CNJ 149/2023",
+    "url": "https://atos.cnj.jus.br/files/compilado131723202608206a86fe6344e53.pdf",
+    "arquivo": "prov_cnj_149_2023.pdf",
+    "bytes": 3134304,
+    "sha256": "0a627407da881f523336aca43de87f456334403c57fe431bdf50062e668d2239",
+    "last_modified": "Thu, 20 Aug 2026 13:17:23 GMT",
+    "baixado_em": "2026-09-23T10:59:45",
+    "indice": {
+      "dispositivos": 923,
+      "artigos": 922,
+      "chunks": 1295,
+      "caracteres": 866612,
+      "embed_model": "local"
+    }
+  },
+  "codigo_normas_ce": {
+    "sigla": "Código de Normas CGJ-CE",
+    "url": "https://portal.tjce.jus.br/uploads/2022/07/Codigo-de-Normas-Extrajudial-Versao-Atualizada-1789148558.pdf",
+    "arquivo": "codigo_normas_ce.pdf",
+    "bytes": 5302211,
+    "sha256": "240f92160ef22ea2fd42c20165edc5bd707d8a8bb1b7c642c2d36467c9b2d794",
+    "last_modified": "Fri, 11 Sep 2026 17:42:38 GMT",
+    "baixado_em": "2026-09-23T10:59:46",
+    "indice": {
+      "dispositivos": 1828,
+      "artigos": 1827,
+      "chunks": 2104,
+      "caracteres": 1097570,
+      "embed_model": "local"
+    }
+  },
+  "prov_cgjce_15_2026": {
+    "sigla": "Provimento 15/2026/CGJCE",
+    "url": "https://portal.tjce.jus.br/uploads/2022/07/Provimento-no-15-2026-CGJCE-1789148866.pdf",
+    "arquivo": "prov_cgjce_15_2026.pdf",
+    "bytes": 72401,
+    "sha256": "114874fe8c8967ef87c5281f420309df2b2ba4b480b69b06bcfb02dd5d5540e4",
+    "last_modified": "Fri, 11 Sep 2026 17:47:47 GMT",
+    "baixado_em": "2026-09-23T10:59:46",
+    "indice": {
+      "dispositivos": 5,
+      "artigos": 4,
+      "chunks": 13,
+      "caracteres": 8886,
+      "embed_model": "local"
+    }
+  },
+  "res_anpd_15_2024": {
+    "sigla": "Resolução CD/ANPD 15/2024",
+    "url": "https://www.in.gov.br/en/web/dou/-/resolucao-cd/anpd-n-15-de-24-de-abril-de-2024-556243024",
+    "arquivo": "res_anpd_15_2024.html",
+    "bytes": 114372,
+    "sha256": "47a012dd738f7a820fc94d997f791c60f193e904e9d8dfedfa7669951073a83b",
+    "last_modified": null,
+    "baixado_em": "2026-09-23T10:59:47",
+    "indice": {
+      "dispositivos": 25,
+      "artigos": 24,
+      "chunks": 36,
+      "caracteres": 24208,
+      "embed_model": "local"
+    }
+  },
+  "anpd_guia_agentes": {
+    "sigla": "Guia ANPD — Agentes de Tratamento",
+    "url": "https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/Segunda_Versao_do_Guia_de_Agentes_de_Tratamento_retificada.pdf/@@download/file",
+    "arquivo": "anpd_guia_agentes.pdf",
+    "bytes": 879427,
+    "sha256": "3df770f01a744b52ee3c989efe1179a4008d115606dbf52ce7378419d078dc79",
+    "last_modified": null,
+    "baixado_em": "2026-09-23T10:59:48",
+    "indice": {
+      "dispositivos": 26,
+      "artigos": 0,
+      "chunks": 86,
+      "caracteres": 58003,
+      "embed_model": "local"
+    }
+  },
+  "anpd_guia_seguranca": {
+    "sigla": "Guia ANPD — Segurança da Informação",
+    "url": "https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia-vf.pdf/@@download/file",
+    "arquivo": "anpd_guia_seguranca.pdf",
+    "bytes": 366201,
+    "sha256": "b720ea49fc3c99400b8156515dab17a82a63806b6c21da34f9fb868ac70e4f04",
+    "last_modified": null,
+    "baixado_em": "2026-09-23T10:59:49",
+    "indice": {
+      "dispositivos": 21,
+      "artigos": 0,
+      "chunks": 63,
+      "caracteres": 36534,
+      "embed_model": "local"
+    }
+  }
+}
