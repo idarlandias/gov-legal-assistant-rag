@@ -75,12 +75,14 @@ def fmt_sources(sources: list) -> str:
     return "; ".join(vistos)
 
 
-def run(perguntas: list[dict], k: int, domain: str, sleep_s: float) -> tuple[dict, list[dict]]:
+def run(perguntas: list[dict], k: int, domain: str, sleep_s: float,
+        routing: bool = True) -> tuple[dict, list[dict]]:
     from dotenv import load_dotenv
 
     load_dotenv(ROOT / ".env")
     from src.observability.trace import trace
     from src.pipeline.rag import RAGPipeline
+    from src.pipeline.routing import classify_complexity
 
     # RAGPipeline direto (não build_rag_pipeline) para nunca resetar/reindexar o banco aqui
     pipeline = RAGPipeline(corpus_dir=str(ROOT / "data" / "corpus"),
@@ -95,6 +97,7 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float) -> tuple[dic
         "data": datetime.now().isoformat(timespec="seconds"),
         "provider": os.environ.get("LLM_PROVIDER", "gemini").lower(),
         "llm_model": pipeline.llm_model,
+        "routing": routing,
         "embed_model": pipeline.embed_model,
         "k": k,
         "domain": domain,
@@ -106,6 +109,9 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float) -> tuple[dic
     for i, p in enumerate(perguntas):
         before = dict(usage)
         rec: dict[str, Any] = {"id": p["id"], "categoria": p["categoria"], "pergunta": p["pergunta"]}
+        if routing:  # mesmo roteamento cheap/premium do streamlit_app
+            pipeline.llm_model = classify_complexity(p["pergunta"]).model
+        rec["modelo"] = pipeline.llm_model
         t0 = time.perf_counter()
         try:
             with trace("benchmark_fase3", pergunta_id=p["id"]):
@@ -135,9 +141,10 @@ def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -
     ws = wb["Respostas"]
     linhas = {(row[0].value, row[1].value): row[0].row
               for row in ws.iter_rows(min_row=2, max_col=2) if row[0].value is not None}
-    versao = f"{meta['provider']}/{meta['llm_model']} k={meta['k']} ({meta['git_commit'] or 's/ commit'})"
     escritas = puladas = 0
     for rec in resultados:
+        modelo = rec.get("modelo") or meta["llm_model"]
+        versao = f"{meta['provider']}/{modelo} k={meta['k']} ({meta['git_commit'] or 's/ commit'})"
         if rec["erro"]:
             continue
         r = linhas.get((rec["id"], RAG_TOOL))
@@ -175,6 +182,8 @@ def main() -> int:
     ap.add_argument("--xlsx", action="store_true", help="preenche as linhas 'RAG atual' da planilha")
     ap.add_argument("--overwrite", action="store_true", help="sobrescreve respostas já preenchidas")
     ap.add_argument("--dry-run", action="store_true", help="só lista as perguntas, sem chamar o LLM")
+    ap.add_argument("--no-routing", action="store_true",
+                    help="usa sempre CHEAP_MODEL (padrão: roteamento cheap/premium como no app)")
     args = ap.parse_args()
 
     ids = {int(x) for x in args.ids.split(",")} if args.ids else None
@@ -187,7 +196,7 @@ def main() -> int:
     if args.xlsx and not XLSX_PATH.exists():
         raise SystemExit(f"ERRO: {XLSX_PATH} não existe. Rode scripts/benchmark/build_planilha.py")
 
-    meta, resultados = run(perguntas, args.k, args.domain, args.sleep)
+    meta, resultados = run(perguntas, args.k, args.domain, args.sleep, routing=not args.no_routing)
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     out = RESULTS_DIR / f"rag-{datetime.now():%Y%m%d-%H%M%S}.json"
