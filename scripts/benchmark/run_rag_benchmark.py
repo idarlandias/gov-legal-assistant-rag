@@ -75,8 +75,8 @@ def fmt_sources(sources: list) -> str:
     return "; ".join(vistos)
 
 
-def run(perguntas: list[dict], k: int, domain: str, sleep_s: float,
-        routing: bool = True) -> tuple[dict, list[dict]]:
+def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: bool = True,
+        collection: str = "docs", ferramenta: str = RAG_TOOL) -> tuple[dict, list[dict]]:
     from dotenv import load_dotenv
 
     load_dotenv(ROOT / ".env")
@@ -86,14 +86,17 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float,
 
     # RAGPipeline direto (não build_rag_pipeline) para nunca resetar/reindexar o banco aqui
     pipeline = RAGPipeline(corpus_dir=str(ROOT / "data" / "corpus"),
-                           persist_dir=str(ROOT / "data" / "chroma"))
+                           persist_dir=str(ROOT / "data" / "chroma"),
+                           collection_name=collection)
     n_chunks = pipeline.collection.count()
     if n_chunks == 0:
-        raise SystemExit("ERRO: coleção Chroma vazia. Indexe o corpus antes (rode o app uma vez).")
+        raise SystemExit(f"ERRO: coleção Chroma '{collection}' vazia. Indexe o corpus antes "
+                         "(docs: rode o app; fase3: scripts/fase3/build_corpus.py).")
 
     usage = instrument_usage(pipeline)
     meta = {
-        "ferramenta": RAG_TOOL,
+        "ferramenta": ferramenta,
+        "collection": collection,
         "data": datetime.now().isoformat(timespec="seconds"),
         "provider": os.environ.get("LLM_PROVIDER", "gemini").lower(),
         "llm_model": pipeline.llm_model,
@@ -141,15 +144,16 @@ def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -
     ws = wb["Respostas"]
     linhas = {(row[0].value, row[1].value): row[0].row
               for row in ws.iter_rows(min_row=2, max_col=2) if row[0].value is not None}
+    ferramenta = meta.get("ferramenta", RAG_TOOL)
     escritas = puladas = 0
     for rec in resultados:
         modelo = rec.get("modelo") or meta["llm_model"]
         versao = f"{meta['provider']}/{modelo} k={meta['k']} ({meta['git_commit'] or 's/ commit'})"
         if rec["erro"]:
             continue
-        r = linhas.get((rec["id"], RAG_TOOL))
+        r = linhas.get((rec["id"], ferramenta))
         if r is None:
-            print(f"AVISO: pergunta #{rec['id']} não existe na planilha; rode build_planilha.py",
+            print(f"AVISO: #{rec['id']} / '{ferramenta}' não existe na planilha; rode build_planilha.py",
                   file=sys.stderr)
             puladas += 1
             continue
@@ -179,7 +183,13 @@ def main() -> int:
     ap.add_argument("--k", type=int, default=5, help="chunks recuperados (padrão 5)")
     ap.add_argument("--domain", default="auto", help="filtro de domínio do Chroma (padrão auto)")
     ap.add_argument("--sleep", type=float, default=2.0, help="pausa entre perguntas, em s")
-    ap.add_argument("--xlsx", action="store_true", help="preenche as linhas 'RAG atual' da planilha")
+    ap.add_argument("--xlsx", action="store_true", help="preenche as linhas da ferramenta na planilha")
+    ap.add_argument("--collection", default="docs",
+                    help="coleção Chroma: docs (Fase 2) ou fase3 (corpus vertical)")
+    ap.add_argument("--ferramenta",
+                    help="nome na planilha (padrão: 'RAG Fase 3' se --collection fase3, senão 'RAG atual')")
+    ap.add_argument("--from-json", type=Path,
+                    help="não roda o RAG: preenche a planilha a partir de um results/*.json salvo")
     ap.add_argument("--overwrite", action="store_true", help="sobrescreve respostas já preenchidas")
     ap.add_argument("--dry-run", action="store_true", help="só lista as perguntas, sem chamar o LLM")
     ap.add_argument("--no-routing", action="store_true",
@@ -196,13 +206,23 @@ def main() -> int:
     if args.xlsx and not XLSX_PATH.exists():
         raise SystemExit(f"ERRO: {XLSX_PATH} não existe. Rode scripts/benchmark/build_planilha.py")
 
-    meta, resultados = run(perguntas, args.k, args.domain, args.sleep, routing=not args.no_routing)
-
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out = RESULTS_DIR / f"rag-{datetime.now():%Y%m%d-%H%M%S}.json"
-    out.write_text(json.dumps({"meta": meta, "resultados": resultados}, ensure_ascii=False, indent=2),
-                   encoding="utf-8")
-    print(f"Resultados: {out}", file=sys.stderr)
+    if args.from_json:
+        if not args.xlsx:
+            raise SystemExit("ERRO: --from-json só faz sentido com --xlsx")
+        salvo = json.loads(args.from_json.read_text(encoding="utf-8"))
+        meta, resultados = salvo["meta"], salvo["resultados"]
+        if ids:
+            resultados = [r for r in resultados if r["id"] in ids]
+    else:
+        ferramenta = args.ferramenta or ("RAG Fase 3" if args.collection == "fase3" else RAG_TOOL)
+        meta, resultados = run(perguntas, args.k, args.domain, args.sleep,
+                               routing=not args.no_routing, collection=args.collection,
+                               ferramenta=ferramenta)
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        out = RESULTS_DIR / f"rag-{args.collection}-{datetime.now():%Y%m%d-%H%M%S}.json"
+        out.write_text(json.dumps({"meta": meta, "resultados": resultados}, ensure_ascii=False,
+                                  indent=2), encoding="utf-8")
+        print(f"Resultados: {out}", file=sys.stderr)
 
     if args.xlsx:
         escritas, puladas = fill_xlsx(XLSX_PATH, meta, resultados, args.overwrite)
