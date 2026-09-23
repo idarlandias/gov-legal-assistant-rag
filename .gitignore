@@ -32,3 +32,7 @@ data/corpus/concursos_temp_backup/
 
 # Material de cursinho (direito autoral) - fora do repo e do corpus da Fase 3
 data/corpus/concursos/legislacao_transito/
+
+# Corpus Fase 3: originais baixados (reproduzíveis via scripts/fase3/build_corpus.py)
+data/corpus_fase3/raw/
+data/corpus_fase3/dispositivos.jsonl
