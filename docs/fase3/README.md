@@ -20,6 +20,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 3 | [03_plano_validacao.md](03_plano_validacao.md) | Benchmark, entrevistas, Gate 1 e MVP |
 | 4 | [04_benchmark_perguntas.md](04_benchmark_perguntas.md) | 25 perguntas de balcão (gabarito a validar) |
 | 5 | [05_corpus_fase3.md](05_corpus_fase3.md) | Fontes oficiais incluídas e excluídas |
+| 6 | [benchmark/](benchmark/README.md) | Planilha de coleta e script que roda o RAG nas perguntas |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
