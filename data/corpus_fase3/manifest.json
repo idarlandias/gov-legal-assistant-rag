@@ -12,7 +12,7 @@
       "artigos": 317,
       "chunks": 410,
       "caracteres": 228861,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "lei_13709_2018": {
@@ -28,7 +28,7 @@
       "artigos": 79,
       "chunks": 119,
       "caracteres": 80000,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "lei_12527_2011": {
@@ -44,7 +44,7 @@
       "artigos": 49,
       "chunks": 65,
       "caracteres": 42081,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "decreto_7724_2012": {
@@ -60,7 +60,7 @@
       "artigos": 78,
       "chunks": 105,
       "caracteres": 66950,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "lei_8935_1994": {
@@ -76,7 +76,7 @@
       "artigos": 58,
       "chunks": 63,
       "caracteres": 28674,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "prov_cnj_149_2023": {
@@ -92,7 +92,7 @@
       "artigos": 922,
       "chunks": 1295,
       "caracteres": 866612,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "codigo_normas_ce": {
@@ -108,7 +108,7 @@
       "artigos": 1827,
       "chunks": 2104,
       "caracteres": 1097570,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "prov_cgjce_15_2026": {
@@ -124,7 +124,7 @@
       "artigos": 4,
       "chunks": 13,
       "caracteres": 8886,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "res_anpd_15_2024": {
@@ -140,7 +140,7 @@
       "artigos": 24,
       "chunks": 36,
       "caracteres": 24208,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "anpd_guia_agentes": {
@@ -156,7 +156,7 @@
       "artigos": 0,
       "chunks": 86,
       "caracteres": 58003,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   },
   "anpd_guia_seguranca": {
@@ -172,7 +172,7 @@
       "artigos": 0,
       "chunks": 63,
       "caracteres": 36534,
-      "embed_model": "local"
+      "embed_model": "intfloat/multilingual-e5-small"
     }
   }
 }

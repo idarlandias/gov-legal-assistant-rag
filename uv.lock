@@ -2827,9 +2827,12 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "chromadb" },
+    { name = "huggingface-hub" },
     { name = "langchain-text-splitters" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "onnxruntime", version = "1.24.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "onnxruntime", version = "1.26.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "openai" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -2837,7 +2840,9 @@ dependencies = [
     { name = "pypdf" },
     { name = "python-dotenv" },
     { name = "reportlab" },
+    { name = "requests" },
     { name = "streamlit" },
+    { name = "tokenizers" },
 ]
 
 [package.optional-dependencies]
@@ -2853,9 +2858,11 @@ eval = [
 [package.metadata]
 requires-dist = [
     { name = "chromadb", specifier = ">=0.5" },
+    { name = "huggingface-hub", specifier = ">=0.20" },
     { name = "langchain-text-splitters", specifier = ">=0.2" },
     { name = "nbval", marker = "extra == 'dev'", specifier = ">=0.11" },
     { name = "numpy", specifier = ">=1.26" },
+    { name = "onnxruntime", specifier = ">=1.17" },
     { name = "openai", specifier = ">=1.0" },
     { name = "openpyxl", marker = "extra == 'eval'", specifier = ">=3.1" },
     { name = "pandas", specifier = ">=2.0" },
@@ -2864,8 +2871,10 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "reportlab", specifier = ">=4.5.1" },
+    { name = "requests", specifier = ">=2.31" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
     { name = "streamlit", specifier = ">=1.30" },
+    { name = "tokenizers", specifier = ">=0.15" },
 ]
 provides-extras = ["dev", "eval"]
 

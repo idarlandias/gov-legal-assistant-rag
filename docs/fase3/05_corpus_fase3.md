@@ -52,14 +52,32 @@ python scripts/fase3/build_corpus.py stats
 ```
 Os originais ficam em `data/corpus_fase3/raw/` e o texto segmentado em `data/corpus_fase3/dispositivos.jsonl`. Os dois estão no `.gitignore` e são reproduzíveis pelo script; só o `manifest.json` é versionado.
 
-## Primeira medição (benchmark, 25 perguntas)
+## Recuperação híbrida
+[`src/fase3/retrieval.py`](../../src/fase3/retrieval.py):
+- **Denso:** `intfloat/multilingual-e5-small` (MIT, 384 dimensões) rodando em ONNX pelo onnxruntime, sem torch. Usa os prefixos `query:` e `passage:` que o E5 exige.
+- **Esparso:** BM25 com tokenização em português: sem acento, sem stopwords, "6.015" vira "6015" e cada palavra é cortada nas 6 primeiras letras, como um stemmer barato.
+- **Fusão:** RRF (k=60) sobre os 50 melhores de cada lista.
+- **Trava de segurança:** o nome do modelo fica nos metadados da coleção, e abrir com outro modelo dá erro. Os dois modelos geram vetores de 384 dimensões, então a troca não daria erro sozinha; só devolveria lixo.
+- Reindexar leva cerca de 11 minutos na CPU.
 
-| | RAG atual (coleção `docs`) | RAG Fase 3 (coleção `fase3`) |
-|---|---:|---:|
-| "Não encontrado no corpus" | 20 | **14** |
-| Fontes citadas | LGPD/LAI genéricas, apostilas | CNJ 149, Código CE, Lei 6.015, ANPD |
+## Evolução no benchmark (25 perguntas, gpt-oss via Groq)
 
-**Gargalo identificado: a recuperação, não o corpus.** O embedding padrão do Chroma (`all-MiniLM-L6-v2`) é treinado em inglês. Na pergunta 1, o Art. 17 da Lei 6.015 responde a pergunta quase palavra por palavra e ficou fora dos 300 primeiros resultados. Na pergunta 23, que cita o Provimento 15/2026 pelo nome, ele só aparece na 27ª posição. Próximo passo: embedding multilíngue e busca híbrida (BM25 + vetorial).
+| Execução | "Não encontrado" | Respostas citando artigo | Tokens de entrada | Latência média |
+|---|---:|---:|---:|---:|
+| RAG atual (coleção `docs`, MiniLM) | 20 | 4 | 45 mil | 6,8 s |
+| Fase 3, MiniLM | 14 | 9 | 48 mil | 8,1 s |
+| Fase 3, E5 denso | 10 | 13 | 52 mil | 8,2 s |
+| **Fase 3, E5 + BM25 (híbrido)** | **8** | **16** | 53 mil | 9,2 s |
+
+A planilha usa a execução híbrida nas linhas "RAG Fase 3".
+
+### Risco novo: mistura de especialidades
+Com mais respostas, aparece um erro mais perigoso que o "não encontrado". Na pergunta 1 (certidão de matrícula pedida por terceiro), o sistema respondeu **"Não"** com base em regras de **Registro Civil** (Provimento CNJ 149, Art. 114 e Art. 117; Código CE, Art. 258). Para **Registro de Imóveis**, a Lei 6.015, Art. 17, diz que qualquer pessoa pode pedir certidão sem informar o motivo. O Código CE e o CNJ 149 misturam todas as especialidades (imóveis, civil, notas, protesto, títulos e documentos), e a busca não distingue uma da outra.
+
+**Próximo passo sugerido:** metadado `especialidade`, extraído dos títulos e capítulos dos Códigos, com filtro ou reforço para Registro de Imóveis. É a curadoria vertical (H1) virando código.
+
+### Avaliação só da recuperação
+`scripts/fase3/eval_retrieval.py` mede em que posição o dispositivo esperado aparece. Os alvos atuais são **provisórios e estreitos**, escolhidos lendo a lei e não pelo gabarito. Eles marcam como erro trechos relevantes de outras normas, como o Código CE, Art. 1131 §10, sobre a certidão de inteiro teor da matrícula. Refazer os alvos a partir do gabarito do oficial/DPO.
 
 ## Fontes
 - [Provimento CNJ 149/2023](https://atos.cnj.jus.br/atos/detalhar/5243)
