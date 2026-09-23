@@ -1,0 +1,32 @@
+{
+  "versao": "v0",
+  "fonte": "docs/fase3/04_benchmark_perguntas.md",
+  "ferramentas": ["Jus IA", "Jurídico AI", "LLM genérico", "RAG atual"],
+  "perguntas": [
+    {"id": 1, "categoria": "Certidão", "pergunta": "Um terceiro sem vínculo pede certidão de inteiro teor de uma matrícula. Posso emitir sem exigir motivo?"},
+    {"id": 2, "categoria": "Certidão", "pergunta": "A certidão de inteiro teor deve exibir o CPF completo dos proprietários?"},
+    {"id": 3, "categoria": "Certidão", "pergunta": "Pedido de certidão da matrícula com o histórico de todos os ônus, incluindo penhoras já canceladas. Emito integralmente?"},
+    {"id": 4, "categoria": "Busca", "pergunta": "Alguém pede para buscar \"todos os imóveis em nome de fulano\" informando só o nome. Posso fazer a busca e informar?"},
+    {"id": 5, "categoria": "Busca", "pergunta": "Busca por CPF solicitada por um credor para localizar bens do devedor. Qual é o procedimento?"},
+    {"id": 6, "categoria": "Informação verbal", "pergunta": "Um requerente pede, por telefone, o nome do proprietário de um imóvel. Posso informar?"},
+    {"id": 7, "categoria": "Informação verbal", "pergunta": "Um vizinho pergunta se o imóvel ao lado tem hipoteca. Posso responder no balcão?"},
+    {"id": 8, "categoria": "Poder público", "pergunta": "Uma prefeitura solicita lista de imóveis com proprietários e CPFs para cobrança de IPTU. Forneço? Em que formato?"},
+    {"id": 9, "categoria": "Poder público", "pergunta": "A polícia pede por ofício dados de um proprietário sem ordem judicial. Como proceder?"},
+    {"id": 10, "categoria": "Poder público", "pergunta": "O Ministério Público requisita certidões em massa. Há limite ou exigência de fundamentação?"},
+    {"id": 11, "categoria": "Transparência", "pergunta": "O CPF do proprietário pode aparecer em dados publicados em portal de transparência ou em resposta a pedido via LAI?"},
+    {"id": 12, "categoria": "Transparência", "pergunta": "Pedido via LAI sobre os emolumentos arrecadados pela serventia. É dever responder?"},
+    {"id": 13, "categoria": "Dado sensível", "pergunta": "A matrícula contém averbação de interdição/curatela. A certidão pode ser emitida sem restrição?"},
+    {"id": 14, "categoria": "Dado sensível", "pergunta": "Há averbação envolvendo menor de idade (ex.: doação a incapaz). Devo tarjar algo?"},
+    {"id": 15, "categoria": "Dado sensível", "pergunta": "Pedido de cópia de documento arquivado (título) que contém dados de saúde de uma das partes. Forneço?"},
+    {"id": 16, "categoria": "Tratamento", "pergunta": "Posso enviar certidão por e-mail/WhatsApp ao requerente? Que cuidados LGPD valem?"},
+    {"id": 17, "categoria": "Tratamento", "pergunta": "Por quanto tempo devo guardar os dados pessoais de quem pediu uma certidão?"},
+    {"id": 18, "categoria": "Tratamento", "pergunta": "Um titular pede, com base na LGPD, a exclusão dos seus dados da matrícula. Como respondo?"},
+    {"id": 19, "categoria": "Tratamento", "pergunta": "Um titular pede relatório de quem consultou sua matrícula. Tenho obrigação de informar?"},
+    {"id": 20, "categoria": "Tratamento", "pergunta": "Um titular pede correção de dado pessoal errado na matrícula. Qual é o procedimento: retificação ou pedido LGPD?"},
+    {"id": 21, "categoria": "Compartilhamento", "pergunta": "Uma empresa (imobiliária/fintech) quer acesso em lote ou por API a dados de matrículas. Posso firmar convênio?"},
+    {"id": 22, "categoria": "Compartilhamento", "pergunta": "Compartilhamento com ONR/SREI e centrais eletrônicas: preciso de base legal adicional ou de consentimento?"},
+    {"id": 23, "categoria": "Norma CE", "pergunta": "O que mudou com o Provimento nº 15/2026/CGJCE na qualificação das partes para registro?"},
+    {"id": 24, "categoria": "Norma CE", "pergunta": "Pelo Código de Normas do CE, quais são os requisitos para emitir certidão digital?"},
+    {"id": 25, "categoria": "Incidente", "pergunta": "Uma certidão com dados pessoais foi enviada ao e-mail errado. Quais são as obrigações da serventia?"}
+  ]
+}
