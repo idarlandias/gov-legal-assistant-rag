@@ -68,15 +68,33 @@ st.set_page_config(
 )
 
 
+def ensure_chroma_ready():
+    """Garante que a pasta data/chroma exista descompactando o bundle pré-indexado se necessário (deploy na nuvem)."""
+    chroma_dir = _ROOT / "data" / "chroma"
+    sqlite_file = chroma_dir / "chroma.sqlite3"
+    bundle_zip = _ROOT / "data" / "chroma_bundle.zip"
+    if not sqlite_file.exists() and bundle_zip.exists():
+        import zipfile
+        chroma_dir.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(bundle_zip, "r") as z:
+            z.extractall(chroma_dir)
+
+
+ensure_chroma_ready()
+
+
 @st.cache_resource
 def get_pipeline():
+    ensure_chroma_ready()
     return build_rag_pipeline(corpus_dir=str(_ROOT / "data" / "corpus"))
 
 
 @st.cache_resource
 def get_fase3_pipeline():
+    ensure_chroma_ready()
     from src.fase3.pipeline import Fase3Pipeline
     return Fase3Pipeline()
+
 
 
 @st.cache_resource
