@@ -82,6 +82,10 @@ class RAGPipeline:
             default_llm = "gemini-2.5-flash-lite"
             
         self.llm_model = llm_model or os.environ.get("CHEAP_MODEL", default_llm)
+        if provider == "groq":
+            from src.pipeline.routing import GROQ_MODEL_FALLBACKS
+            self.llm_model = GROQ_MODEL_FALLBACKS.get(self.llm_model, self.llm_model)
+
         self.embed_model = embed_model or os.environ.get("EMBED_MODEL", "local").lower()
 
         if self.embed_model == "local":
@@ -139,10 +143,15 @@ class RAGPipeline:
             )
 
     def _call_chat_completions(self, **kwargs) -> Any:
-        """Wrapper para chamar chat.completions.create com retry exponencial em caso de RateLimitError."""
+        """Wrapper para chamar chat.completions.create com retry exponencial e auto-fallback para modelos da Groq."""
         import time
         from openai import RateLimitError
-        
+        from src.pipeline.routing import GROQ_MODEL_FALLBACKS
+
+        # Sanitiza modelos obsoletos da Groq se vieram nos parâmetros
+        if "model" in kwargs and kwargs["model"] in GROQ_MODEL_FALLBACKS:
+            kwargs["model"] = GROQ_MODEL_FALLBACKS[kwargs["model"]]
+
         wait_time = 2
         for attempt in range(4):
             try:
@@ -154,6 +163,16 @@ class RAGPipeline:
                     wait_time = wait_time * 2 + 2
                     continue
                 raise e
+            except Exception as e:
+                err_str = str(e).lower()
+                # Auto-recuperação caso a API retorne modelo inexistente (ex: llama-3.3-70b descontinuado na Groq)
+                if ("model_not_found" in err_str or "does not exist" in err_str or "404" in err_str) and kwargs.get("model") != "openai/gpt-oss-120b":
+                    print(f"Aviso: Modelo '{kwargs.get('model')}' indisponível no provedor. Migrando automaticamente para 'openai/gpt-oss-120b'...")
+                    kwargs["model"] = "openai/gpt-oss-120b"
+                    self.llm_model = "openai/gpt-oss-120b"
+                    continue
+                raise e
+
 
     # ------------------------------------------------------------------ TODO 1
     def ingest_and_index(self) -> int:

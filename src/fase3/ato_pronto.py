@@ -183,11 +183,15 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
     prompt = build_ato_pronto_prompt(context=contexto, pedido=pedido)
     messages = [{"role": "user", "content": prompt}]
 
+    from src.pipeline.routing import GROQ_MODEL_FALLBACKS
+    model_name = GROQ_MODEL_FALLBACKS.get(pipeline.llm_model, pipeline.llm_model)
+
     api_kwargs: dict[str, Any] = {
-        "model": pipeline.llm_model,
+        "model": model_name,
         "messages": messages,
         "temperature": 0.0,
     }
+
 
     # Tenta usar json_object se suportado pelo provedor
     try:

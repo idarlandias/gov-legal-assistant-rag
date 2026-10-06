@@ -19,6 +19,17 @@ class RouteDecision:
     reason: str
 
 
+GROQ_MODEL_FALLBACKS = {
+    "llama-3.3-70b-versatile": "openai/gpt-oss-120b",
+    "llama-3.1-70b-versatile": "openai/gpt-oss-120b",
+    "deepseek-r1-distill-llama-70b": "openai/gpt-oss-120b",
+    "llama3-70b-8192": "openai/gpt-oss-120b",
+    "llama-3.1-8b-instant": "openai/gpt-oss-20b",
+    "llama3-8b-8192": "openai/gpt-oss-20b",
+    "llama-3.3-70b-specdec": "openai/gpt-oss-120b",
+}
+
+
 # ------------------------------------------------------------------ TODO 6
 def classify_complexity(query: str) -> RouteDecision:
     """Classifica complexidade da query para escolher modelo (cheap vs premium)."""
@@ -37,6 +48,10 @@ def classify_complexity(query: str) -> RouteDecision:
     cheap_model = os.environ.get("CHEAP_MODEL", default_cheap)
     premium_model = os.environ.get("PREMIUM_MODEL", default_premium)
 
+    if provider == "groq":
+        cheap_model = GROQ_MODEL_FALLBACKS.get(cheap_model, cheap_model)
+        premium_model = GROQ_MODEL_FALLBACKS.get(premium_model, premium_model)
+
     query_lower = query.lower()
 
     # Heurística de classificação de complexidade
@@ -50,6 +65,7 @@ def classify_complexity(query: str) -> RouteDecision:
 
     reason = "A consulta é curta e direta."
     return RouteDecision(model=cheap_model, complexity="simple", reason=reason)
+
 
 
 def make_client() -> OpenAI:
