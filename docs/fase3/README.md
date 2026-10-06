@@ -29,6 +29,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 - [ ] Rodar o benchmark: Jus IA, Jurídico AI, LLM genérico e RAG atual
 - [ ] Entrevistar 2 a 3 cartórios de RI do Vale do Jaguaribe
 - [ ] Gate 1: seguir, pivotar ou abandonar
-- [ ] Montar o corpus da Fase 3 (fontes oficiais)
-- [ ] MVP estreito com saída estruturada
+- [x] Montar o corpus da Fase 3 (fontes oficiais indexadas com schema 2 e especialidade)
+- [x] MVP estreito com saída estruturada (Gerador de Ato Pronto de Balcão e UI Alfândega)
 - [ ] Resubmeter ao funil com dados novos
+

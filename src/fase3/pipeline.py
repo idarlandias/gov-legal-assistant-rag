@@ -27,3 +27,9 @@ class Fase3Pipeline(RAGPipeline):
 
     def retrieve(self, query: str, k: int = 5, domain: str | None = None) -> list[dict]:
         return self.retriever.search(query, k=k, modo=self.modo, especialidades=self.especialidades)
+
+    def gerar_ato_pronto(self, pedido, k: int = 5):
+        """Emite o Ato Pronto (veredito, minuta e auditoria LGPD) para balcão de Registro de Imóveis."""
+        from src.fase3.ato_pronto import processar_ato_pronto
+        return processar_ato_pronto(self, pedido=pedido, k=k)
+

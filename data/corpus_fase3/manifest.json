@@ -9,6 +9,12 @@
     "baixado_em": "2026-09-23T10:59:42",
     "indice": {
       "dispositivos": 318,
+      "especialidades": {
+        "geral": 42,
+        "registro_civil": 87,
+        "rtd_rcpj": 54,
+        "registro_imoveis": 135
+      },
       "artigos": 317,
       "chunks": 410,
       "caracteres": 228861,
@@ -25,6 +31,9 @@
     "baixado_em": "2026-09-23T10:59:43",
     "indice": {
       "dispositivos": 80,
+      "especialidades": {
+        "geral": 80
+      },
       "artigos": 79,
       "chunks": 119,
       "caracteres": 80000,
@@ -41,6 +50,9 @@
     "baixado_em": "2026-09-23T10:59:44",
     "indice": {
       "dispositivos": 50,
+      "especialidades": {
+        "geral": 50
+      },
       "artigos": 49,
       "chunks": 65,
       "caracteres": 42081,
@@ -57,6 +69,9 @@
     "baixado_em": "2026-09-23T10:59:44",
     "indice": {
       "dispositivos": 79,
+      "especialidades": {
+        "geral": 79
+      },
       "artigos": 78,
       "chunks": 105,
       "caracteres": 66950,
@@ -73,6 +88,9 @@
     "baixado_em": "2026-09-23T10:59:45",
     "indice": {
       "dispositivos": 59,
+      "especialidades": {
+        "geral": 59
+      },
       "artigos": 58,
       "chunks": 63,
       "caracteres": 28674,
@@ -89,9 +107,18 @@
     "baixado_em": "2026-09-23T10:59:45",
     "indice": {
       "dispositivos": 923,
+      "especialidades": {
+        "geral": 251,
+        "outros": 40,
+        "notas": 74,
+        "rtd_rcpj": 83,
+        "registro_civil": 201,
+        "registro_imoveis": 202,
+        "protesto": 72
+      },
       "artigos": 922,
       "chunks": 1295,
-      "caracteres": 866612,
+      "caracteres": 866613,
       "embed_model": "intfloat/multilingual-e5-small"
     }
   },
@@ -105,6 +132,15 @@
     "baixado_em": "2026-09-23T10:59:46",
     "indice": {
       "dispositivos": 1828,
+      "especialidades": {
+        "geral": 287,
+        "registro_civil": 276,
+        "rtd_rcpj": 156,
+        "protesto": 227,
+        "notas": 228,
+        "registro_imoveis": 608,
+        "outros": 46
+      },
       "artigos": 1827,
       "chunks": 2104,
       "caracteres": 1097570,
@@ -121,6 +157,9 @@
     "baixado_em": "2026-09-23T10:59:46",
     "indice": {
       "dispositivos": 5,
+      "especialidades": {
+        "geral": 5
+      },
       "artigos": 4,
       "chunks": 13,
       "caracteres": 8886,
@@ -137,6 +176,9 @@
     "baixado_em": "2026-09-23T10:59:47",
     "indice": {
       "dispositivos": 25,
+      "especialidades": {
+        "geral": 25
+      },
       "artigos": 24,
       "chunks": 36,
       "caracteres": 24208,
@@ -153,6 +195,9 @@
     "baixado_em": "2026-09-23T10:59:48",
     "indice": {
       "dispositivos": 26,
+      "especialidades": {
+        "geral": 26
+      },
       "artigos": 0,
       "chunks": 86,
       "caracteres": 58003,
@@ -169,6 +214,9 @@
     "baixado_em": "2026-09-23T10:59:49",
     "indice": {
       "dispositivos": 21,
+      "especialidades": {
+        "geral": 21
+      },
       "artigos": 0,
       "chunks": 63,
       "caracteres": 36534,
