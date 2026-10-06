@@ -136,8 +136,9 @@ st.markdown(
     "**Decisão Operacional & Compliance Registral** — Proteção contra violações da LGPD e incidentes na Corregedoria do TJCE."
 )
 
-tab_balcao, tab_chat, tab_benchmark = st.tabs([
+tab_balcao, tab_tarjador, tab_chat, tab_benchmark = st.tabs([
     "🚦 Balcão Registral (Ato Pronto — Fase 3)",
+    "🛡️ Tarjador Inteligente & Hash SHA-256",
     "💬 Consulta Especializada (Chat RAG)",
     "📊 Casos de Balcão & Eficiência",
 ])
@@ -359,7 +360,112 @@ with tab_balcao:
 
 
 # ==============================================================================
-# TAB 2: CONSULTA JURÍDICA LIVRE (CHAT RAG)
+# TAB 2: TARJADOR INTELIGENTE & CARIMBO CRIPTOGRÁFICO (INOVAÇÃO RADICAL)
+# ==============================================================================
+with tab_tarjador:
+    st.subheader("🛡️ Tarjador Inteligente de Matrícula & Carimbo Criptográfico")
+    st.markdown(
+        "**Elimine o risco de vazamento em certidões:** O sistema detecta dados pessoais sensíveis "
+        "(CPF, RG, Filiação, Regime de Bens) no texto da matrícula, aplica as tarjas oficiais com fundamentação "
+        "no Código de Normas da CGJ-CE (Art. 1131, §10) e no Provimento CNJ 149/2023 e emite o Carimbo Digital de Conformidade com Hash SHA-256."
+    )
+
+    from src.fase3.tarjador import MATRICULA_EXEMPLO_CE, tarjar_texto_matricula
+
+    col_t_in, col_t_out = st.columns([1.1, 1.4], gap="large")
+
+    with col_t_in:
+        st.markdown("### 📄 Texto da Matrícula para Emissão")
+
+        if st.button("📋 Carregar Matrícula Real de Exemplo (Limoeiro do Norte/CE)", use_container_width=True):
+            st.session_state["texto_matricula_input"] = MATRICULA_EXEMPLO_CE
+            st.rerun()
+
+        default_txt = st.session_state.get("texto_matricula_input", MATRICULA_EXEMPLO_CE)
+        texto_matricula = st.text_area(
+            "Cole o teor da matrícula ou certidão:",
+            value=default_txt,
+            height=280,
+            key="area_texto_matricula",
+        )
+
+        col_opt1, col_opt2 = st.columns(2)
+        with col_opt1:
+            solicitante_tarja = st.selectbox(
+                "Perfil do Requerente:",
+                options=[
+                    "Terceiro sem vínculo comprovado",
+                    "Próprio Titular / Proprietário do Imóvel",
+                    "Autoridade Judicial / Investigação",
+                ],
+                index=0,
+                key="tarja_solicitante",
+            )
+        with col_opt2:
+            prot_tarja = st.text_input("Protocolo do Atendimento:", value="PROT-2026/0842", key="tarja_protocolo")
+
+        btn_tarjar = st.button("⚡ Inspecionar e Aplicar Tarjamento", type="primary", use_container_width=True)
+
+    with col_t_out:
+        st.markdown("### 📜 Certidão com Tarjamento e Carimbo SHA-256")
+
+        if btn_tarjar or "resultado_tarja_executada" in st.session_state:
+            resultado_tarja = tarjar_texto_matricula(
+                texto_matricula=texto_matricula,
+                solicitante=solicitante_tarja,
+                protocolo=prot_tarja,
+            )
+            st.session_state["resultado_tarja_executada"] = True
+
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Dados Detectados", resultado_tarja.total_dados_detectados)
+            c2.metric("Dados Tarjados", resultado_tarja.total_dados_tarjados)
+            c3.metric("Autenticidade", resultado_tarja.carimbo.codigo_autenticidade)
+            c4.metric("Tempo", f"{resultado_tarja.tempo_processamento_s}s")
+
+            st.markdown("#### 📄 Texto Tarjado (Pronto para Certidão)")
+            st.text_area(
+                "Texto pronto para inclusão na certidão emitida:",
+                value=resultado_tarja.texto_tarjado,
+                height=220,
+                key="box_texto_tarjado",
+            )
+
+            c_btn1, c_btn2 = st.columns(2)
+            with c_btn1:
+                st.download_button(
+                    "📥 Baixar Matrícula Tarjada (.txt)",
+                    data=resultado_tarja.texto_tarjado,
+                    file_name=f"certidao_tarjada_{prot_tarja.replace('/', '_')}.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+            with c_btn2:
+                st.download_button(
+                    "🔐 Baixar Carimbo de Integridade (.txt)",
+                    data=resultado_tarja.carimbo.texto_carimbo,
+                    file_name=f"carimbo_sha256_{prot_tarja.replace('/', '_')}.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+
+            with st.expander("🛡️ Carimbo Digital de Conformidade Registral (SHA-256)", expanded=True):
+                st.code(resultado_tarja.carimbo.texto_carimbo, language="text")
+
+            with st.expander("🔍 Auditoria Detalhada dos Dados Encontrados"):
+                for d in resultado_tarja.dados_detectados:
+                    status_cor = "🟢" if d.acao_aplicada == "MANTIDO" else "🔴"
+                    st.markdown(f"- {status_cor} **{d.tipo}** (`{d.valor_original}`): **{d.acao_aplicada}** — _{d.motivo_legal}_")
+        else:
+            st.info(
+                "👈 **Cole o texto da matrícula ao lado (ou clique em 'Carregar Matrícula Real de Exemplo') "
+                "e clique em 'Inspecionar e Aplicar Tarjamento'.**\n\n"
+                "O sistema tarjará automaticamente todos os dados sensíveis protegidos por lei e emitirá a certidão pronta com o hash de integridade."
+            )
+
+
+# ==============================================================================
+# TAB 3: CONSULTA JURÍDICA LIVRE (CHAT RAG)
 # ==============================================================================
 with tab_chat:
     st.subheader("💬 Consulta Especializada em Linguagem Natural")
