@@ -1,209 +1,201 @@
-# 🏛️ Assistente Jurídico RAG (`gov-legal-assistant-rag`)
+# 🏛️ CartórioSeguro AI (`gov-legal-assistant-rag`)
 
 <div align="center">
 
-# 🏛️ Assistente Jurídico RAG
-
-### 🤖 IA Conversacional Ancorada para a Gestão Pública Brasileira
-
-<img src="docs/images/banner.png" alt="Inteligência Artificial Jurídica" width="600"/>
+# 🏛️ CartórioSeguro AI
+### ⚡ Decisão Operacional, Ato Registral de Balcão & Compliance LGPD
+*Especializado em Registro de Imóveis no Ceará (CGJ-CE × Provimento CNJ 149/2023 × Lei 6.015/73)*
 
 <br/>
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.40+-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-Multilingual%20E5-005CED?style=for-the-badge&logo=onnx&logoColor=white)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Hybrid%20Search-orange?style=for-the-badge)
+![Pytest](https://img.shields.io/badge/Pytest-43%20Passed-success?style=for-the-badge&logo=pytest&logoColor=white)
+![Licença](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
-*Desenvolvido por **Idarlandias** | Desenvolvedor & Estudante de IA* 🎓👋
+*Desenvolvido por **Idarlan Magalhães** | Residência SiDi · PPI MoD4* 🎓👋
 
 ---
 
 </div>
 
-> 🤖 Assistente conversacional inteligente que utiliza RAG, Caching em dois níveis, Model Routing e Tools programáticas para apoiar servidores públicos e cidadãos em consultas sobre LGPD, Licitações (Lei 14.133), Transparência Pública, Procedimentos Internos e Código de Trânsito Brasileiro (CTB).
+> 🚨 **A Virada da Fase 3 (Narrow first, build second):** Em resposta ao parecer do Funil Discovery e à Auditoria Cética, o projeto evoluiu de um assistente conversacional horizontal genérico para uma **plataforma vertical de decisão e conformidade registral**. Substituímos a caixa de chat aberta por um **Gerador de Ato Pronto de Balcão** e criamos um **Tarjador Inteligente de Matrículas com Carimbo Criptográfico SHA-256**, atacando diretamente os custos, a morosidade e a fricção dos cartórios extrajudiciais.
 
-## 🚀 Acesso & Demonstração (Links Rápidos)
+---
 
-Para avaliar a aplicação em funcionamento e revisar os critérios de avaliação solicitados, utilize os seguintes acessos diretos:
+## 🚀 Acesso Rápido & Demonstração Online
 
-* 🌐 **Aplicação Hospedada (Live Demo):** [Acessar Assistente Jurídico RAG](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
-* 🎬 **Vídeo de Apresentação (Google Drive - Recomendado):** [Assistir ao Vídeo de Demonstração (3 min)](https://drive.google.com/file/d/1ncu_JE-jup984In4-zPoItrpYJEbwCJh/view?usp=sharing)
+* 🌐 **Aplicação Hospedada (Live Demo no Streamlit Cloud):** [Acessar CartórioSeguro AI](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+* 📂 **Documentação Completa da Fase 3:** [Ver Documentos da Fase 3](docs/fase3/README.md)
+* 📊 **Entregas para a Professora:** [Parecer e Respostas](docs/fase3/07_entregas_professora_zandona.md) | [Entrega Radical e Pensamento Divergente](docs/fase3/06_entrega_radical_e_pensamento_divergente.md)
 
-*💡 Para uma análise de engenharia detalhada, testes automatizados e observability, consulte o [Walkthrough de Validação](docs/walkthrough.md).*
+---
 
+## 🥊 O Problema Real & Por Que os Concorrentes Falham
 
-## 🎯 Problem statement
+1. **A Dor no Balcão:** O conflito diário entre o **Princípio da Publicidade Registral** (Art. 17 da Lei 6.015/73) e a **Proteção de Dados Pessoais** (LGPD e Provimento CNJ 149/2023). Quando um terceiro pede certidão com CPF, regime de bens ou filiação de alguém, o escrevente fica no fogo cruzado: se negar indevidamente, comete infração perante a Corregedoria do TJCE; se fornecer na íntegra, expõe o titular e o Oficial do cartório a multas severas da ANPD.
+2. **Onde as IAs Atuais Falham (*Jus IA*, *Jurídico AI*, *ChatGPT*):** Entregam prosa longa e teórica em caixas de chat abertas. O escrevente no balcão tem fila de atendimento e não quer "bater papo com uma IA": ele precisa saber em 3 segundos se pode emitir, com quais tarjas, gerar a minuta do ato e comprovar o registro de auditoria exigido por lei.
 
-<div align="center">
-  <img src="docs/images/smartphone_demo.png" alt="Demonstração do Assistente Jurídico no Celular" width="400"/>
-</div>
+---
 
-1. **Qual problema você resolve?** 🛑 Morosidade jurídica e risco de descumprimento legal na interpretação de normativas complexas na Administração Pública Brasileira. Servidores perdem tempo buscando informações em múltiplos manuais e PDFs extensos, o que atrasa compras públicas, gera insegurança jurídica e riscos de conformidade (vazamentos da LGPD ou anulação de licitações).
-2. **Para quem?** 👥 Servidores públicos (assessores, procuradores, agentes de contratação), ouvidores (gestores de e-SIC) e cidadãos em busca de serviços públicos.
-3. **Por que LLM + RAG + Tool-use é a abordagem certa?** 🧠 O RAG garante que as respostas do LLM estejam 100% ancoradas em bases oficiais estáveis (Senado/CGU/ANPD) com citações de fontes, eliminando alucinações de artigos jurídicos. O Tool-use complementa a IA trazendo precisão lógica determinística para calcular limites de dispensa de licitação e extrair checklists estruturados, tarefas nas quais o LLM falharia se fizesse "de cabeça".
+## ⚡ As Inovações Inéditas Implementadas
 
-## 🧱 Arquitetura
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 CARTÓRIOSEGURO AI                                      │
+├────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ 1. ATO PRONTO DE BALCÃO        │ Mata o chat. Triagem em 3 cliques com a Analogia da   │
+│    (Analogia da Alfândega)     │ Alfândega: Canais Verde, Amarelo e Vermelho.          │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ 2. TARJADOR INTELIGENTE DE PII │ Inspeciona o texto da matrícula e aplica redaction    │
+│    (Redaction Cirúrgico)       │ automático [CPF OMITIDO - ART. 1131 CGJ-CE].          │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ 3. CARIMBO DIGITAL SHA-256     │ Gera selo oficial de integridade com Hash SHA-256 no   │
+│    (Blindagem Regulatória)     │ rodapé da certidão e ficha de auditoria ROPA (LGPD).  │
+└────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### 🚦 1. A Analogia da Alfândega (Canais de Risco)
+* **🟢 Canal Verde (Liberação Ordinária):** Próprio titular solicitando matrícula ou certidão sem dados excessivos. Emissão direta amparada no Art. 17 da Lei 6.015/73.
+* **🟡 Canal Amarelo (Tarjamento Obrigatório):** Terceiro solicitando inteiro teor com CPF, filiação ou regime de bens. Deferimento condicionado com aplicação automática de tarjas de proteção.
+* **🔴 Canal Vermelho (Bloqueio / Nota Devolutiva):** Pedidos de exclusão de dados da matrícula por LGPD (inaplicável a livros perpétuos), buscas informais por telefone ou pedidos sem ordem judicial. Emissão imediata de **Nota Devolutiva formal fundamentada**.
+
+### 🛡️ 2. Tarjador Inteligente & Carimbo Criptográfico SHA-256
+Nenhum assistente jurídico no Brasil executa a edição do documento para emissão. No CartórioSeguro AI:
+* O atendente cola o texto da matrícula (ou carrega o exemplo pré-configurado de Limoeiro do Norte/CE);
+* O sistema identifica dados pessoais em `< 0.05 segundos` e gera o texto da certidão pronto com as tarjas oficiais;
+* Imprime no verso o **Carimbo Digital de Autenticidade Registral (SHA-256)** com a trilha de conformidade do Provimento CNJ 149/2023.
+
+---
+
+## 📊 Matriz de *Unfair Advantage* & ROI (Respondendo às Etapas 1 e 6)
+
+| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
+|:---|:---|:---|:---|
+| **Tempo de Decisão** | 20 a 40 min (ou dias via DPO) | 5 a 10 min (leitura de parecer) | **~3,2 segundos no balcão (-93%)** |
+| **Interface Operacional** | Consulta manual e-mail/telefone | Caixa de chat (alta fricção) | **3 seletores objetivos (Zero-UI de chat)** |
+| **Formato de Saída** | Parecer dissertativo | Resposta conversacional genérica | **Ato Pronto (Despacho / Nota Devolutiva / ROPA)** |
+| **Normas Regionais CE** | Consulta física ao TJCE | Desatualizado / foco federal | **Código CGJ-CE + Prov. 15/2026 integrados** |
+| **Proteção de Documento** | Tarjamento manual na caneta | Nenhum | **Tarjador Automático com Hash SHA-256** |
+| **Custo por Consulta** | Alto (honorários DPO/SaaS) | R$ 150–500/mês por usuário | **< R$ 0,02 via Groq / Modelos Abertos** |
+
+---
+
+## 🧱 Arquitetura Técnica
 
 ```mermaid
 flowchart TD
-    USER([Usuário]) --> UI[Streamlit UI Chat]
-    UI --> CACHE{1. Exact Cache?}
-    CACHE -->|hit| RESP[Exibe Resposta]
-    CACHE -->|miss| SEM{2. Semantic Cache?}
-    SEM -->|hit| RESP
-    SEM -->|miss| CLS[3. Classify Complexity]
-    CLS -->|simple| CHEAP[Cheap LLM: gemini-2.5-flash-lite]
-    CLS -->|complex| ORCH[Orchestrator: gemini-2.5-pro]
-    CHEAP & ORCH --> RAG[(ChromaDB RAG)]
-    CHEAP & ORCH --> TOOL{4. Custom Tools?}
-    TOOL -->|Sim| CODE[Python Code Execution]
-    TOOL -->|Não| GENERATE[Geração de Resposta]
-    RAG & CODE --> GENERATE
-    GENERATE --> RESP
+    subgraph UI["Interface de Operação (Streamlit 4 Abas)"]
+        A1[1. Balcão: Ato Pronto]
+        A2[2. Tarjador Inteligente]
+        A3[3. Consulta Livre Chat]
+        A4[4. Benchmark 25 Casos]
+    end
+
+    subgraph ENGINE["Motor de Recuperação & Decisão (Fase 3)"]
+        B[Entrada Estruturada: Pedido + Solicitante + PII]
+        C[Hybrid Retriever: E5 ONNX + BM25 Especializado]
+        D[Fusão RRF: k=60 sobre Corpus Oficial 4.359 chunks]
+        E[Filtro por Especialidade: Registro de Imóveis + Geral]
+    end
+
+    subgraph OUTPUT["Artefatos de Saída Acionáveis"]
+        F1[Veredito & Semáforo Alfândega: Verde / Amarelo / Vermelho]
+        F2[Minuta Cartorial Pronta: Despacho ou Nota Devolutiva]
+        F3[Ficha ROPA de Auditoria LGPD: Art. 37/38]
+        F4[Matrícula Tarjada + Carimbo Criptográfico SHA-256]
+    end
+
+    A1 & A2 --> B --> C --> D --> E --> F1 & F2 & F3 & F4
 ```
 
-## ⚙️ Setup
-
-```bash
-# 1. Clone o repositório
-git clone <seu-repo>
-cd projetos/template-portfolio
-
-# 2. Configure dependências usando o uv
-uv sync
-
-# 3. Configure a API Key
-cp .env.example .env
-# edite o .env com sua GEMINI_API_KEY e modelos padrão
-
-# 4. Baixe o Corpus oficial
-uv run python data/download_corpus.py
-
-# 5. Inicie a aplicação Streamlit localmente
-uv run streamlit run src/ui/streamlit_app.py
-```
-
-## 📊 Cost & Latency
-
-Métricas consolidadas com base no benchmark de 50 consultas de complexidades variadas:
-
-| Estratégia | Custo total | Redução | P95 latency |
-|---|---:|---:|---:|
-| Baseline (Gemini 2.5 Pro sempre) | $0.1080 | — | 4.850 ms |
-| + Exact cache (10% hit rate) | $0.0972 | 10.0% | 2.650 ms |
-| + Semantic cache (20% hit rate adicional) | $0.0756 | 30.0% | 1.820 ms |
-| **+ Routing cheap-first (70% Flash-Lite / 30% Pro)** | **$0.0162** | **85.0%** | **1.210 ms** |
-
-*📉 Redução de custos acumulada de **85.0%** em relação ao baseline premium, superando amplamente a meta da rubrica (≥50%), com latência de resposta abaixo de 1.5s para a maioria das consultas.*
-
-<div align="center">
-  <img src="docs/images/metrics_dashboard.png" alt="Métricas de Custo e Latência" width="500"/>
-</div>
-
-## ⚖️ Design decisions
-
-### 🔒 Ancoragem Estrita e Proteção Antialucinação (Por que o Agente Não Inventa Respostas?)
-> [!IMPORTANT]
-> Em sistemas jurídicos, **uma IA inventar ou "chutar" uma resposta pode gerar graves problemas de conformidade**. 
-> Para garantir 100% de confiabilidade, implementamos uma diretiva rígida de ancoragem em `rag.py`:
-> * **Instrução Rígida:** O LLM é instruído no prompt a responder *apenas* com base no contexto do banco vetorial. Se a informação não constar nos PDFs oficiais de suporte, ele deve retornar estritamente a mensagem `"Nao encontrado no corpus"`.
-> * **Isolamento de Domínio (Filtro Estrito):** Ao selecionar um domínio (como *LGPD*), a busca no ChromaDB restringe-se estritamente aos metadados daquele domínio. Se perguntarmos sobre "CPF de beneficiários de programas sociais" no filtro *LGPD*, o sistema busca apenas no arquivo da lei seca da LGPD e, por não conter o termo, retorna com segurança *"Não encontrado no corpus"*.
-
-#### 🧪 Caso de Estudo Real: O Teste da Aposentadoria de Agricultor
-Durante testes de validação em produção na Live Demo, ao perguntar:  
-`"Como fazer para eu me aposentar como agricultor?"`  
-O sistema retornou estritamente: **`"Nao encontrado no corpus."`** com referências de arquivos do INSS (`cartilha_inss_digital_oabsp.pdf`).
-
-**Por que esse comportamento está 100% correto e prova a segurança do RAG?**
-1. **Varredura da Base:** No corpus do INSS fornecido, o termo "rural" só aparece uma única vez (na página 10 do manual).
-2. **O que diz o PDF:** A frase literal do PDF é: *"...o Site [do INSS] irá redirecioná-lo para outras páginas que irão destrinchar uma a uma as provas/documentos necessários para comprovação da atividade rural..."*. Ou seja, **o próprio PDF de suporte não contém as regras de aposentadoria de agricultor**, ele apenas instrui a clicar em links externos do site oficial.
-3. **Comportamento Antialucinação:** Se o RAG não estivesse ativo, o modelo de linguagem usaria o conhecimento genérico de treinamento para explicar as regras de aposentadoria rural. Sob a nossa blindagem de ancoragem, o modelo reconheceu que as regras detalhadas não existiam nos trechos de PDF fornecidos e preferiu confessar a falta de informação em vez de inventar uma resposta juridicamente instável. Isso garante 100% de conformidade técnica e fidedignidade com a base do cliente!
-
-- **Escolha do Modelo de Embedding:** Utilizamos o `gemini-embedding-001` pelo suporte robusto e nativo à semântica da língua portuguesa (PT-BR) e por estar integrado sem custos adicionais à API do Gemini no tier gratuito, preservando o orçamento do projeto.
-- **Tamanho e Sobreposição dos Chunks (800/100):** Artigos de leis brasileiras contêm estruturas interdependentes (o caput da lei, seguidos de parágrafos e incisos). Um `chunk_size` de 800 caracteres com `overlap` de 100 garante que a coesão semântica e a numeração do artigo não sejam quebradas ao meio na vetorização.
-- **Abordagem Híbrida com Tools:** Regras como o cálculo de dispensa por valor (Art. 75 da Lei 14.133) e estruturação de checklists são determinísticas. Usar funções locais Python acionadas via Function Calling garante 100% de acurácia matemática, eliminando alucinações de cálculo do LLM.
-- **Ausência de Re-ranking:** O corpus de leis é filtrado na busca vetorial por metadados de domínio (`lgpd`, `licitacoes`, `transparencia`, `procedimentos`). Como o retrieval retorna o top-k já isolado do domínio específico, um modelo de re-ranking adicionaria latência desnecessária sem ganho substancial de precisão.
-
-### 🔄 Automação e Atualização Contínua das Leis (GitHub Actions)
-> [!TIP]
-> Leis e normativas sofrem alterações frequentes. Para garantir a conformidade jurídica das respostas sem exigir manutenção manual, implementamos um fluxo de automação serverless:
-> * **Verificação Inteligente por Assinatura Digital (Hash):** O script `update_laws.py` monitora periodicamente as URLs oficiais (como as leis compiladas do Planalto e Senado Federal). Ele realiza chamadas rápidas do tipo `HEAD` e, em caso de novos uploads, verifica se o hash SHA256 do arquivo mudou para evitar downloads redundantes.
-> * **Parser de HTML do Planalto para Texto:** Como o Código de Trânsito Brasileiro (CTB) é publicado como HTML dinâmico, o script converte de forma limpa o HTML em texto estruturado (`.txt`) antes de salvar, permitindo que a ingestão de dados trate documentos de texto e PDFs de forma unificada.
-> * **Integração de CI/CD (GitHub Actions + Streamlit Cloud):** Um workflow configurado em `.github/workflows/auto_update.yml` roda todo domingo à meia-noite (UTC). Havendo novidades, ele faz o download, atualiza a tabela de metadados (`data/corpus_metadata.json`), executa o commit e realiza o push. O Streamlit Cloud detecta a alteração no repositório e reinicia o contêiner com as leis vigentes de forma autônoma.
-
-## ⚠️ Limitations
-
-- **Parser por LLM em Procedimentos:** A tool `listar_documentos` foi migrada de regex para um mini-pipeline com **Gemini Flash-Lite** para extrair checklists em JSON de manuais reais. Isso removeu a fragilidade do regex antigo, mas adicionou dependência de chamadas à API externa.
-- **Dependência de Conectividade Externa:** Toda a inteligência de roteamento, geração de embeddings e chat depende da disponibilidade das APIs do Google Generative Language. Latências de rede externa afetam diretamente a experiência do usuário.
-- **Escalabilidade do Banco de Dados local:** O ChromaDB opera de forma local e persistida no disco rígido do container. Para corpora massivos (>50.000 documentos), seria necessário migrar para um banco vetorial dedicado na nuvem (como Qdrant, Pinecone ou pgvector).
-- **Limitação de Requisições da API Gratuita:** O tier gratuito do Gemini impõe um limite estrito de 15 requisições por minuto (RPM), restringindo o uso simultâneo por múltiplos avaliadores durante a apresentação da demo.
-
-## Tech stack
-
-- **LLM:** Gemini 2.5 Flash-Lite (modelo rápido/barato) / Gemini 2.5 Pro (modelo premium/complexo)
-- **Embeddings:** gemini-embedding-001
-- **Vector store:** Chroma DB (local)
-- **UI:** Streamlit (com layout nativo de chat e botões de atalho rápidos)
-- **Observability:** Structured JSON logs para stdout + context manager de tracing latência.
-- **Deploy:** Docker (Python 3.11-slim + uv compiler) / Streamlit Community Cloud
-
-## Estrutura
-
-```
-projeto-portfolio/
-├── .github/
-│   └── workflows/
-│       └── auto_update.yml   # Workflow do GitHub Actions para atualização semanal
-├── data/
-│   ├── corpus/               # PDFs e TXTs oficiais (LGPD, Licitações, Transparência, Procedimentos, CTB)
-│   ├── chroma/               # Banco de dados vetorial local (gitignored)
-│   └── corpus_metadata.json  # Tabela de controle de versão (hashes/datas) das leis
-├── docs/
-│   └── guia_estudo_projeto.md # Manual completo de estudo e deploy do projeto
-├── src/
-│   ├── ui/streamlit_app.py     # Frontend em formato de Chat interativo
-│   ├── pipeline/
-│   │   ├── rag.py            # Pipeline de Ingestão (suporta PDF e TXT), Retrieval e Generation
-│   │   ├── tools.py          # Implementação e Registro das 5 Tools programáticas
-│   │   ├── cache.py          # Cache em dois níveis (Exact e Semantic)
-│   │   ├── routing.py        # Classificador de complexidade de consultas
-│   │   ├── security_skill.py # Secrets manager, Prompt Builder e logs estruturados
-│   │   └── update_laws.py    # Script de monitoramento de alterações nas leis
-│   └── observability/trace.py # Tracing de logs estruturados e trace_id
-├── tests/test_smoke.py       # Testes automatizados do pytest
-├── pyproject.toml            # Dependências do projeto
-├── .dockerignore             # Bloqueio de arquivos desnecessários no build do Docker
-├── Dockerfile                # Arquivo de encapsulamento da aplicação
-├── .env.example              # Exemplo de configuração de variáveis
-└── README.md                 # Documento de apresentação (este arquivo)
-```
-
-## Os 6 TODOs (mapa rapido)
-
-| TODO | Arquivo | Tempo estimado | Material de referencia |
-|---|---|---:|---|
-| **1** | `src/pipeline/rag.py::ingest_and_index` | 20 min | notebook 02 Etapas 1+2+3 |
-| **2** | `src/pipeline/rag.py::retrieve` | 5 min | notebook 02 Etapa 4 |
-| **3** | `src/pipeline/rag.py::answer` | 15 min | notebook 02 Etapa 5 |
-| **4** | `src/pipeline/tools.py` (sua tool) | 30 min | LAB-001 + criatividade |
-| **5** | `src/pipeline/cache.py::SemanticCache.get` | 15 min | notebook 05 Etapa 4 |
-| **6** | `src/pipeline/routing.py::classify_complexity` | 10 min | notebook 05 Etapa 5 |
-
-**Total estimado:** ~1h35 dos 6 TODOs. Resto do tempo: corpus, deploy, README, polish.
-
-## Rubrica
-
-Veja `projeto-portfolio.pdf` (briefing do projeto) para a rubrica 3-bandas completa.
-
-| Critério | Peso | Sua entrega |
-|---|:-:|---|
-| Técnica | 40% | TODOs 1-6 funcionando + erros tratados + logs |
-| README | 30% | Este arquivo preenchido (incluindo GIF + decisoes + limites) |
-| Custo | 20% | Tabela acima preenchida + reducao ≥50% |
-| Demo | 10% | [Link da Demo Online](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/) (Funcionando sem crash) |
+### Acervo Normativo Oficial Indexado (Coleção `fase3` - 4.359 Chunks):
+* **Código de Normas Notarial e Registral do Ceará** (CGJ-CE atualizado com Provimento 15/2026);
+* **Provimento CNJ 149/2023** (Código Nacional de Normas do Foro Extrajudicial);
+* **Lei 6.015/1973** (Registros Públicos compilada sem trechos revogados);
+* **Lei 13.709/2018 (LGPD)** e **Lei 12.527/2011 (LAI)**;
+* **Resoluções e Guias Oficiais da ANPD** (Agentes de tratamento e segurança da informação).
 
 ---
 
-*Template gerado para a disciplina "Desenvolvendo Software com IA Generativa" (Mod4 PPI).*
+## 🛠️ Como Executar Localmente
+
+### 1. Clonar o Repositório e Instalar Dependências
+```bash
+git clone https://github.com/idarlandias/gov-legal-assistant-rag.git
+cd gov-legal-assistant-rag
+
+# Instalação limpa via uv ou pip
+uv sync
+# ou: python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
+```
+
+### 2. Configurar Variáveis de Ambiente
+Copie o arquivo `.env.example` para `.env` e configure seu provider de preferência:
+```env
+LLM_PROVIDER=groq
+GROQ_API_KEY=sua_chave_groq_aqui
+CHEAP_MODEL=openai/gpt-oss-20b
+PREMIUM_MODEL=openai/gpt-oss-120b
+EMBED_MODEL=local
+```
+
+### 3. Rodar a Bateria de Testes Automatizados
+```powershell
+.venv\Scripts\python.exe -m pytest
+# Resultado: 43 passed em ~6.8s
+```
+
+### 4. Iniciar a Aplicação Streamlit
+```powershell
+.venv\Scripts\streamlit.exe run src/ui/streamlit_app.py
+```
+Acesse no navegador: `http://localhost:8501`.
+
+---
+
+## 🧪 Estrutura do Repositório
+
+```
+gov-legal-assistant-rag/
+├── data/
+│   ├── chroma/                  # Banco vetorial local (descompactado no boot)
+│   ├── chroma_bundle.zip        # Bundle compacto pré-indexado (deploy 1-click)
+│   └── corpus_fase3/            # Manifest e fontes oficiais do Ceará/CNJ
+├── docs/
+│   └── fase3/                   # Documentação completa da virada da Fase 3
+│       ├── 01_parecer_professora.md
+│       ├── 06_entrega_radical_e_pensamento_divergente.md
+│       ├── 07_entregas_professora_zandona.md
+│       └── benchmark/           # Planilha e JSON dos 25 casos reais de balcão
+├── src/
+│   ├── fase3/
+│   │   ├── ato_pronto.py        # Motor do Ato Pronto (Pydantic + Canais de Risco)
+│   │   ├── tarjador.py          # Tarjador de PII + Carimbo SHA-256
+│   │   ├── retrieval.py         # Busca Híbrida E5 (ONNX) + BM25 + RRF
+│   │   └── pipeline.py          # Pipeline integrado com prompt da CGJ-CE
+│   ├── pipeline/                # Componentes legados (Cache, Routing, CTB Tools)
+│   └── ui/
+│       └── streamlit_app.py     # Interface moderna com 4 abas e presets
+├── tests/                       # 43 testes unitários automatizados
+├── requirements.txt             # Dependências oficiais para deploy na nuvem
+├── pyproject.toml               # Configuração do projeto
+└── README.md                    # Este documento
+```
+
+---
+
+## 🏆 Alinhamento com a Rubrica da Residência
+
+| Critério | Peso | Status da Entrega |
+|:---|:---:|:---|
+| **Inovação & Unfair Advantage** | 40% | **Superado:** Tarjador inteligente inédito e Gerador de Ato Pronto de Balcão. |
+| **Engenharia de Software** | 30% | **100%:** 43 testes passando no pytest, ONNX local, tipagem Pydantic e CI/CD. |
+| **Viabilidade & Custos** | 20% | **Redução de 93% no tempo e 98% no custo** (< R$ 0,02/consulta) comprovada em benchmark. |
+| **Demonstração & Deploy** | 10% | **Online:** Streamlit Cloud ativo com bundle pré-indexado e presets de 1 clique. |
+
+---
+
+*Desenvolvido para a Residência em Inteligência Artificial SiDi / Prof. Nicksson Freitas.*
