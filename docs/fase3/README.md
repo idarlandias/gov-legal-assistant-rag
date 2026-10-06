@@ -21,6 +21,8 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 4 | [04_benchmark_perguntas.md](04_benchmark_perguntas.md) | 25 perguntas de balcão (gabarito a validar) |
 | 5 | [05_corpus_fase3.md](05_corpus_fase3.md) | Fontes oficiais incluídas e excluídas |
 | 6 | [benchmark/](benchmark/README.md) | Planilha de coleta e script que roda o RAG nas perguntas |
+| 7 | [06_entrega_radical_e_pensamento_divergente.md](06_entrega_radical_e_pensamento_divergente.md) | Ideação, mindset e formas alternativas de entrega de valor |
+| 8 | [07_entregas_professora_zandona.md](07_entregas_professora_zandona.md) | As 3 entregas consolidadas para a Profª Daniele Zandoná |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
