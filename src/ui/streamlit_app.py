@@ -1,4 +1,4 @@
-"""Streamlit UI — CartórioSeguro AI & Assistente Jurídico RAG.
+"""Streamlit UI — Assistente Registral CE (Ato Pronto de balcão e consulta jurídica RAG).
 
 Oferece três experiências principais:
 1. 🚦 Balcão Registral (Fase 3): Gerador de Ato Pronto de Balcão
@@ -62,7 +62,7 @@ def _format_answer(text: str) -> str:
 
 # ---------------------------------------------------------------- Inicialização de Recursos
 st.set_page_config(
-    page_title="CartórioSeguro AI — Balcão Registral & RAG Jurídico",
+    page_title="Assistente Registral CE — Ato Pronto de Balcão & Consulta Jurídica",
     page_icon=":material/account_balance:",
     layout="wide",
 )
@@ -113,7 +113,7 @@ semantic_cache = get_semantic_cache()
 
 # ---------------------------------------------------------------- Barra Lateral (Métricas e Status)
 with st.sidebar:
-    st.title("CartórioSeguro AI")
+    st.title("Assistente Registral CE")
     st.caption("Residência SiDi · Fase 3 — Recorte Vertical de Registro de Imóveis (CE)")
     st.divider()
 
@@ -154,7 +154,7 @@ with st.sidebar:
 
 
 # ---------------------------------------------------------------- Cabeçalho Principal
-st.title("CartórioSeguro AI")
+st.title("Assistente Registral CE")
 st.markdown(
     "**Decisão Operacional & Compliance Registral** — Apoio à decisão de balcão em Registro de Imóveis: publicidade registral, LGPD e LAI."
 )
@@ -552,7 +552,7 @@ with tab_benchmark:
     st.markdown("### Matriz de Diferenciação (*Unfair Advantage*)")
     st.markdown(
         """
-| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
+| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **Assistente Registral CE (Fase 3)** |
 |:---|:---|:---|:---|
 | **Tempo de Decisão no Balcão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
 | **Interface com o Escrevente** | não medido | não medido | **3 cliques objetivos (Zero-UI de chat)** |
@@ -593,5 +593,5 @@ with tab_benchmark:
 
 st.divider()
 st.caption(
-    "CartórioSeguro AI · Desenvolvido na Residência SiDi · Tecnologias: ChromaDB, Multilingual E5 (ONNX), BM25, Pydantic, Streamlit."
+    "Assistente Registral CE · Desenvolvido na Residência SiDi · Tecnologias: ChromaDB, Multilingual E5 (ONNX), BM25, Pydantic, Streamlit."
 )

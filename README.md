@@ -1,8 +1,8 @@
-# 🏛️ CartórioSeguro AI (`gov-legal-assistant-rag`)
+# 🏛️ Assistente Registral CE (`gov-legal-assistant-rag`)
 
 <div align="center">
 
-# 🏛️ CartórioSeguro AI
+# 🏛️ Assistente Registral CE
 ### ⚡ Apoio à decisão operacional, Ato Registral de Balcão & Compliance LGPD
 *Especializado em Registro de Imóveis no Ceará (CGJ-CE × Provimento CNJ 149/2023 × Lei 6.015/73)*
 
@@ -23,11 +23,13 @@
 
 > 🚨 **A Virada da Fase 3 (Narrow first, build second):** Em resposta ao parecer do Funil Discovery e à Auditoria Cética, o projeto evoluiu de um assistente conversacional horizontal genérico para uma **plataforma vertical de decisão e conformidade registral**. Substituímos a caixa de chat aberta por um **Gerador de Ato Pronto de Balcão**, atacando diretamente os custos, a morosidade e a fricção dos cartórios extrajudiciais.
 
+Antes chamado CartórioSeguro AI. O nome foi alterado porque o sistema produz sugestão de ato, não garantia de conformidade; a decisão e a responsabilidade são do Oficial Registrador.
+
 ---
 
 ## 🚀 Acesso Rápido & Demonstração Online
 
-* 🌐 **Aplicação Hospedada (Live Demo no Streamlit Cloud):** [Acessar CartórioSeguro AI](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
+* 🌐 **Aplicação Hospedada (Live Demo no Streamlit Cloud):** [Acessar o Assistente Registral CE](https://gov-legal-assistant-rag-ac5upzossehz8hj2zqjzuh.streamlit.app/)
 * 📂 **Documentação Completa da Fase 3:** [Ver Documentos da Fase 3](docs/fase3/README.md)
 * 📊 **Entregas para a Professora:** [Parecer e Respostas](docs/fase3/07_entregas_professora_zandona.md) | [Entrega Radical e Pensamento Divergente](docs/fase3/06_entrega_radical_e_pensamento_divergente.md)
 
@@ -44,7 +46,7 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                 CARTÓRIOSEGURO AI                                      │
+│                                ASSISTENTE REGISTRAL CE                                 │
 ├────────────────────────────────┬───────────────────────────────────────────────────────┤
 │ 1. ATO PRONTO DE BALCÃO        │ O Ato Pronto substitui a conversa livre no fluxo de   │
 │    (Analogia da Alfândega)     │ balcão; o chat permanece como consulta de apoio.      │
@@ -59,7 +61,7 @@
 * **🔴 Canal Vermelho:** indeferimento em **nota devolutiva fundamentada** (CGJ-CE Art. 1.128 §4º).
 
 ### 🛡️ 2. Tarjador Inteligente & Carimbo Criptográfico SHA-256
-No CartórioSeguro AI:
+No Assistente Registral CE:
 * O atendente cola o texto da matrícula (ou carrega o exemplo pré-configurado de Limoeiro do Norte/CE);
 * O sistema identifica dados pessoais e gera o texto da certidão;
 * Hash SHA-256 de integridade do texto gerado. Não é assinatura digital nem certificação de autenticidade.
@@ -68,7 +70,7 @@ No CartórioSeguro AI:
 
 ## 📊 Matriz de *Unfair Advantage* & ROI (Respondendo às Etapas 1 e 6)
 
-| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
+| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **Assistente Registral CE (Fase 3)** |
 |:---|:---|:---|:---|
 | **Tempo de Decisão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
 | **Interface Operacional** | não medido | não medido | **3 seletores objetivos; o Ato Pronto substitui a conversa livre no fluxo de balcão; o chat permanece como consulta de apoio** |
