@@ -8,15 +8,18 @@ Transfere o valor do RAG para o fluxo de trabalho real do cartório de Registro 
 from __future__ import annotations
 
 import json
+import logging
 import re
 import time
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 if TYPE_CHECKING:
     from src.fase3.pipeline import Fase3Pipeline
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------- Modelos de Dados
@@ -26,6 +29,7 @@ class CanalRisco(str, Enum):
     VERDE = "VERDE"        # Liberação direta (baixo risco / dever legal / próprio titular)
     AMARELO = "AMARELO"    # Liberação condicionada (tarjamento obrigatório de dados pessoais excessivos)
     VERMELHO = "VERMELHO"  # Bloqueio / Exigência formal (Nota Devolutiva fundamentada)
+    INDEFINIDO = "INDEFINIDO"  # Falha na análise: nada é decidido, exige revisão manual
 
 
 class PedidoBalcao(BaseModel):
@@ -72,6 +76,12 @@ class RegistroAuditoriaLGPD(BaseModel):
     conformidade_cnj_149: str = Field(default="Em conformidade com as diretrizes de proteção de dados do Provimento CNJ 149/2023.")
 
 
+class RegistroFalha(BaseModel):
+    """Registro de uma análise que falhou: só o motivo, sem campos de auditoria inventados."""
+
+    falha: str = Field(..., description="Tipo da exceção ou motivo (ex: 'contexto vazio')")
+
+
 class AtoProntoOutput(BaseModel):
     """Saída completa do Ato Pronto para o escrevente no balcão."""
 
@@ -80,9 +90,16 @@ class AtoProntoOutput(BaseModel):
     instrucao_balcao: str = Field(..., description="Instrução em até 2 linhas para execução imediata no balcão")
     fundamentacao: list[DispositivoLegal] = Field(default_factory=list, description="Artigos vigentes aplicáveis")
     minuta_ato: str = Field(..., description="Texto pronto formatado para colar no sistema do cartório ou imprimir (Despacho ou Nota Devolutiva)")
-    auditoria_lgpd: RegistroAuditoriaLGPD
+    auditoria_lgpd: RegistroAuditoriaLGPD | RegistroFalha
     fontes_corpus: list[str] = Field(default_factory=list, description="Lista de fontes normativas oficiais recuperadas pelo RAG")
     latencia_s: float = Field(default=0.0, description="Tempo total de processamento em segundos")
+
+    @model_validator(mode="after")
+    def _falha_so_com_indefinido(self) -> "AtoProntoOutput":
+        # Impede que o LLM devolva um ato decidido (VERDE/AMARELO/VERMELHO) sem auditoria real
+        if isinstance(self.auditoria_lgpd, RegistroFalha) != (self.canal == CanalRisco.INDEFINIDO):
+            raise ValueError("RegistroFalha só é válido com canal INDEFINIDO, e vice-versa")
+        return self
 
 
 # ---------------------------------------------------------------- Query & Prompt
@@ -166,6 +183,21 @@ def _limpar_json(texto: str) -> str:
     return texto
 
 
+VEREDITO_FALHA = "FALHA NA ANÁLISE — REVISÃO MANUAL NECESSÁRIA"
+
+
+def _ato_indefinido(motivo: str) -> AtoProntoOutput:
+    """Saída de falha: nenhum canal decidido, nenhuma fundamentação ou minuta inventada."""
+    return AtoProntoOutput(
+        canal=CanalRisco.INDEFINIDO,
+        veredito=VEREDITO_FALHA,
+        instrucao_balcao="",
+        fundamentacao=[],
+        minuta_ato="",
+        auditoria_lgpd=RegistroFalha(falha=motivo),
+    )
+
+
 def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int = 5) -> AtoProntoOutput:
     """Processa o pedido no pipeline da Fase 3 e gera o Ato Pronto estruturado."""
     t0 = time.perf_counter()
@@ -173,6 +205,12 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
     # 1. Recuperação Híbrida especializada
     query = gerar_query_recuperacao(pedido)
     hits = pipeline.retrieve(query, k=k)
+
+    if not hits:
+        # Sem norma recuperada o LLM só poderia inventar: não chama o modelo
+        saida = _ato_indefinido("contexto vazio")
+        saida.latencia_s = round(time.perf_counter() - t0, 2)
+        return saida
 
     contexto = "\n\n---\n\n".join(
         f"[{h.get('dispositivo') or h['source']}:p{h['page']}]\n{h['text']}"
@@ -193,52 +231,26 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
     }
 
 
-    # Tenta usar json_object se suportado pelo provedor
     try:
-        api_kwargs["response_format"] = {"type": "json_object"}
-        response = pipeline._call_chat_completions(**api_kwargs)
-    except Exception:
-        # Fallback sem response_format se der erro de parâmetro
-        api_kwargs.pop("response_format", None)
-        response = pipeline._call_chat_completions(**api_kwargs)
+        # Tenta usar json_object se suportado pelo provedor
+        try:
+            api_kwargs["response_format"] = {"type": "json_object"}
+            response = pipeline._call_chat_completions(**api_kwargs)
+        except Exception:
+            # Fallback sem response_format se der erro de parâmetro
+            api_kwargs.pop("response_format", None)
+            response = pipeline._call_chat_completions(**api_kwargs)
 
-    conteudo_bruto = response.choices[0].message.content or "{}"
-    conteudo_json = _limpar_json(conteudo_bruto)
-
-    try:
-        dados = json.loads(conteudo_json)
+        conteudo_bruto = response.choices[0].message.content or "{}"
+        dados = json.loads(_limpar_json(conteudo_bruto))
         # Converte o canal para maiúsculo se necessário
         if "canal" in dados and isinstance(dados["canal"], str):
             dados["canal"] = dados["canal"].upper()
         saida = AtoProntoOutput.model_validate(dados)
     except Exception as e:
-        # Fallback seguro caso o LLM falhe no formato estruturado
-        canal_fallback = CanalRisco.AMARELO
-        if any(w in conteudo_bruto.lower() for w in ["negar", "devolutiva", "indeferid", "vedado", "proibido"]):
-            canal_fallback = CanalRisco.VERMELHO
-        elif any(w in conteudo_bruto.lower() for w in ["deferido integral", "liberado", "sem restrição"]):
-            canal_fallback = CanalRisco.VERDE
-
-        saida = AtoProntoOutput(
-            canal=canal_fallback,
-            veredito="ANÁLISE DE BALCÃO REALIZADA",
-            instrucao_balcao="Verifique o teor da resposta e aplique as salvaguardas de conformidade.",
-            fundamentacao=[
-                DispositivoLegal(
-                    norma="Provimento CNJ 149/2023 / Código de Normas CGJ-CE",
-                    artigo="Regras de Publicidade Registral e LGPD",
-                    aplicacao="Aplicação da proteção de dados aos registros imobiliários."
-                )
-            ],
-            minuta_ato=conteudo_bruto,
-            auditoria_lgpd=RegistroAuditoriaLGPD(
-                finalidade="Publicidade registral imobiliária",
-                base_legal_lgpd="Art. 7º, II da LGPD",
-                categoria_titular="Titular do imóvel",
-                dados_tratados=pedido.dados_sensiveis or ["Dados da matrícula"],
-                salvaguardas_adotadas="Verificação de interesse e aplicação de sigilo legal.",
-            ),
-        )
+        # Rede, JSON inválido ou schema inválido: nunca decide canal no escuro
+        logger.exception("Falha ao gerar Ato Pronto (protocolo %s)", pedido.protocolo)
+        saida = _ato_indefinido(type(e).__name__)
 
     saida.latencia_s = round(time.perf_counter() - t0, 2)
     saida.fontes_corpus = [

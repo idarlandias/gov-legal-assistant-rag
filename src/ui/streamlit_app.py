@@ -293,7 +293,13 @@ with tab_balcao:
                     resultado = fase3_pipe.gerar_ato_pronto(pedido)
 
                     # Exibição do Semáforo da Alfândega
-                    if resultado.canal.value == "VERDE":
+                    indefinido = resultado.canal.value == "INDEFINIDO"
+                    if indefinido:
+                        canal_cor = "#6c757d"
+                        canal_bg = "#f1f3f5"
+                        canal_icone = "⚪"
+                        canal_titulo = "CANAL INDEFINIDO — Revisão Manual Necessária"
+                    elif resultado.canal.value == "VERDE":
                         canal_cor = "#28a745"
                         canal_bg = "#eafaf1"
                         canal_icone = "🟢"
@@ -327,6 +333,7 @@ with tab_balcao:
                         value=resultado.minuta_ato,
                         height=220,
                         key="minuta_box",
+                        disabled=indefinido,
                     )
                     c_dl1, c_dl2 = st.columns(2)
                     with c_dl1:
@@ -336,6 +343,7 @@ with tab_balcao:
                             file_name=f"ato_{protocolo_input.replace('/', '_')}.txt",
                             mime="text/plain",
                             use_container_width=True,
+                            disabled=indefinido,
                         )
                     with c_dl2:
                         json_auditoria = json.dumps(resultado.model_dump(), indent=2, ensure_ascii=False)
@@ -345,6 +353,7 @@ with tab_balcao:
                             file_name=f"auditoria_lgpd_{protocolo_input.replace('/', '_')}.json",
                             mime="application/json",
                             use_container_width=True,
+                            disabled=indefinido,
                         )
 
                     # Fundamentação e Auditoria
@@ -356,10 +365,13 @@ with tab_balcao:
 
                     with col_audit:
                         with st.expander("🛡️ Registro de Auditoria LGPD (ROPA)", expanded=True):
-                            st.markdown(f"- **Finalidade:** {resultado.auditoria_lgpd.finalidade}")
-                            st.markdown(f"- **Base Legal:** {resultado.auditoria_lgpd.base_legal_lgpd}")
-                            st.markdown(f"- **Salvaguardas:** {resultado.auditoria_lgpd.salvaguardas_adotadas}")
-                            st.markdown(f"- **Conformidade:** {resultado.auditoria_lgpd.conformidade_cnj_149}")
+                            if indefinido:
+                                st.markdown(f"- **Falha:** {resultado.auditoria_lgpd.falha}")
+                            else:
+                                st.markdown(f"- **Finalidade:** {resultado.auditoria_lgpd.finalidade}")
+                                st.markdown(f"- **Base Legal:** {resultado.auditoria_lgpd.base_legal_lgpd}")
+                                st.markdown(f"- **Salvaguardas:** {resultado.auditoria_lgpd.salvaguardas_adotadas}")
+                                st.markdown(f"- **Conformidade:** {resultado.auditoria_lgpd.conformidade_cnj_149}")
 
                     st.caption(
                         f"⏱️ Tempo de resposta: {resultado.latencia_s}s · Fontes consultadas: {len(resultado.fontes_corpus)} dispositivos oficiais"

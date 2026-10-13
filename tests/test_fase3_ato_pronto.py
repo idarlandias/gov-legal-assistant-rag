@@ -2,12 +2,16 @@
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.fase3.ato_pronto import (
+    VEREDITO_FALHA,
     AtoProntoOutput,
     CanalRisco,
     DispositivoLegal,
     PedidoBalcao,
     RegistroAuditoriaLGPD,
+    RegistroFalha,
     _limpar_json,
     gerar_query_recuperacao,
     processar_ato_pronto,
@@ -152,24 +156,56 @@ def test_processar_ato_pronto_com_mock():
     assert resultado.latencia_s >= 0.0
 
 
-def test_processar_ato_pronto_fallback():
+_HIT = {"id": "1", "text": "trecho normativo", "source": "Lei 6.015/1973, Art. 17", "page": 0,
+        "dispositivo": "Art. 17"}
+_PEDIDO = PedidoBalcao(tipo_pedido="Busca por CPF", solicitante="Terceiro sem vínculo", dados_sensiveis=["CPF"])
+
+
+def _pipeline_com_resposta(conteudo: str, hits=None) -> MagicMock:
     mock_pipeline = MagicMock()
     mock_pipeline.llm_model = "mock-model"
-    mock_pipeline.retrieve.return_value = []
-    
-    # Simula o LLM devolvendo texto corrido sem JSON
+    mock_pipeline.retrieve.return_value = [_HIT] if hits is None else hits
     resposta_mock = MagicMock()
-    resposta_mock.choices = [
-        MagicMock(message=MagicMock(content="Recomendo negar e emitir nota devolutiva por falta de amparo legal."))
-    ]
+    resposta_mock.choices = [MagicMock(message=MagicMock(content=conteudo))]
     mock_pipeline._call_chat_completions.return_value = resposta_mock
+    return mock_pipeline
 
-    pedido = PedidoBalcao(
-        tipo_pedido="Busca por CPF",
-        solicitante="Terceiro sem vínculo",
-        dados_sensiveis=["CPF"],
-    )
 
-    resultado = processar_ato_pronto(mock_pipeline, pedido)
-    assert resultado.canal == CanalRisco.VERMELHO  # detectou 'negar'/'devolutiva'
-    assert resultado.auditoria_lgpd.finalidade != ""
+def _assert_indefinido(resultado, motivo: str) -> None:
+    assert resultado.canal == CanalRisco.INDEFINIDO
+    assert resultado.veredito == VEREDITO_FALHA
+    assert resultado.fundamentacao == []
+    assert resultado.minuta_ato == ""
+    assert isinstance(resultado.auditoria_lgpd, RegistroFalha)
+    assert resultado.auditoria_lgpd.falha == motivo
+
+
+def test_json_invalido_do_llm_gera_indefinido():
+    pipe = _pipeline_com_resposta("Recomendo negar e emitir nota devolutiva por falta de amparo legal.")
+    _assert_indefinido(processar_ato_pronto(pipe, _PEDIDO), "JSONDecodeError")
+
+
+def test_excecao_de_rede_gera_indefinido():
+    pipe = _pipeline_com_resposta("{}")
+    pipe._call_chat_completions.side_effect = ConnectionError("rede caiu")
+    _assert_indefinido(processar_ato_pronto(pipe, _PEDIDO), "ConnectionError")
+
+
+def test_busca_vazia_nao_chama_o_llm():
+    pipe = _pipeline_com_resposta("{}", hits=[])
+    resultado = processar_ato_pronto(pipe, _PEDIDO)
+    assert pipe._call_chat_completions.call_count == 0
+    _assert_indefinido(resultado, "contexto vazio")
+
+
+@pytest.mark.parametrize("conteudo", [
+    "DEFERIDO INTEGRAL, liberado sem restrição.",
+    '{"canal": "VERDE", "veredito": "DEFERIDO INTEGRAL"}',  # JSON incompleto
+    '{"canal": "VERDE", "veredito": "DEFERIDO INTEGRAL", "instrucao_balcao": "x", '
+    '"minuta_ato": "x", "auditoria_lgpd": {"falha": "x"}}',  # auditoria de falha com canal decidido
+    "",
+    "canal VERDE",
+])
+def test_fallback_nunca_produz_verde(conteudo):
+    resultado = processar_ato_pronto(_pipeline_com_resposta(conteudo), _PEDIDO)
+    assert resultado.canal == CanalRisco.INDEFINIDO
