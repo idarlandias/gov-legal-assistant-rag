@@ -63,7 +63,7 @@ def _format_answer(text: str) -> str:
 # ---------------------------------------------------------------- Inicialização de Recursos
 st.set_page_config(
     page_title="CartórioSeguro AI — Balcão Registral & RAG Jurídico",
-    page_icon="🏛️",
+    page_icon=":material/account_balance:",
     layout="wide",
 )
 
@@ -118,7 +118,7 @@ with st.sidebar:
     st.caption("Residência SiDi · Fase 3 — Recorte Vertical de Registro de Imóveis (CE)")
     st.divider()
 
-    st.subheader("⚙️ Status do Acervo")
+    st.subheader("Status do Acervo")
     try:
         fase3_pipe = get_fase3_pipeline()
         chunks_fase3 = fase3_pipe.collection.count()
@@ -135,11 +135,11 @@ with st.sidebar:
         pass
 
     st.divider()
-    st.subheader("⚡ Caches e Latência")
+    st.subheader("Caches e Latência")
     st.metric("Exact Cache", exact_cache.stats()["size"])
     st.metric("Semantic Cache", semantic_cache.stats()["size"])
 
-    if st.button("🧹 Limpar Caches"):
+    if st.button("Limpar Caches"):
         get_exact_cache.clear()
         get_semantic_cache.clear()
         st.success("Caches limpos com sucesso!")
@@ -149,7 +149,7 @@ with st.sidebar:
 
 
 # ---------------------------------------------------------------- Cabeçalho Principal
-st.title("🏛️ CartórioSeguro AI")
+st.title("CartórioSeguro AI")
 st.markdown(
     "**Decisão Operacional & Compliance Registral** — Apoio à decisão de balcão em Registro de Imóveis: publicidade registral, LGPD e LAI."
 )
@@ -158,12 +158,12 @@ st.markdown(
 MOSTRAR_ABA_TARJADOR = os.environ.get("MOSTRAR_ABA_TARJADOR", "false").strip().lower() in ("1", "true", "sim")
 
 _abas = [
-    "🚦 Balcão Registral (Ato Pronto — Fase 3)",
-    "💬 Consulta Especializada (Chat RAG)",
-    "📊 Casos de Balcão & Eficiência",
+    "Balcão Registral (Ato Pronto — Fase 3)",
+    "Consulta Especializada (Chat RAG)",
+    "Casos de Balcão & Eficiência",
 ]
 if MOSTRAR_ABA_TARJADOR:
-    _abas.insert(1, "🛡️ Tarjador Inteligente & Hash SHA-256")
+    _abas.insert(1, "Tarjador Inteligente & Hash SHA-256")
 _tabs = st.tabs(_abas)
 tab_balcao, tab_chat, tab_benchmark = _tabs[0], _tabs[-2], _tabs[-1]
 tab_tarjador = _tabs[1] if MOSTRAR_ABA_TARJADOR else None
@@ -173,16 +173,16 @@ tab_tarjador = _tabs[1] if MOSTRAR_ABA_TARJADOR else None
 # TAB 1: GERADOR DE ATO PRONTO (A INOVAÇÃO RADICAL DA FASE 3)
 # ==============================================================================
 with tab_balcao:
-    st.subheader("⚡ Triagem de pedido")
+    st.subheader("Triagem de pedido")
     st.markdown(
         "Emita atos prontos com veredito direto, fundamentação referenciada no Código de Normas do Ceará e no Provimento CNJ 149/2023, "
         "minuta pronta para despacho ou Nota Devolutiva e registro de auditoria LGPD (ROPA)."
     )
 
     # 1-Click Preset Scenarios
-    st.markdown("##### 🚀 Exemplos frequentes")
+    st.markdown("##### Exemplos frequentes")
     p1, p2, p3, p4 = st.columns(4)
-    if p1.button("🟡 Terceiro pede CPF", use_container_width=True, help="Certidão de inteiro teor com CPF pedida por terceiro"):
+    if p1.button("Terceiro pede CPF", use_container_width=True, help="Certidão de inteiro teor com CPF pedida por terceiro"):
         st.session_state["preset_pedido"] = "Certidão de Inteiro Teor de Matrícula"
         st.session_state["preset_solicitante"] = "Terceiro sem comprovação de vínculo ou interesse jurídico"
         st.session_state["preset_dados"] = ["CPF completo", "Estado Civil / Regime de Bens"]
@@ -190,7 +190,7 @@ with tab_balcao:
         st.session_state["trigger_auto"] = True
         st.rerun()
 
-    if p2.button("🟢 Dono pede Matrícula", use_container_width=True, help="Titular solicitando sua própria matrícula"):
+    if p2.button("Dono pede Matrícula", use_container_width=True, help="Titular solicitando sua própria matrícula"):
         st.session_state["preset_pedido"] = "Certidão de Situação Jurídica Atual (Vigente)"
         st.session_state["preset_solicitante"] = "Próprio Titular / Proprietário do Imóvel"
         st.session_state["preset_dados"] = []
@@ -198,7 +198,7 @@ with tab_balcao:
         st.session_state["trigger_auto"] = True
         st.rerun()
 
-    if p3.button("🔴 Exclusão LGPD", use_container_width=True, help="Titular querendo apagar matrícula com base na LGPD"):
+    if p3.button("Exclusão LGPD", use_container_width=True, help="Titular querendo apagar matrícula com base na LGPD"):
         st.session_state["preset_pedido"] = "Pedido de Exclusão de Dados da Matrícula com base na LGPD"
         st.session_state["preset_solicitante"] = "Próprio Titular / Proprietário do Imóvel"
         st.session_state["preset_dados"] = ["CPF completo", "Filiação / Adoção sigilosa"]
@@ -207,7 +207,7 @@ with tab_balcao:
         st.rerun()
 
     # 🟡, não 🔴: o CE Art. 1.128 §2º V permite a informação mediante identificação e finalidade
-    if p4.button("🟡 Info Verbal por Telefone", use_container_width=True, help="Pedido de informação verbal por telefone"):
+    if p4.button("Info Verbal por Telefone", use_container_width=True, help="Pedido de informação verbal por telefone"):
         st.session_state["preset_pedido"] = "Informação Verbal no Balcão ou por Telefone"
         st.session_state["preset_solicitante"] = "Terceiro sem comprovação de vínculo ou interesse jurídico"
         st.session_state["preset_dados"] = ["CPF completo"]
@@ -262,13 +262,13 @@ with tab_balcao:
     idx_solicitante = opcoes_solicitantes.index(default_solicitante) if default_solicitante in opcoes_solicitantes else 1
 
     with col_form:
-        st.markdown("### 📋 Dados da Solicitação")
+        st.markdown("### Dados da Solicitação")
 
         tipo_pedido = st.selectbox("1. Tipo de Solicitação:", options=opcoes_pedidos, index=idx_pedido)
         solicitante = st.selectbox("2. Perfil do Requerente / Solicitante:", options=opcoes_solicitantes, index=idx_solicitante)
         dados_sensiveis = st.multiselect("3. Dados Pessoais / Sensíveis Envolvidos:", options=opcoes_dados, default=default_dados)
 
-        with st.expander("➕ Detalhes Adicionais e Protocolo (Opcional)", expanded=bool(default_detalhes)):
+        with st.expander("Detalhes Adicionais e Protocolo (Opcional)", expanded=bool(default_detalhes)):
             protocolo_input = st.text_input("Número do Protocolo:", value="PROT-2026/0842")
             detalhes_input = st.text_area(
                 "Particularidades do caso concreto:",
@@ -277,13 +277,13 @@ with tab_balcao:
                 height=80,
             )
 
-        btn_gerar = st.button("⚡ Processar Balcão (Gerar Ato Pronto)", type="primary", use_container_width=True)
+        btn_gerar = st.button("Processar Balcão (Gerar Ato Pronto)", type="primary", use_container_width=True)
 
         # Dispara automático se veio de preset
         auto_run = st.session_state.pop("trigger_auto", False)
 
     with col_result:
-        st.markdown("### 📜 Ato Registral Emitido")
+        st.markdown("### Ato Registral Emitido")
         from src.fase3.ato_pronto import AVISO_RESPONSABILIDADE
 
         # fixo no topo do painel, antes e depois de qualquer geração
@@ -307,22 +307,22 @@ with tab_balcao:
                     # Exibição do semáforo
                     indefinido = resultado.canal.value == "INDEFINIDO"
                     if indefinido:
-                        canal_cor = "#6c757d"
+                        canal_cor = "#495057"
                         canal_bg = "#f1f3f5"
-                        canal_icone = "⚪"
+                        canal_icone = ""
                         canal_titulo = "CANAL INDEFINIDO — Revisão Manual Necessária"
                     elif resultado.canal.value == "VERDE":
-                        canal_cor = "#28a745"
+                        canal_cor = "#1E6B34"
                         canal_bg = "#eafaf1"
                         canal_icone = "🟢"
                         canal_titulo = "CANAL VERDE — Liberação Ordinária Autorizada"
                     elif resultado.canal.value == "AMARELO":
-                        canal_cor = "#e0a800"
+                        canal_cor = "#7A5A00"
                         canal_bg = "#fef9e7"
                         canal_icone = "🟡"
                         canal_titulo = "CANAL AMARELO — Fornecimento mediante Exigência Prévia (identificação e finalidade)"
                     else:
-                        canal_cor = "#dc3545"
+                        canal_cor = "#A71D2A"
                         canal_bg = "#fdf2e9"
                         canal_icone = "🔴"
                         canal_titulo = "CANAL VERMELHO — Bloqueio / Nota Devolutiva Obrigatória"
@@ -340,7 +340,7 @@ with tab_balcao:
                     )
 
                     # Minuta Pronta
-                    st.markdown("#### 📝 Minuta Formal do Ato")
+                    st.markdown("#### Minuta Formal do Ato")
                     st.text_area(
                         "Texto pronto para copiar no sistema do cartório:",
                         value=resultado.minuta_ato,
@@ -351,7 +351,7 @@ with tab_balcao:
                     c_dl1, c_dl2 = st.columns(2)
                     with c_dl1:
                         st.download_button(
-                            "📥 Baixar Minuta (.txt)",
+                            "Baixar Minuta (.txt)",
                             data=resultado.minuta_ato,
                             file_name=f"ato_{protocolo_input.replace('/', '_')}.txt",
                             mime="text/plain",
@@ -361,7 +361,7 @@ with tab_balcao:
                     with c_dl2:
                         json_auditoria = json.dumps(resultado.model_dump(), indent=2, ensure_ascii=False)
                         st.download_button(
-                            "🛡️ Baixar Registro LGPD / ROPA (.json)",
+                            "Baixar Registro LGPD / ROPA (.json)",
                             data=json_auditoria,
                             file_name=f"auditoria_lgpd_{protocolo_input.replace('/', '_')}.json",
                             mime="application/json",
@@ -371,19 +371,19 @@ with tab_balcao:
 
                     if resultado.citacoes and resultado.citacoes.nao_verificadas():
                         st.warning(
-                            "⚠️ **Citações não verificadas nos trechos recuperados** — confira antes de usar a minuta:\n\n"
+                            "**Citações não verificadas nos trechos recuperados** — confira antes de usar a minuta:\n\n"
                             + "\n".join(f"- {c.descricao()}" for c in resultado.citacoes.nao_verificadas())
                         )
 
                     # Fundamentação e Auditoria
                     col_fund, col_audit = st.columns(2)
                     with col_fund:
-                        with st.expander("⚖️ Fundamentação Legal Vinculante", expanded=True):
+                        with st.expander("Fundamentação Legal Vinculante", expanded=True):
                             for fund in resultado.fundamentacao:
                                 st.markdown(f"- **{fund.norma} ({fund.artigo})**: {fund.aplicacao}")
 
                     with col_audit:
-                        with st.expander("🛡️ Registro de Auditoria LGPD (ROPA)", expanded=True):
+                        with st.expander("Registro de Auditoria LGPD (ROPA)", expanded=True):
                             if indefinido:
                                 st.markdown(f"- **Falha:** {resultado.auditoria_lgpd.falha}")
                             else:
@@ -393,14 +393,14 @@ with tab_balcao:
                                 st.markdown(f"- **Conformidade:** {resultado.auditoria_lgpd.conformidade_cnj_149}")
 
                     st.caption(
-                        f"⏱️ Tempo de resposta: {resultado.latencia_s}s · Fontes consultadas: {len(resultado.fontes_corpus)} dispositivos oficiais"
+                        f"Tempo de resposta: {resultado.latencia_s}s · Fontes consultadas: {len(resultado.fontes_corpus)} dispositivos oficiais"
                     )
 
                 except Exception as e:
                     st.error(f"Erro ao processar o ato pronto: {e}")
         else:
             st.info(
-                "👈 **Selecione os parâmetros ao lado ou clique em um dos Exemplos frequentes no topo.**\n\n"
+                "**Selecione os parâmetros ao lado ou clique em um dos Exemplos frequentes no topo.**\n\n"
                 "Canais de classificação do pedido:\n"
                 "- 🟢 **Canal Verde:** deferimento mediante identificação do requerente, sem exigência de finalidade "
                 "(CGJ-CE Art. 1.128 caput; Prov. CNJ 149/2023 Art. 123).\n"
@@ -415,7 +415,7 @@ with tab_balcao:
 # ==============================================================================
 if tab_tarjador is not None:
     with tab_tarjador:
-        st.subheader("🛡️ Tarjador Inteligente de Matrícula & Carimbo Criptográfico")
+        st.subheader("Tarjador Inteligente de Matrícula & Carimbo Criptográfico")
         st.markdown(
             "**Elimine o risco de vazamento em certidões:** O sistema detecta dados pessoais sensíveis "
             "(CPF, RG, Filiação, Regime de Bens) no texto da matrícula, aplica supressões por determinação do oficial "
@@ -427,9 +427,9 @@ if tab_tarjador is not None:
         col_t_in, col_t_out = st.columns([1.1, 1.4], gap="large")
 
         with col_t_in:
-            st.markdown("### 📄 Texto da Matrícula para Emissão")
+            st.markdown("### Texto da Matrícula para Emissão")
 
-            if st.button("📋 Carregar Matrícula Real de Exemplo (Limoeiro do Norte/CE)", use_container_width=True):
+            if st.button("Carregar Matrícula Real de Exemplo (Limoeiro do Norte/CE)", use_container_width=True):
                 st.session_state["texto_matricula_input"] = MATRICULA_EXEMPLO_CE
                 st.rerun()
 
@@ -456,10 +456,10 @@ if tab_tarjador is not None:
             with col_opt2:
                 prot_tarja = st.text_input("Protocolo do Atendimento:", value="PROT-2026/0842", key="tarja_protocolo")
 
-            btn_tarjar = st.button("⚡ Inspecionar e Aplicar Tarjamento", type="primary", use_container_width=True)
+            btn_tarjar = st.button("Inspecionar e Aplicar Tarjamento", type="primary", use_container_width=True)
 
         with col_t_out:
-            st.markdown("### 📜 Certidão com Tarjamento e Carimbo SHA-256")
+            st.markdown("### Certidão com Tarjamento e Carimbo SHA-256")
 
             if btn_tarjar or "resultado_tarja_executada" in st.session_state:
                 resultado_tarja = tarjar_texto_matricula(
@@ -475,7 +475,7 @@ if tab_tarjador is not None:
                 c3.metric("Código do hash", resultado_tarja.carimbo.codigo_autenticidade if resultado_tarja.carimbo else "—")
                 c4.metric("Tempo", f"{resultado_tarja.tempo_processamento_s}s")
 
-                st.markdown("#### 📄 Texto Tarjado (Pronto para Certidão)")
+                st.markdown("#### Texto Tarjado (Pronto para Certidão)")
                 st.text_area(
                     "Texto pronto para inclusão na certidão emitida:",
                     value=resultado_tarja.texto_tarjado,
@@ -486,7 +486,7 @@ if tab_tarjador is not None:
                 c_btn1, c_btn2 = st.columns(2)
                 with c_btn1:
                     st.download_button(
-                        "📥 Baixar Matrícula Tarjada (.txt)",
+                        "Baixar Matrícula Tarjada (.txt)",
                         data=resultado_tarja.texto_tarjado,
                         file_name=f"certidao_tarjada_{prot_tarja.replace('/', '_')}.txt",
                         mime="text/plain",
@@ -495,23 +495,22 @@ if tab_tarjador is not None:
                 if resultado_tarja.carimbo:  # só há carimbo quando algo foi suprimido
                     with c_btn2:
                         st.download_button(
-                            "🔐 Baixar Carimbo de Integridade (.txt)",
+                            "Baixar Carimbo de Integridade (.txt)",
                             data=resultado_tarja.carimbo.texto_carimbo,
                             file_name=f"carimbo_sha256_{prot_tarja.replace('/', '_')}.txt",
                             mime="text/plain",
                             use_container_width=True,
                         )
 
-                    with st.expander("🛡️ Carimbo Digital de Conformidade Registral (SHA-256)", expanded=True):
+                    with st.expander("Carimbo Digital de Conformidade Registral (SHA-256)", expanded=True):
                         st.code(resultado_tarja.carimbo.texto_carimbo, language="text")
 
-                with st.expander("🔍 Auditoria Detalhada dos Dados Encontrados"):
+                with st.expander("Auditoria Detalhada dos Dados Encontrados"):
                     for d in resultado_tarja.dados_detectados:
-                        status_cor = "🟢" if d.acao_aplicada == "MANTIDO" else "🔴"
-                        st.markdown(f"- {status_cor} **{d.tipo}** (`{d.valor_original}`): **{d.acao_aplicada}** — _{d.motivo_legal}_")
+                        st.markdown(f"- **{d.tipo}** (`{d.valor_original}`): **{d.acao_aplicada}** — _{d.motivo_legal}_")
             else:
                 st.info(
-                    "👈 **Cole o texto da matrícula ao lado (ou clique em 'Carregar Matrícula Real de Exemplo') "
+                    "**Cole o texto da matrícula ao lado (ou clique em 'Carregar Matrícula Real de Exemplo') "
                     "e clique em 'Inspecionar e Aplicar Tarjamento'.**\n\n"
                     "O sistema tarjará automaticamente todos os dados sensíveis protegidos por lei e emitirá a certidão pronta com o hash de integridade."
                 )
@@ -521,7 +520,7 @@ if tab_tarjador is not None:
 # TAB 3: CONSULTA JURÍDICA LIVRE (CHAT RAG)
 # ==============================================================================
 with tab_chat:
-    st.subheader("💬 Consulta Especializada em Linguagem Natural")
+    st.subheader("Consulta Especializada em Linguagem Natural")
     st.caption("Pesquise dúvidas teóricas ou cenários complexos no acervo legal completo.")
 
     domain_option = st.selectbox(
@@ -555,11 +554,11 @@ with tab_chat:
             st.markdown(msg["content"])
             if msg.get("aviso_citacoes"):
                 st.warning(
-                    "⚠️ **Citações não verificadas nos trechos recuperados** — confira antes de usar:\n\n"
+                    "**Citações não verificadas nos trechos recuperados** — confira antes de usar:\n\n"
                     + "\n".join(f"- {a}" for a in msg["aviso_citacoes"])
                 )
             if msg.get("sources"):
-                with st.expander("📎 Fontes citadas"):
+                with st.expander("Fontes citadas"):
                     for source, page in msg["sources"]:
                         st.write(f"- `{source}:p{page}`")
 
@@ -579,7 +578,7 @@ with tab_chat:
                     st.markdown(ans_text)
                     sources = res.get("sources", [])
                     if sources:
-                        with st.expander("📎 Dispositivos Normativos"):
+                        with st.expander("Dispositivos Normativos"):
                             for s, p in sources:
                                 st.write(f"- `{s}:p{p}`")
                     citacoes = res.get("citacoes")
@@ -597,7 +596,7 @@ with tab_chat:
 
                     cached = exact_cache.get(user_query)
                     if cached:
-                        st.success("⚡ Cache hit (exato)")
+                        st.success("Cache hit (exato)")
                         st.markdown(cached)
                         log_event("cache_hit", trace_id=trace_id, layer="exact")
                         st.session_state["messages"].append({
@@ -622,7 +621,7 @@ with tab_chat:
                         st.markdown(ans_text)
                         sources = res.get("sources", [])
                         if sources:
-                            with st.expander("📎 Fontes citadas"):
+                            with st.expander("Fontes citadas"):
                                 for s, p in sources:
                                     st.write(f"- `{s}:p{p}`")
 
@@ -640,7 +639,7 @@ with tab_chat:
 # TAB 3: BENCHMARK & EFICIÊNCIA (UNFAIR ADVANTAGE DO PARECER)
 # ==============================================================================
 with tab_benchmark:
-    st.subheader("📊 Comparativo de Eficiência, Unfair Advantage e Validação")
+    st.subheader("Comparativo de Eficiência, Unfair Advantage e Validação")
     st.markdown(
         "Números medidos no benchmark interno. A comparação com o fluxo tradicional e com as ferramentas de "
         "mercado ainda não foi medida (ver 'Hipóteses não validadas' no README)."
@@ -659,7 +658,7 @@ with tab_benchmark:
     )
     col_m4.metric("Automação de Auditoria", "ROPA Instantâneo", "Art. 37 da LGPD")
 
-    st.markdown("### 🥊 Matriz de Diferenciação (*Unfair Advantage*)")
+    st.markdown("### Matriz de Diferenciação (*Unfair Advantage*)")
     st.markdown(
         """
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
@@ -674,7 +673,7 @@ with tab_benchmark:
     )
 
     st.divider()
-    st.subheader("📋 Amostra das 25 Perguntas do Benchmark Oficial (Gate 1)")
+    st.subheader("Amostra das 25 Perguntas do Benchmark Oficial (Gate 1)")
 
     benchmark_json_path = _ROOT / "docs" / "fase3" / "benchmark" / "perguntas.json"
     if benchmark_json_path.exists():
