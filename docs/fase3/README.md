@@ -27,6 +27,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 10 | [09_relatorio_para_analise.md](09_relatorio_para_analise.md) | Relatório autossuficiente da auditoria para análise externa |
 | 11 | [10_relatorio_pos_correcoes.md](10_relatorio_pos_correcoes.md) | Correções aplicadas, números medidos depois delas e itens abertos |
 | 12 | [11_relatorio_correcoes_rodada2.md](11_relatorio_correcoes_rodada2.md) | 2ª rodada: canal AMARELO, consulta do Ato, guarda do 1.131, README e verificador v2 |
+| 13 | [12_relatorio_rodada3_readme_ui.md](12_relatorio_rodada3_readme_ui.md) | 3ª rodada: README e UI alinhados ao código, tema claro, guarda de UI e manifesto de normas |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
