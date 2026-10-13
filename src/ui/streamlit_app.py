@@ -363,6 +363,12 @@ with tab_balcao:
                             disabled=indefinido,
                         )
 
+                    if resultado.citacoes and resultado.citacoes.nao_verificadas():
+                        st.warning(
+                            "⚠️ **Citações não verificadas nos trechos recuperados** — confira antes de usar a minuta:\n\n"
+                            + "\n".join(f"- {c.descricao()}" for c in resultado.citacoes.nao_verificadas())
+                        )
+
                     # Fundamentação e Auditoria
                     col_fund, col_audit = st.columns(2)
                     with col_fund:
@@ -539,6 +545,11 @@ with tab_chat:
     for msg in st.session_state["messages"]:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
+            if msg.get("aviso_citacoes"):
+                st.warning(
+                    "⚠️ **Citações não verificadas nos trechos recuperados** — confira antes de usar:\n\n"
+                    + "\n".join(f"- {a}" for a in msg["aviso_citacoes"])
+                )
             if msg.get("sources"):
                 with st.expander("📎 Fontes citadas"):
                     for source, page in msg["sources"]:
@@ -563,10 +574,13 @@ with tab_chat:
                         with st.expander("📎 Dispositivos Normativos"):
                             for s, p in sources:
                                 st.write(f"- `{s}:p{p}`")
+                    citacoes = res.get("citacoes")
                     st.session_state["messages"].append({
                         "role": "assistant",
                         "content": ans_text,
                         "sources": sources,
+                        # guardado na mensagem: o st.rerun() abaixo redesenha tudo a partir daqui
+                        "aviso_citacoes": [c.descricao() for c in citacoes.nao_verificadas()] if citacoes else [],
                     })
             else:
                 with trace("query_handle", query=user_query, domain=selected_domain) as ctx:

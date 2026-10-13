@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, Field, model_validator
 
 from src.fase3.retrieval import rotulo_fonte
+from src.fase3.verificador_citacoes import RelatorioCitacoes, verificar
 
 if TYPE_CHECKING:
     from src.fase3.pipeline import Fase3Pipeline
@@ -95,6 +96,8 @@ class AtoProntoOutput(BaseModel):
     auditoria_lgpd: RegistroAuditoriaLGPD | RegistroFalha
     fontes_corpus: list[str] = Field(default_factory=list, description="Lista de fontes normativas oficiais recuperadas pelo RAG")
     latencia_s: float = Field(default=0.0, description="Tempo total de processamento em segundos")
+    citacoes: RelatorioCitacoes | None = Field(
+        default=None, description="Conferência das citações contra os trechos recuperados (preenchida pelo sistema)")
 
     @model_validator(mode="after")
     def _falha_so_com_indefinido(self) -> "AtoProntoOutput":
@@ -245,7 +248,11 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
         # Converte o canal para maiúsculo se necessário
         if "canal" in dados and isinstance(dados["canal"], str):
             dados["canal"] = dados["canal"].upper()
+        dados.pop("citacoes", None)  # a conferência é do sistema, nunca do LLM
         saida = AtoProntoOutput.model_validate(dados)
+        texto_citado = "\n\n".join(
+            [f"{f.norma} — {f.artigo}" for f in saida.fundamentacao] + [saida.instrucao_balcao, saida.minuta_ato])
+        saida.citacoes = verificar(texto_citado, hits)
     except Exception as e:
         # Rede, JSON inválido ou schema inválido: nunca decide canal no escuro
         logger.exception("Falha ao gerar Ato Pronto (protocolo %s)", pedido.protocolo)

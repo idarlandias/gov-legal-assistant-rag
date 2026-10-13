@@ -130,9 +130,12 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
                 out = pipeline.answer(p["pergunta"], k=k, domain=domain)
             rec["resposta"] = out.get("answer", "")
             rec["fontes"] = fmt_sources(out.get("sources", []))
+            # só a Fase 3 devolve a conferência de citações; a coleção docs fica sem (None)
+            rec["citacoes"] = resumo_citacoes(out["citacoes"]) if out.get("citacoes") is not None else None
             rec["erro"] = None
         except Exception as e:  # registra e segue; o exit code sinaliza a falha
             rec["resposta"], rec["fontes"], rec["erro"] = "", "", f"{type(e).__name__}: {e}"
+            rec["citacoes"] = None
         rec["latencia_s"] = round(time.perf_counter() - t0, 2)
         tem_usage = usage["calls"] > before["calls"] and usage["calls_sem_usage"] == before["calls_sem_usage"]
         rec["tokens_entrada"] = usage["prompt_tokens"] - before["prompt_tokens"] if tem_usage else None
@@ -143,7 +146,31 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
         print(f"[{i + 1}/{len(perguntas)}] #{p['id']} {status}", file=sys.stderr)
         if sleep_s and i < len(perguntas) - 1:
             time.sleep(sleep_s)
+    meta["citacoes"] = agregar_citacoes(resultados)
     return meta, resultados
+
+
+def resumo_citacoes(relatorio: Any) -> dict:
+    """Versão serializável do RelatorioCitacoes para o JSON e a planilha."""
+    return {
+        "total": relatorio.total,
+        "verificadas": relatorio.verificadas,
+        "norma_divergente": relatorio.norma_divergente,
+        "nao_recuperada": relatorio.nao_recuperada,
+        "taxa_verificavel": relatorio.taxa_verificavel,
+        "nao_verificadas": [c.descricao() for c in relatorio.nao_verificadas()],
+    }
+
+
+def agregar_citacoes(resultados: list[dict]) -> dict | None:
+    """Totais da execução: taxa_verificavel = verificadas / total de citações (None se não houve)."""
+    com = [r["citacoes"] for r in resultados if r.get("citacoes")]
+    if not com:
+        return None
+    soma = {k: sum(c[k] for c in com) for k in ("total", "verificadas", "norma_divergente", "nao_recuperada")}
+    soma["taxa_verificavel"] = soma["verificadas"] / soma["total"] if soma["total"] else None
+    soma["perguntas_sem_citacao"] = sum(1 for c in com if c["total"] == 0)
+    return soma
 
 
 def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -> tuple[int, int]:
@@ -177,6 +204,11 @@ def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -
         ws[f"I{r}"] = rec["latencia_s"]
         ws[f"J{r}"] = rec["tokens_entrada"]
         ws[f"K{r}"] = rec["tokens_saida"]
+        cit = rec.get("citacoes")
+        if cit:  # V (taxa) é fórmula na planilha
+            ws[f"T{r}"] = cit["total"]
+            ws[f"U{r}"] = cit["verificadas"]
+            ws[f"W{r}"] = "; ".join(cit["nao_verificadas"])
         escritas += 1
     try:
         wb.save(path)
@@ -240,6 +272,13 @@ def main() -> int:
     if args.xlsx:
         escritas, puladas = fill_xlsx(XLSX_PATH, meta, resultados, args.overwrite)
         print(f"Planilha: {escritas} linhas escritas, {puladas} puladas", file=sys.stderr)
+
+    cit = meta.get("citacoes")
+    if cit:
+        taxa = f"{cit['taxa_verificavel']:.0%}" if cit["taxa_verificavel"] is not None else "n/a"
+        print(f"Citações: {cit['verificadas']}/{cit['total']} verificadas ({taxa}) · "
+              f"{cit['norma_divergente']} norma divergente · {cit['nao_recuperada']} não recuperadas",
+              file=sys.stderr)
 
     erros = [r for r in resultados if r["erro"]]
     sem_tokens = [r["id"] for r in resultados if not r["erro"] and r["tokens_entrada"] is None]

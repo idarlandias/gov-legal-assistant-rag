@@ -63,6 +63,11 @@ RESP_COLS = [
     ("Q", "Sem alucinação (0-2)", 13, "score"),
     ("R", "Nota (0-10)", 10, "formula"),
     ("S", "Observações", 40, "input"),
+    # Verificador de citações (RAG Fase 3): preenchido pelo run_rag_benchmark.py, sem LLM
+    ("T", "Citações (total)", 11, "input"),
+    ("U", "Citações verificadas", 12, "input"),
+    ("V", "Taxa verificável", 11, "formula"),
+    ("W", "Citações não verificadas", 50, "input"),
 ]
 
 RUBRICA = [
@@ -198,6 +203,9 @@ def build_respostas(wb: Workbook, perguntas: list[dict], ferramentas: list[str])
                     c.number_format = "0.0000"
                 elif letter == "R":
                     c.value = f'=IF(COUNT(M{row}:Q{row})=5,SUM(M{row}:Q{row}),"")'
+                elif letter == "V":
+                    c.value = f'=IF(AND(ISNUMBER(T{row}),T{row}>0),U{row}/T{row},"")'
+                    c.number_format = "0%"
                 _style(c, kind)
             row += 1
     last = row - 1
@@ -216,7 +224,7 @@ def build_respostas(wb: Workbook, perguntas: list[dict], ferramentas: list[str])
         CellIsRule(operator="lessThan", formula=["6"],
                    fill=PatternFill("solid", fgColor="FFC7CE")))
     ws.freeze_panes = "E2"
-    ws.auto_filter.ref = f"A1:S{last}"
+    ws.auto_filter.ref = f"A1:W{last}"
     return last
 
 
@@ -265,10 +273,10 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
 
     heads = ["Ferramenta", "Avaliadas", "Nota média (0-10)", "Veredito", "Fundamentação",
              "Norma CE", "Acionável", "Sem alucinação", "% notas ≥ 8",
-             "Latência média (s)", "Custo / consulta (R$)"]
+             "Latência média (s)", "Custo / consulta (R$)", "Taxa verificável (citações)"]
     _header(ws, 3, heads)
     ws.column_dimensions["A"].width = 18
-    for col in "BCDEFGHIJK":
+    for col in "BCDEFGHIJKL":
         ws.column_dimensions[col].width = 14
     ws.row_dimensions[3].height = 30
 
@@ -294,13 +302,16 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
         else:
             prow = 10 + comp.index(tool)
             cells["K"] = f'=IF(ISNUMBER(Parametros!$D${prow}),Parametros!$D${prow},"")'
+        # total da ferramenta: soma das verificadas / soma das citações (não a média das taxas)
+        cells["L"] = (f'=IF(SUMIFS({rng("T")},{rng("B")},$A{r})=0,"",'
+                      f'SUMIFS({rng("U")},{rng("B")},$A{r})/SUMIFS({rng("T")},{rng("B")},$A{r}))')
         for col, v in cells.items():
             c = ws[f"{col}{r}"]
             c.value = v
             _style(c, "key" if col == "A" else "formula")
             if col in "CDEFGHJ" and col != "A":
                 c.number_format = "0.00"
-            if col == "I":
+            if col in ("I", "L"):
                 c.number_format = "0%"
             if col == "K":
                 c.number_format = "0.0000"
