@@ -1,0 +1,17 @@
+{
+  "pergunta_id": 5,
+  "pergunta_texto": "Busca por CPF solicitada por um credor para localizar bens do devedor. Qual é o procedimento?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Procedimento para busca de bens do devedor por CPF**\n\n1. **Requerimento ao Oficial do Registro de Imóveis**  \n   O credor deve protocolar um requerimento ao Oficial do Registro de Imóveis, contendo:\n   - CPF e nome do devedor (e, se for casado, do cônjuge) – **Art. 1659, inciso I**;\n   - Endereço residencial atual e anterior, se houver – **Art. 1659, inciso II**;\n   - Endereço comercial, se houver – **Art. 1659, inciso III**;\n   - Qualificação completa das partes (nome, domicílio, nacionalidade, estado civil, regime de bens, profissão, CPF ou documento de identidade) – **Art. 1.103 do Provimento 15/2026/CGJCE**.\n\n2. **Busca de bens**  \n   O Oficial, com base no CPF informado, realiza a busca no Registro de Imóveis e emite um **certificado de busca de bens** (lista de imóveis registrados em nome do CPF).  \n\n3. **Intimação do devedor (se necessário)**  \n   Caso o devedor não seja localizado nos endereços indicados, o Oficial procede à intimação conforme **Art. 1666** (intimação por hora certa, com possibilidade de intimar pessoas próximas ou funcionários de portaria, se aplicável).  \n\n4. **Entrega do resultado**  \n   O certificado de busca, acompanhado de eventuais comprovantes de intimação, é entregue ao credor, permitindo-lhe prosseguir com as medidas de cobrança ou execução.\n\n> **Resumo**: O credor solicita a busca de bens do devedor por CPF, seguindo os requisitos de Art. 1659 e Art. 1.103, e o Oficial realiza a busca e, se necessário, a intimação conforme Art. 1666.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1666:p342",
+    "Código de Normas CGJ-CE — Art. 1659:p339",
+    "Código de Normas CGJ-CE — Art. 1621:p330",
+    "Provimento 15/2026/CGJCE — Art. 1:p2"
+  ]
+}

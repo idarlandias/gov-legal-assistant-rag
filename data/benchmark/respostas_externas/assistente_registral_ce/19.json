@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 19,
+  "pergunta_texto": "Um titular pede relatório de quem consultou sua matrícula. Tenho obrigação de informar?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "Sim.  \nDe acordo com o art. 18 da LGPD, “os direitos dos titulares são, em regra, exercidos em face do controlador, a quem compete, entre outras providências, **fornecer informações relativas ao tratamento**”. Como o registro de imóveis é o controlador dos dados pessoais do titular, você tem obrigação de informar quem consultou a matrícula.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Guia ANPD — Agentes de Tratamento — p. 8:p8",
+    "Código de Normas CGJ-CE — Art. 1461:p299",
+    "Provimento CNJ 149/2023 — Art. 415:p265",
+    "LAI (Lei 12.527/2011) — Art. 30:p0",
+    "Provimento CNJ 149/2023 — Art. 89:p47"
+  ]
+}

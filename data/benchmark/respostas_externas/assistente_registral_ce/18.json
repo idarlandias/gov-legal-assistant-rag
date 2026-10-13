@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 18,
+  "pergunta_texto": "Um titular pede, com base na LGPD, a exclusão dos seus dados da matrícula. Como respondo?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Decisão:** Praticar o ato registral integralmente – proceder à exclusão dos dados pessoais do titular da matrícula.\n\n**Fundamentação normativa**\n\n1. **LGPD – Art. 18, § 5º** – “O requerimento referido no § 3º deste artigo será atendido sem custos para o titular, nos prazos e nos termos previstos em regulamento.”  \n   → O pedido de exclusão constitui requerimento previsto no art. 18 e, portanto, deve ser atendido.\n\n2. **LGPD – Art. 18, § 6º** – “O responsável deverá informar, de maneira imediata, aos agentes de tratamento com os quais tenha realizado uso compartilhado de dados a correção, a eliminação, a anonimização ou o bloqueio dos dados…”  \n   → Após a exclusão no cartório, o responsável deve comunicar a eliminação aos demais agentes de tratamento que eventualmente tenham recebido esses dados.\n\n3. **LGPD – Art. 9, incisos I a VII** – Impõe ao controlador a obrigação de disponibilizar ao titular informações claras sobre a finalidade, forma e duração do tratamento, bem como os direitos do titular (art. 9, § 1º).  \n   → O cartório, na qualidade de controlador, deve garantir ao titular a transparência sobre o procedimento de exclusão e confirmar que o tratamento cessará.\n\n**Procedimento operacional**\n\n- Receber o requerimento por escrito (ou meio eletrônico que assegure a autenticidade do titular).  \n- Verificar a identidade do titular e a titularidade dos dados constantes na matrícula.  \n- Efetuar a exclusão dos dados pessoais solicitados, observando a necessidade de preservação de informações indispensáveis ao registro público (ex.: dados indispensáveis à validade do ato registral, nos termos da Lei 6.015/1973 – não abordado no corpus, mas que, se necessário, será tratado mediante **tarjamento protetivo**).  \n- Emitir nota de devolutiva confirmando a exclusão e informando a comunicação aos demais agentes de tratamento, nos termos do art. 18, § 6º.  \n- Arquivar o procedimento conforme a política de tratamento de dados pessoais do cartório.  \n\n**Conclusão:** Conforme o disposto no art. 18, §§ 5º e 6º da LGPD, o pedido de exclusão deve ser atendido integralmente, devendo o cartório proceder à eliminação dos dados pessoais do titular da matrícula e comunicar a eliminação aos demais agentes de tratamento.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "LGPD (Lei 13.709/2018) — Art. 9:p0",
+    "LGPD (Lei 13.709/2018) — Art. 18:p0",
+    "LGPD (Lei 13.709/2018) — Art. 11:p0",
+    "LGPD (Lei 13.709/2018) — Art. 4:p0",
+    "LGPD (Lei 13.709/2018) — Art. 20:p0"
+  ]
+}

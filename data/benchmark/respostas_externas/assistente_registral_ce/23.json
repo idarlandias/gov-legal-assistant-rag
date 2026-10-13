@@ -1,0 +1,15 @@
+{
+  "pergunta_id": 23,
+  "pergunta_texto": "O que mudou com o Provimento nº 15/2026/CGJCE na qualificação das partes para registro?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**O que mudou com o Provimento nº 15/2026/CGJCE na qualificação das partes para registro?**\n\nO provimento alterou a redação dos dispositivos que tratam da qualificação das partes nos registros, tornando‑a mais rigorosa e detalhada. As principais mudanças são:\n\n| Dispositivo | Alteração | Conteúdo exigido |\n|-------------|-----------|------------------|\n| **Art. 817, I a)** | Redação atualizada | Qualificação completa de pessoa física: nacionalidade, estado civil, profissão, número do documento de identidade e repartição expedidora, número de inscrição no CPF, filiação, domicílio e residência, nome do cônjuge ou companheiro (quando houver) e regime de bens do casamento ou da união estável (se declarado). Vedada a utilização das expressões “regime comum” ou “regime legal”. |\n| **Art. 1.103, II a) e b)** | Redação atualizada | 1. **Pessoa natural**: além dos dados já citados, deve constar o número de inscrição no CPF ou documento de identidade, ou, na falta deste, a filiação. <br>2. **Pessoa jurídica**: denominação social, número de inscrição no CNPJ e sede. |\n\nEssas alterações reforçam a exigência de **qualificação completa e não genérica** das partes, impedindo a prática de atos registrais com qualificação incompleta, genérica ou indeterminada (conforme o § único do Art. 1 do Provimento 15/2026/CGJCE).  \n\n**Conclusão**: O Provimento nº 15/2026/CGJCE atualizou a qualificação das partes, exigindo que todas as informações obrigatórias estejam presentes e expressas de forma clara, sem o uso de termos genéricos.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Provimento 15/2026/CGJCE — Art. 1:p2",
+    "Provimento 15/2026/CGJCE — Preâmbulo:p1"
+  ]
+}

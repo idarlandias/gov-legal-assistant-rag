@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 6,
+  "pergunta_texto": "Um requerente pede, por telefone, o nome do proprietário de um imóvel. Posso informar?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "Não encontrado no corpus.",
+  "citacoes_declaradas": [],
+  "recusou_responder": true,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=NAO_ENCONTRADO, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1394:p282",
+    "Código de Normas CGJ-CE — Art. 1456:p297",
+    "Código de Normas CGJ-CE — Art. 1386:p281",
+    "Provimento CNJ 149/2023 — Art. 426:p269",
+    "Código de Normas CGJ-CE — Art. 1364:p277"
+  ]
+}

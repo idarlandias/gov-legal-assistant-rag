@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 22,
+  "pergunta_texto": "Compartilhamento com ONR/SREI e centrais eletrônicas: preciso de base legal adicional ou de consentimento?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-120b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta:** O ato registral deve ser praticado integralmente.\n\n**Fundamentação normativa**\n\n1. **Integração com o ONR** – O Código de Normas da CGJ‑CE, art. 1749, determina que as serventias “adotarão as medidas necessárias para a integração, diretamente com o representante legal do ONR – Operador Nacional de Registro Eletrônico de Imóveis”. Não há exigência de autorização adicional ou de consentimento do titular dos dados para essa integração.\n\n2. **Compartilhamento de dados com centrais eletrônicas** – O Provimento CNJ 149/2023, art. 101, dispõe que “o compartilhamento de dados com centrais de serviços eletrônicos compartilhados é compatível com a proteção de dados pessoais, devendo as centrais observar a adequação, necessidade e persecução da finalidade dos dados a serem compartilhados…”. O parágrafo único ainda enfatiza a preferência pela **descentralização** das bases, evitando a transferência de bases de dados quando possível. Não há menção à necessidade de consentimento do titular para o compartilhamento nos termos previstos.\n\n3. **Reforço da mesma regra** – O Código de Normas da CGJ‑CE, art. 196, repete integralmente o conteúdo do art. 101 do Provimento CNJ 149/2023, confirmando que o compartilhamento é permitido desde que observados os princípios de adequação, necessidade e finalidade, sem exigir consentimento adicional.\n\n**Conclusão prática**\n\n- Não é necessária **base legal adicional** nem **consentimento explícito** do titular dos dados para o compartilhamento com o ONR/SREI e as centrais eletrônicas, desde que o procedimento observe os requisitos de adequação, necessidade e finalidade previstos nos dispositivos citados.\n- Portanto, o ato registral pode ser **praticado integralmente**, atendendo às exigências dos artigos acima mencionados.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1749:p357",
+    "Provimento CNJ 149/2023 — Art. 101:p51",
+    "Código de Normas CGJ-CE — Art. 196:p68",
+    "Provimento CNJ 149/2023 — Art. 321:p208",
+    "Provimento CNJ 149/2023 — Art. 219:p118"
+  ]
+}

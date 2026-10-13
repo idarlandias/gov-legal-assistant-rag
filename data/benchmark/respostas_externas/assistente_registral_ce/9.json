@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 9,
+  "pergunta_texto": "A polícia pede por ofício dados de um proprietário sem ordem judicial. Como proceder?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta Jurídica e Operacional**\n\nO ato de fornecer os dados solicitados pela polícia, sem que exista ordem judicial que autorize tal tratamento, deve ser **indeferido por meio de Nota Devolutiva**.\n\n**Fundamentação:**\n\n- **Código de Normas CGJ‑CE, Art. 1128, § 4º**: “Caracterizada tentativa de tratamento de dados em desacordo com as finalidades do Registro de Imóveis e com os princípios da Lei Geral de Proteção de Dados Pessoais, poderá o Oficial recusar o fornecimento em nota fundamentada, do que caberá revisão pelo juízo competente.”\n\nComo não há ordem judicial que autorize a divulgação dos dados pessoais do proprietário, a solicitação viola os princípios da LGPD e as finalidades do Registro de Imóveis. Portanto, o oficial deve recusar o pedido, emitindo uma Nota Devolutiva fundamentada no Art. 1128, § 4º.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1464:p299",
+    "Lei 6.015/1973 — Art. 283:p0",
+    "Provimento CNJ 149/2023 — Art. 320-AE:p205",
+    "Código de Normas CGJ-CE — Art. 1128:p229",
+    "Provimento CNJ 149/2023 — Art. 320-AK:p206"
+  ]
+}

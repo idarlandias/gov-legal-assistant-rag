@@ -1,0 +1,17 @@
+{
+  "pergunta_id": 20,
+  "pergunta_texto": "Um titular pede correção de dado pessoal errado na matrícula. Qual é o procedimento: retificação ou pedido LGPD?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-120b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Procedimento a ser adotado:** **Retificação registral praticada integralmente** (sem tarja protetiva e sem indeferimento).\n\n**Fundamentação normativa**\n\n1. **Código de Normas da CGJ‑CE – Art. 1.386**  \n   > “No que diz respeito à retificação de dados de qualificação pessoal das partes, caberá ao Oficial do Registro de Imóveis somente retificar o erro à margem do registro (matrícula, transcrição ou inscrição) do nome e estado civil do proprietário, que deverá apresentar requerimento com firma reconhecida ou assinado digitalmente, quando comprovado:  \n   > a) que o nome lançado no assento não corresponde ao nome apresentado no registro civil …;  \n   > b) que se trata do titular do domínio.”  \n\n   – O pedido do titular enquadra‑se exatamente na hipótese (a) e (b) do inciso acima, logo o ato de correção deve ser realizado por **retificação à margem da matrícula**, mediante requerimento formal.\n\n2. **LGPD – Art. 18, §§ 5º e 6º** (direito à correção de dados pessoais)  \n   > “§ 5º O requerimento referido no § 3º deste artigo será atendido sem custos para o titular…  \n   > § 6º O responsável deverá informar, de maneira imediata, aos agentes de tratamento … a correção, a eliminação, a anonimização ou o bloqueio dos dados…”  \n\n   – O titular exerce o direito de correção previsto na LGPD; o controlador (no caso, o Cartório de Registro de Imóveis) deve atender ao pedido, o que se operacionaliza mediante a **retificação registral** prevista no art. 1.386 da CGJ‑CE.\n\n**Conclusão prática**\n\n- O pedido deve ser **aceito** e **atendido integralmente** por meio de **retificação à margem da matrícula**, nos termos do art. 1.386 da CGJ‑CE.  \n- O requerimento deve conter:  \n  1. Petição assinada digitalmente ou com firma reconhecida;  \n  2. Documentos comprobatórios (certidão de nascimento, casamento ou registro de estrangeiro) que demonstrem o nome correto;  \n  3. Indicação clara do erro a ser corrigido.  \n\n- Não há necessidade de tarja protetiva, pois o dado a ser corrigido não se trata de informação sensível que exija restrição de acesso.  \n\n- O cartório deve ainda observar o disposto nos §§ 5º e 6º do art. 18 da LGPD, garantindo que a correção seja efetuada sem custos ao titular e comunicando, se houver outros agentes de tratamento, a atualização dos dados.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "LGPD (Lei 13.709/2018) — Art. 18:p0",
+    "LGPD (Lei 13.709/2018) — Art. 5:p0",
+    "Código de Normas CGJ-CE — Art. 1386:p281",
+    "LGPD (Lei 13.709/2018) — Art. 7:p0"
+  ]
+}

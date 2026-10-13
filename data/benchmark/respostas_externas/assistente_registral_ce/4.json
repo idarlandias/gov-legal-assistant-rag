@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 4,
+  "pergunta_texto": "Alguém pede para buscar \"todos os imóveis em nome de fulano\" informando só o nome. Posso fazer a busca e informar?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-120b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta:** Indeferir o pedido via **Nota Devolutiva**.\n\n**Fundamentação normativa**\n\n- **Código de Normas CGJ‑CE – Art. 1.128, § 2º, inc. IV**:  \n  “as requisições de buscas fundadas exclusivamente no indicador pessoal ou real” são vedadas. O pedido “todos os imóveis em nome de fulano”, apresentado apenas com o nome (indicador pessoal), enquadra‑se exatamente nessa hipótese, não havendo a exigência de identificação do requerente nem de finalidade específica.\n\n- **Lei Geral de Proteção de Dados (LGPD) – Art. 7º** (não explicitado no corpus, mas aplicável por analogia): o tratamento de dados pessoais (lista de imóveis vinculados a pessoa física) só pode ocorrer mediante consentimento ou outra hipótese legal, o que não foi demonstrado no pedido.\n\n**Conclusão operacional**\n\n- O registro não deve ser praticado integralmente nem com tarja protetiva; o pedido deve ser **indeferido** mediante emissão de Nota Devolutiva, informando ao solicitante a impossibilidade de atender à busca baseada exclusivamente no nome.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Lei 6.015/1973 — Art. 234:p0",
+    "Lei 6.015/1973 — Art. 222:p0",
+    "Código de Normas CGJ-CE — Art. 1416:p287",
+    "Código de Normas CGJ-CE — Art. 1311:p267",
+    "Código de Normas CGJ-CE — Art. 1128:p229"
+  ]
+}

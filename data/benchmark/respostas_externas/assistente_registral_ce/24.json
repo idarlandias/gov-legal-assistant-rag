@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 24,
+  "pergunta_texto": "Pelo Código de Normas do CE, quais são os requisitos para emitir certidão digital?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Requisitos para emissão de certidão digital (Código de Normas CGJ‑CE)**  \n\n| Requisito | Dispositivo normativo |\n|-----------|-----------------------|\n| 1. Utilizar formulário próprio, timbrado e oficial, proibida a utilização de impressos não oficiais. | Art. 1127, § 1º, I |\n| 2. Se a certidão for assinada ou enviada pela Internet, deve atender aos requisitos da Infraestrutura de Chaves Públicas Brasileira (ICP‑Brasil). | Art. 1127, § 1º, único |\n| 3. Certidões de imóveis já objeto de matrícula eletrônica, após a “primeira qualificação eletrônica”, devem ser expedidas em formato nato‑digital estruturado, contendo a situação jurídica atual do imóvel (descrição, titularidade e ônus reais não cancelados). | Art. 1129 |\n| 4. Para escrituração de livros em formato digital, o arquivo deve ser assinado eletronicamente com certificado digital padrão ICP‑Brasil, pode incluir carimbo do tempo e deve ser mantido na própria serventia, com cópia de segurança regular. | Art. 140, § 3º |\n\nEsses são os requisitos expressos no Código de Normas CGJ‑CE para a emissão de certidão digital.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1127:p229",
+    "Código de Normas CGJ-CE — Art. 1128:p229",
+    "Código de Normas CGJ-CE — Art. 1685:p345",
+    "Código de Normas CGJ-CE — Art. 1129:p229",
+    "Código de Normas CGJ-CE — Art. 140:p58"
+  ]
+}

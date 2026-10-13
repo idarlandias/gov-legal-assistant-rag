@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 10,
+  "pergunta_texto": "O Ministério Público requisita certidões em massa. Há limite ou exigência de fundamentação?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "Não encontrado no corpus.",
+  "citacoes_declaradas": [],
+  "recusou_responder": true,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=NAO_ENCONTRADO, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1367:p277",
+    "Código de Normas CGJ-CE — Art. 1141:p232",
+    "Código de Normas CGJ-CE — Art. 1128:p229",
+    "Código de Normas CGJ-CE — Art. 1127:p229",
+    "Lei 6.015/1973 — Art. 176-O:p0"
+  ]
+}

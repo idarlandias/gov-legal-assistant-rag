@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 13,
+  "pergunta_texto": "A matrícula contém averbação de interdição/curatela. A certidão pode ser emitida sem restrição?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta**  \nA certidão não pode ser emitida sem incluir a averbação de interdição/curatela que consta na matrícula.  \n\n**Dispositivo legal**  \n- Lei 6.015/1973, Art. 19, § 11: “No âmbito do registro de imóveis, a certidão de inteiro teor da matrícula conterá a reprodução de todo seu conteúdo e será suficiente para fins de comprovação de propriedade, direitos, ônus reais e restrições sobre o imóvel, independentemente de certificação específica pelo oficial.”  \n\n- Lei 6.015/1973, Art. 230: “Se na certidão constar ônus, o oficial fará a matrícula, e, logo em seguida ao registro, averbará a existência do ônus, sua natureza e valor, certificando o fato no título que devolverá à parte.”\n\n**Conclusão**  \nO ato deve ser **indefere via Nota Devolutiva**. A certidão de inteiro teor deve reproduzir integralmente a averbação de interdição/curatela; omiti-la violaria o disposto nos dispositivos citados.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Código de Normas CGJ-CE — Art. 1131:p229",
+    "Lei 6.015/1973 — Art. 19:p0",
+    "Lei 6.015/1973 — Art. 230:p0",
+    "Código de Normas CGJ-CE — Art. 1416:p287",
+    "Provimento CNJ 149/2023 — Art. 201:p94"
+  ]
+}

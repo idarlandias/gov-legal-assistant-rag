@@ -1,0 +1,17 @@
+{
+  "pergunta_id": 1,
+  "pergunta_texto": "Um terceiro sem vínculo pede certidão de inteiro teor de uma matrícula. Posso emitir sem exigir motivo?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-120b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta:**  \nSim. A certidão de inteiro teor pode ser emitida ao requerente, ainda que ele seja um terceiro sem vínculo ou sem apresentar justificativa para o pedido.\n\n**Fundamentação normativa**\n\n1. **Lei nº 6.015/1973 – Art. 19, § 11**  \n   > “No âmbito do registro de imóveis, a certidão de inteiro teor da matrícula conterá a reprodução de todo seu conteúdo e será suficiente para fins de comprovação de propriedade, direitos, ônus reais e restrições sobre o imóvel, independentemente de certificação específica pelo oficial.”  \n\n   O dispositivo não impõe a exigência de motivação ou vínculo do requerente para a expedição da certidão.\n\n2. **Código de Normas da CGJ‑CE – Art. 1.131, §§ 1‑2**  \n   > “Ao receber o pedido de certidão, o Oficial fornecerá, obrigatoriamente, ao requerente protocolo… e o prazo para a entrega do documento que não poderá exceder a 05 (cinco) dias úteis… A certidão será lavrada em inteiro teor… não podendo ser retardada por mais de 5 (cinco) dias úteis.”  \n\n   Não há previsão de necessidade de justificativa ou de vínculo do interessado; o oficial apenas cumpre o prazo e informa os custos.\n\n3. **Provimento CNJ 149/2023 – Art. 327**  \n   > “A certidão de inteiro teor digital solicitada durante o horário de expediente… será emitida e disponibilizada dentro de no máximo 2 horas… e ficará disponível para download pelo requerente pelo prazo mínimo de 30 dias.”  \n\n   O provimento regula apenas o prazo e a forma de disponibilização, não condicionando a emissão a motivo ou vínculo.\n\n4. **Provimento CNJ 149/2023 – Art. 200** (restrição que não se aplica ao caso)  \n   > “É vedada a expedição de nova certidão de inteiro teor… tendo como única fonte de consulta anterior certidão expedida por unidade do serviço extrajudicial.”  \n\n   Essa vedação refere‑se à origem da informação, não à identidade do requerente.\n\n**Conclusão prática**  \nO ato registral deve ser praticado integralmente: a serventia pode expedir a certidão de inteiro teor da matrícula ao terceiro, sem necessidade de exigir motivo ou comprovar vínculo. O oficial observará apenas os requisitos de protocolo, pagamento de emolumentos e os prazos estabelecidos nos dispositivos citados.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Lei 6.015/1973 — Art. 19:p0",
+    "Código de Normas CGJ-CE — Art. 1131:p229",
+    "Provimento CNJ 149/2023 — Art. 327:p209",
+    "Provimento CNJ 149/2023 — Art. 200:p94"
+  ]
+}

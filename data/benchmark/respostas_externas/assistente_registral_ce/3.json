@@ -1,0 +1,17 @@
+{
+  "pergunta_id": 3,
+  "pergunta_texto": "Pedido de certidão da matrícula com o histórico de todos os ônus, incluindo penhoras já canceladas. Emito integralmente?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-120b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Decisão:** Indeferir o pedido via **Nota Devolutiva** – a certidão deverá conter apenas os ônus reais **não cancelados**, nos termos da normativa vigente.\n\n**Fundamentação normativa**\n\n1. **Código de Normas da CGJ‑CE – Art. 1.129**  \n   > “As certidões dos imóveis que já forem objeto de matrícula eletrônica, após a ‘primeira qualificação eletrônica’, serão expedidas … contendo a situação jurídica atual do imóvel, ou seja, sua descrição, titularidade e os ônus reais **não cancelados**.”  \n\n   O dispositivo delimita expressamente o conteúdo da certidão à situação jurídica **atual**, excluindo, portanto, ônus que já tenham sido cancelados.\n\n2. **Código de Normas da CGJ‑CE – Art. 1.682, parágrafo único**  \n   > “A expedição de certidão de atos anteriores da cadeia filiatória do imóvel depende de identificação segura do requerente e de indicação da finalidade.”  \n\n   Não há previsão de que a certidão de histórico completo (incluindo ônus cancelados) seja emitida de forma automática; sua expedição exigiria requisitos adicionais que não foram atendidos no pedido.\n\n**Conclusão operacional**\n\n- O pedido de certidão contendo **todo o histórico de ônus, inclusive penhoras já canceladas**, ultrapassa o escopo definido pelos artigos acima.  \n- Assim, o ato registral **não deve ser praticado integralmente**.  \n- O cartório deve **indeferir** o pedido mediante **Nota Devolutiva**, orientando o requerente a formular novo pedido específico, com identificação segura e indicação de finalidade, caso deseje acesso a atos anteriores da cadeia filiatória, nos termos do art. 1.682, § único.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Lei 6.015/1973 — Art. 230:p0",
+    "Código de Normas CGJ-CE — Art. 1129:p229",
+    "Código de Normas CGJ-CE — Art. 1682:p345",
+    "Código de Normas CGJ-CE — Art. 1259:p256"
+  ]
+}

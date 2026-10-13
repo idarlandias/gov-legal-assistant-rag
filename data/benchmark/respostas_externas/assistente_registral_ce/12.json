@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 12,
+  "pergunta_texto": "Pedido via LAI sobre os emolumentos arrecadados pela serventia. É dever responder?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Resposta Jurídica e Operacional**\n\nSim, é dever responder ao pedido de acesso à informação sobre os emolumentos arrecadados pela serventia.\n\n**Fundamentação normativa**\n\n- **LAI – Art. 10**  \n  - § 1º: “Qualquer interessado poderá apresentar pedido de acesso a informações … devendo o pedido conter a identificação do requerente e a especificação da informação requerida.”  \n  - § 2º: “Os órgãos e entidades do poder público devem viabilizar alternativa de encaminhamento de pedidos de acesso por meio de seus sítios oficiais na internet.”  \n  - § 3º: “São vedadas quaisquer exigências relativas aos motivos determinantes da solicitação de informações de interesse público.”  \n\n- **LAI – Art. 14**  \n  - “É direito do requerente obter o inteiro teor de decisão de negativa de acesso, por certidão ou cópia.”  \n\nPortanto, a serventia deve atender ao pedido, fornecendo a informação solicitada ou, se houver motivo legítimo para negar, deve apresentar a decisão de negativa com o inteiro teor, conforme Art. 14.  \n\n**Conclusão**  \nO ato registral de resposta ao pedido via LAI deve ser praticado integralmente, obedecendo aos dispositivos citados.",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "LAI (Lei 12.527/2011) — Art. 14:p0",
+    "Provimento CNJ 149/2023 — Art. 228-U:p134",
+    "LAI (Lei 12.527/2011) — Art. 10:p0",
+    "LAI (Lei 12.527/2011) — Art. 13:p0",
+    "Provimento CNJ 149/2023 — Art. 71-J:p35"
+  ]
+}

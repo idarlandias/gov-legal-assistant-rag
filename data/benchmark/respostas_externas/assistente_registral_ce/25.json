@@ -1,0 +1,18 @@
+{
+  "pergunta_id": 25,
+  "pergunta_texto": "Uma certidão com dados pessoais foi enviada ao e-mail errado. Quais são as obrigações da serventia?",
+  "sistema": "assistente_registral_ce",
+  "modelo_ou_plano": "openai/gpt-oss-20b",
+  "coletado_em": "2026-10-13T11:31:32-03:00",
+  "resposta_integral": "**Obrigação da serventia**  \nO envio de uma certidão contendo dados pessoais para o e‑mail errado configura, no mínimo, um erro de tratamento de dados que exige correção imediata e medidas de mitigação, nos termos das normas de proteção de dados aplicáveis à serventia.\n\n| O que deve ser feito | Dispositivo normativo que fundamenta |\n|----------------------|--------------------------------------|\n| **Corrigir o envio** – a serventia deve reenviar a certidão ao destinatário correto e impedir a divulgação indevida. | Art. 103 do Provimento CNJ 149/2023 – “o responsável pela serventia extrajudicial efetuará, sempre que possível, a criptografia ou a pseudonimização de dados pessoais para o acesso a informações ou transferência dos dados para terceiros.” |\n| **Aplicar criptografia ou pseudonimização** – caso a certidão contenha dados sensíveis ou de natureza pessoal, a serventia deve, sempre que possível, proteger esses dados antes de qualquer reenvio ou correção. | Art. 103 do Provimento CNJ 149/2023 |\n| **Garantir a conformidade com a LGPD** – a serventia deve assegurar que o tratamento de dados pessoais, inclusive a correção de erro, esteja em conformidade com os princípios, fundamentos e obrigações da Lei Geral de Proteção de Dados. | Art. 178 do Código de Normas CGJ‑CE |\n| **Fornecer transparência ao titular** – a serventia deve disponibilizar, de forma clara e acessível, informações sobre o tratamento de dados, incluindo a ocorrência do erro e as medidas adotadas para corrigi‑lo. | Art. 97 do Provimento CNJ 149/2023 (aviso de privacidade e proteção de dados) |\n| **Identificar o solicitante** – se a certidão foi solicitada por meio telemático, a serventia deve ter identificado o solicitante de forma idônea, conforme exigido para a tramitação do serviço eletrônico. | Art. 100 do Provimento CNJ 149/2023 |\n\nEm síntese, a serventia deve:  \n1. **Corrigir imediatamente** o envio incorreto;  \n2. **Aplicar criptografia ou pseudonimização** (se possível) antes de reenviar ou corrigir a certidão;  \n3. **Assegurar a conformidade com a LGPD** (Art. 178);  \n4. **Fornecer transparência** ao titular dos dados (Art. 97); e  \n5. **Confirmar a identificação do solicitante** (Art. 100).",
+  "citacoes_declaradas": [],
+  "recusou_responder": false,
+  "observacao": "Exportado de rag-fase3-20261013-113528-reverificado.json (status_resposta=RESPONDIDA, k=5, filtro=registro_imoveis+geral, commit 26168ce).",
+  "trechos_recuperados": [
+    "Provimento CNJ 149/2023 — Art. 103:p52",
+    "Provimento CNJ 149/2023 — Art. 105:p52",
+    "Provimento CNJ 149/2023 — Art. 100:p51",
+    "Código de Normas CGJ-CE — Art. 178:p65",
+    "Provimento CNJ 149/2023 — Art. 97:p50"
+  ]
+}
