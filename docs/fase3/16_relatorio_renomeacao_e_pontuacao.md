@@ -93,4 +93,28 @@ A camada 2 reproduz exatamente o verificador v2 gravado na execução (47 de 55 
 1. Coletar Jus IA, Jurídico AI e LLM genérico com `perguntas_coleta.md`, na ordem de `ordem_coleta.json`, usando `registrar_resposta.py`.
 2. Rodar a pergunta 26 no RAG.
 3. Com pelo menos dois sistemas coletados, gerar o comparativo (só camada 1) e a seção da pergunta 26.
-4. Push dos commits locais (`e7933ce`, `795889b`, `b45b7cb` e este relatório), mediante autorização.
+4. ~~Push dos commits locais~~: feito, ver seção 5.
+
+---
+
+## 5. Protocolo do push
+
+Repositório `https://github.com/idarlandias/gov-legal-assistant-rag.git`, branch `main`.
+
+| Campo | Valor |
+|---|---|
+| Intervalo | `ad8aeea..00372c8` (4 commits) |
+| Commit no topo | `00372c89127e0bc2e0314c3f2aa1f769b357753c` |
+| Data do commit no topo | 2026-10-13 14:18:24 -0300 |
+| Autor | idarlandias@gmail.com nos 4 commits, sem co-autor |
+| Hash local × remoto (`git ls-remote origin refs/heads/main`) | idênticos |
+| Antes do push | nada em staging, árvore limpa, sem force push |
+
+| Commit | Mensagem |
+|---|---|
+| `e7933ce` | docs: relatório de pré-execução da pontuação e da renomeação |
+| `795889b` | refactor: renomeia o produto para Assistente Registral CE |
+| `b45b7cb` | feat: pontuação da coleta em duas camadas e ferramentas de coleta |
+| `00372c8` | docs: relatório da renomeação e da pontuação em duas camadas |
+
+Esta seção 5 entrou num commit próprio, posterior ao push acima. O hash dele fica registrado no `git log`; não pode constar aqui porque é calculado a partir do próprio conteúdo do arquivo.
