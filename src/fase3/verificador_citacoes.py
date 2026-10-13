@@ -88,8 +88,9 @@ _N = r"(?:n[o.]*\s*)?"  # "nº", "n.", "no"
 # atribuído ao Código; o trecho já reivindicado por uma norma não é reaproveitado por outra.
 _APELIDOS: list[tuple[str, str]] = [
     ("prov_cgjce_15_2026", rf"prov(?:imento|\.)?\s*{_N}15\s*/\s*2026(?:\s*/\s*cgj\s*-?\s*ce)?"),
+    # "CNJ" sozinho: o Provimento 149 é a única norma do CNJ no corpus
     ("prov_cnj_149_2023", rf"prov(?:imento|\.)?\s*(?:cnj\s*)?{_N}149(?:\s*/\s*2023)?|codigo nacional de normas"
-                          rf"|\bcnj\s*{_N}149\b"),
+                          rf"|\bcnj\s*{_N}149\b|\bcnj\b"),
     ("codigo_normas_ce", r"codigo de normas|\bcgj\s*-?\s*ce\b|\bcgjce\b"),
     ("lei_6015_1973", rf"\blei\s*{_N}6\.?015\b(?:\s*/\s*(?:19)?73)?|lei de registros publicos|\blrp\b"),
     ("lei_13709_2018", rf"\blgpd\b|\blei\s*{_N}13\.?709\b(?:\s*/\s*(?:20)?18)?|lei geral de protecao de dados"),
@@ -128,7 +129,9 @@ _NUM = r"(?:\d{1,3}(?:\.\d{3})+|\d{1,4})(?:\s*[o°])?(?:\s?-[A-Z]{1,2}\b)?"
 _CITACAO = re.compile(rf"(?i:\bart(?:igo)?s?)\.?\s*({_NUM}(?:\s*(?:,|\be\b|\ba\b)\s*{_NUM})*)")
 _ITEM = re.compile(r"(\d{1,3}(?:\.\d{3})+|\d{1,4})(?:\s*[o°])?(?:\s?-([A-Z]{1,2})\b)?")
 _DISPOSITIVO = re.compile(r"Art\.\s*(\d+)(?:-([A-Z]{1,2}))?")
-_CONECTOR_DEPOIS = re.compile(r"^[\s,§\w°.-]{0,30}?\b(?:d[aoe]s?|dest[ae]|conforme|nos termos d[aoe])\b\s*[^\w]*$")
+# Norma logo depois do artigo, ligada por "da/do..." ou entre parênteses: "Art. 1.680, § 1º (CGJ-CE)"
+_CONECTOR_DEPOIS = re.compile(
+    r"^[\s,§\w°.-]{0,30}?(?:\b(?:d[aoe]s?|dest[ae]|conforme|nos termos d[aoe])\b\s*[^\w]*|\(\s*)$")
 # Fim de frase: ponto seguido de espaço e maiúscula, sem ser o ponto de "Art."
 _FRASE = re.compile(r"(?<![Aa]rt)(?<![Aa]rts)\.\s+(?=[A-Z])|[!?;]\s+")
 
@@ -155,6 +158,16 @@ def _norma_da_citacao(ini: int, fim: int, mencoes: list[tuple[int, int, str]], f
     return min(candidatos)[1] if candidatos else None
 
 
+def _parece_titulo(minusculo: str, mencoes: list[tuple[int, int, str]]) -> bool:
+    """Linha curta em que o nome da norma é pelo menos metade do texto (ex.: "1. **LGPD**:")."""
+    def letras(s: str) -> int:
+        return len(re.sub(r"[^a-z]", "", s))
+
+    total = letras(minusculo)
+    da_norma = sum(letras(minusculo[a:b]) for a, b, _ in mencoes)
+    return 0 < total <= 60 and da_norma / total >= 0.5
+
+
 def _extrair(resposta: str) -> list[tuple[str, tuple[int, str], str | None, bool]]:
     """[(trecho, chave do artigo, norma citada, norma herdada?)] na ordem em que aparecem."""
     out = []
@@ -173,9 +186,9 @@ def _extrair(resposta: str) -> list[tuple[str, tuple[int, str], str | None, bool
                     norma = ultima_norma
                 for item in _ITEM.finditer(m.group(1)):
                     out.append((m.group(0).strip(), _chave(item.group(1), item.group(2)), norma, herdada))
-            # Só herda de "títulos" (frase com norma e sem artigo, ex.: "**Código de Normas CGJ-CE**"),
-            # para "O Art. 18 (LGPD). Ver Art. 213-A" não atribuir o 213-A à LGPD
-            if mencoes and not citacoes:
+            # Só herda de títulos (ex.: "**Código de Normas CGJ-CE**"), nunca de frase comum que cita
+            # uma norma: "...princípios da LGPD." seguido de "fundamentada no Art. 1128" não é LGPD
+            if mencoes and not citacoes and _parece_titulo(minusculo, mencoes):
                 ultima_norma = mencoes[-1][2]
     return out
 

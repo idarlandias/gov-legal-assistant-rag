@@ -94,6 +94,27 @@ def test_nao_herda_norma_de_frase_que_ja_tinha_artigo():
     assert rel.citacoes[1].norma_inferida
 
 
+def test_nao_herda_norma_de_frase_comum_sem_artigo():
+    # Benchmark de 13/10 (#9 e #18): a frase anterior só mencionava a LGPD, não era título
+    resposta = ("Há tentativa de tratamento em desacordo com os princípios da LGPD. Portanto, o oficial deve "
+                "recusar o pedido, emitindo uma Nota Devolutiva fundamentada no Art. 1128, § 4º.")
+    assert _status(resposta) == [("Art. 1128", StatusCitacao.VERIFICADA)]
+
+
+def test_cnj_sozinho_e_o_provimento_149():
+    # Benchmark de 13/10 (#15): "Art. 123, § 1º (CNJ) / Art. 1.680, § 1º (CGJ-CE)"
+    chunks = [{"norma": CNJ, "dispositivo": "Art. 123"}, {"norma": CE, "dispositivo": "Art. 1680"}]
+    assert _status("| Art. 123, § 1º (CNJ) / Art. 1.680, § 1º (CGJ-CE) |", chunks) == [
+        ("Art. 123", StatusCitacao.VERIFICADA), ("Art. 1680", StatusCitacao.VERIFICADA)]
+
+
+def test_artigo_atribuido_a_lei_que_nao_o_tem_continua_divergente():
+    # Benchmark de 13/10 (#25): "(Art. 178)" ao lado da LGPD; o 178 recuperado é do Código CE
+    chunks = [{"norma": CE, "dispositivo": "Art. 178"}]
+    assert _status("3. **Assegurar a conformidade com a LGPD** (Art. 178)", chunks) == [
+        ("Art. 178", StatusCitacao.NORMA_DIVERGENTE)]
+
+
 def test_sem_norma_e_artigo_ambiguo_nao_e_verificado():
     # Art. 123 existe no CNJ e no CE: sem dizer qual, não dá para confirmar
     assert _status("Aplica-se o Art. 123.") == [("Art. 123", StatusCitacao.NORMA_DIVERGENTE)]
