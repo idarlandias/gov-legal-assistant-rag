@@ -89,9 +89,11 @@ class Fase3Pipeline(RAGPipeline):
             "status": "OK",
         }
 
-    def gerar_ato_pronto(self, pedido, k: int = 5):
+    def gerar_ato_pronto(self, pedido, k: int | None = None):
         """Emite o Ato Pronto (veredito, minuta e auditoria LGPD) para balcão de Registro de Imóveis."""
-        from src.fase3.ato_pronto import processar_ato_pronto
+        from src.fase3.ato_pronto import K_ATO_PRONTO, processar_ato_pronto
+
+        k = k or K_ATO_PRONTO
         return processar_ato_pronto(self, pedido=pedido, k=k)
 
     def tarjar_matricula(self, texto: str, solicitante: str = "Terceiro sem vínculo comprovado", protocolo: str = "PROT-BALCAO"):

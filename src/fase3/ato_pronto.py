@@ -128,14 +128,44 @@ class AtoProntoOutput(BaseModel):
 # ---------------------------------------------------------------- Query & Prompt
 
 
+# Cada opção de "tipo de pedido" da UI → vocabulário das normas (CE Art. 1.128, CNJ 149 Arts. 123-128).
+# Os rótulos crus da UI não recuperavam o CNJ 123 nem o CE 1.128 nem no top-8 (medido em 13/10/2026).
+EXPANSAO_TIPO_PEDIDO: dict[str, str] = {
+    "certidão de inteiro teor de matrícula":
+        "certidão de matrícula registro averbação identificação do requerente independentemente de finalidade",
+    "certidão de situação jurídica atual (vigente)":
+        "certidão situação jurídica atual do imóvel titularidade ônus reais não cancelados independentemente de "
+        "finalidade",
+    "histórico de ônus / cadeia filiatória / ônus cancelados":
+        "certidão de atos anteriores da cadeia filiatória identificação segura finalidade",
+    "busca por indicador pessoal (pesquisa de bens por cpf/nome)":
+        "requisição de busca indicador pessoal ou real identificação segura indicação da finalidade",
+    "cópia de título / documento arquivado no cartório":
+        "certidão de documento arquivado previsão legal específica de expedição",
+    "informação verbal no balcão ou por telefone":
+        "fornecimento de informações sobre o registro não veiculadas por certidão identificação finalidade",
+    "pedido de exclusão de dados da matrícula com base na lgpd":
+        "direitos do titular eliminação dos dados pessoais tratados guarda dos livros do registro",
+    "pedido de retificação de dado pessoal na matrícula":
+        "retificação do registro averbação correção de dados incompletos inexatos",
+    "requisição por órgão público / polícia / prefeitura sem ordem judicial":
+        "compartilhamento de dados com órgãos públicos requisição identificação finalidade",
+    "acesso em lote / convênio com empresa imobiliária ou fintech":
+        "pedidos de certidão busca e informações apresentados em bloco dados pessoais de mais de uma matrícula",
+}
+
+
 def gerar_query_recuperacao(pedido: PedidoBalcao) -> str:
-    """Monta consulta semântica e lexical direcionada ao acervo normativo da CGJ-CE e CNJ."""
-    termos = [pedido.tipo_pedido, pedido.solicitante]
-    if pedido.dados_sensiveis:
-        termos.extend(pedido.dados_sensiveis)
+    """Consulta = vocabulário normativo do tipo de pedido + rótulos da UI + termos livres ao final."""
+    tipo = pedido.tipo_pedido.strip()
+    expansao = EXPANSAO_TIPO_PEDIDO.get(tipo.lower())
+    if expansao is None:
+        logger.warning("Tipo de pedido sem expansão normativa, usando o rótulo: %r", tipo)
+        expansao = tipo
+    termos = [expansao, pedido.solicitante, *pedido.dados_sensiveis]
     if pedido.detalhes_caso:
-        termos.append(pedido.detalhes_caso)
-    return " ".join(termos)
+        termos.append(pedido.detalhes_caso)  # texto livre do escrevente sempre ao final
+    return " ".join(t for t in termos if t)
 
 
 # Definição dos canais: nenhuma menção a supressão de dados (não há norma no corpus que a autorize
@@ -241,13 +271,19 @@ def _ato_indefinido(motivo: str) -> AtoProntoOutput:
     )
 
 
-def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int = 5) -> AtoProntoOutput:
+K_ATO_PRONTO = 8  # top-8: com 5, normas-chave ficavam de fora no caso mais comum
+
+
+def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int = K_ATO_PRONTO) -> AtoProntoOutput:
     """Processa o pedido no pipeline da Fase 3 e gera o Ato Pronto estruturado."""
     t0 = time.perf_counter()
 
     # 1. Recuperação Híbrida especializada
     query = gerar_query_recuperacao(pedido)
     hits = pipeline.retrieve(query, k=k)
+    logger.info("Ato Pronto %s · consulta expandida: %s", pedido.protocolo, query)
+    logger.info("Ato Pronto %s · trechos recuperados (k=%d): %s", pedido.protocolo, k,
+                "; ".join(rotulo_fonte(h) for h in hits) or "nenhum")
 
     if not hits:
         # Sem norma recuperada o LLM só poderia inventar: não chama o modelo
