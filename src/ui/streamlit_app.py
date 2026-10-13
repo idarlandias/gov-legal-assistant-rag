@@ -1,7 +1,7 @@
 """Streamlit UI — CartórioSeguro AI & Assistente Jurídico RAG.
 
 Oferece três experiências principais:
-1. 🚦 Balcão Registral (Fase 3): Gerador de Ato Pronto de Balcão baseado na analogia da alfândega
+1. 🚦 Balcão Registral (Fase 3): Gerador de Ato Pronto de Balcão
    (Canais Verde, Amarelo e Vermelho) com veredito, minuta pronta e auditoria LGPD (ROPA).
 2. 💬 Assistente Jurídico Geral: Chat em linguagem natural para LGPD, licitações e transparência.
 3. 📊 Benchmark & Compliance: Painel dos 25 casos de balcão e comparativo de eficiência/ROI.
@@ -151,7 +151,7 @@ with st.sidebar:
 # ---------------------------------------------------------------- Cabeçalho Principal
 st.title("🏛️ CartórioSeguro AI")
 st.markdown(
-    "**Decisão Operacional & Compliance Registral** — Proteção contra violações da LGPD e incidentes na Corregedoria do TJCE."
+    "**Decisão Operacional & Compliance Registral** — Apoio à decisão de balcão em Registro de Imóveis: publicidade registral, LGPD e LAI."
 )
 
 # Aba do tarjador escondida por padrão (MOSTRAR_ABA_TARJADOR=true no .env ou nos secrets para exibir)
@@ -173,14 +173,14 @@ tab_tarjador = _tabs[1] if MOSTRAR_ABA_TARJADOR else None
 # TAB 1: GERADOR DE ATO PRONTO (A INOVAÇÃO RADICAL DA FASE 3)
 # ==============================================================================
 with tab_balcao:
-    st.subheader("⚡ Triagem Operacional de Balcão (Analogia da Alfândega)")
+    st.subheader("⚡ Triagem de pedido")
     st.markdown(
-        "Emita atos prontos com veredito direto, fundamentação vinculante no Código de Normas do Ceará e no Provimento CNJ 149/2023, "
+        "Emita atos prontos com veredito direto, fundamentação referenciada no Código de Normas do Ceará e no Provimento CNJ 149/2023, "
         "minuta pronta para despacho ou Nota Devolutiva e registro de auditoria LGPD (ROPA)."
     )
 
     # 1-Click Preset Scenarios
-    st.markdown("##### 🚀 Cenários Práticos de Balcão (Teste em 1 Clique):")
+    st.markdown("##### 🚀 Exemplos frequentes")
     p1, p2, p3, p4 = st.columns(4)
     if p1.button("🟡 Terceiro pede CPF", use_container_width=True, help="Certidão de inteiro teor com CPF pedida por terceiro"):
         st.session_state["preset_pedido"] = "Certidão de Inteiro Teor de Matrícula"
@@ -284,11 +284,15 @@ with tab_balcao:
 
     with col_result:
         st.markdown("### 📜 Ato Registral Emitido")
+        from src.fase3.ato_pronto import AVISO_RESPONSABILIDADE
+
+        # fixo no topo do painel, antes e depois de qualquer geração
+        st.info(AVISO_RESPONSABILIDADE)
 
         if btn_gerar or auto_run:
             with st.spinner("Consultando acervo da CGJ-CE e Prov. CNJ 149/2023..."):
                 try:
-                    from src.fase3.ato_pronto import AVISO_RESPONSABILIDADE, PedidoBalcao
+                    from src.fase3.ato_pronto import PedidoBalcao
 
                     fase3_pipe = get_fase3_pipeline()
                     pedido = PedidoBalcao(
@@ -300,7 +304,7 @@ with tab_balcao:
                     )
                     resultado = fase3_pipe.gerar_ato_pronto(pedido)
 
-                    # Exibição do Semáforo da Alfândega
+                    # Exibição do semáforo
                     indefinido = resultado.canal.value == "INDEFINIDO"
                     if indefinido:
                         canal_cor = "#6c757d"
@@ -396,12 +400,13 @@ with tab_balcao:
                     st.error(f"Erro ao processar o ato pronto: {e}")
         else:
             st.info(
-                "👈 **Selecione os parâmetros ao lado ou clique em um dos Cenários Práticos no topo.**\n\n"
-                "A analogia da alfândega classifica a demanda instantaneamente:\n"
-                "- 🟢 **Canal Verde:** Pedidos com dever legal de publicidade sem excesso de dados pessoais.\n"
-                "- 🟡 **Canal Amarelo:** Pedidos deferíveis mediante exigência prévia de identificação e finalidade "
-                "(Código de Normas CGJ-CE, Art. 1.128, §2º).\n"
-                "- 🔴 **Canal Vermelho:** Pedidos ilegais, excessivos ou sem ordem judicial, gerando Nota Devolutiva."
+                "👈 **Selecione os parâmetros ao lado ou clique em um dos Exemplos frequentes no topo.**\n\n"
+                "Canais de classificação do pedido:\n"
+                "- 🟢 **Canal Verde:** deferimento mediante identificação do requerente, sem exigência de finalidade "
+                "(CGJ-CE Art. 1.128 caput; Prov. CNJ 149/2023 Art. 123).\n"
+                "- 🟡 **Canal Amarelo:** deferimento mediante exigência prévia de identificação e indicação da finalidade, "
+                "com abertura da ficha do Art. 1.128 §3º.\n"
+                "- 🔴 **Canal Vermelho:** indeferimento em nota devolutiva fundamentada (Art. 1.128 §4º)."
             )
 
 
