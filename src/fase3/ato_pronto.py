@@ -169,7 +169,7 @@ def gerar_query_recuperacao(pedido: PedidoBalcao) -> str:
 
 
 # Definição dos canais: nenhuma menção a supressão de dados (não há norma no corpus que a autorize
-# na certidão de inteiro teor; o CE Art. 1.131 §10 manda reproduzir todo o conteúdo).
+# na certidão de inteiro teor; o CE Art. 1.131 §10 manda reproduzir todo o conteúdo).  guarda-1131: ok
 CANAIS_PROMPT = """- Canal VERDE: Pedido seguro, obrigação de publicidade imediata e integral (ex: próprio titular requerendo sua matrícula, terceiro pedindo certidão de situação jurídica atual sem dados excessivos).
 - Canal AMARELO: Fornecimento permitido mediante EXIGÊNCIA PRÉVIA — identificação do requerente e indicação da finalidade — nas hipóteses do Art. 1.128, §2º, I a V, do Código de Normas da CGJ-CE, com abertura da ficha prevista no §3º do mesmo artigo.
 - Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada."""

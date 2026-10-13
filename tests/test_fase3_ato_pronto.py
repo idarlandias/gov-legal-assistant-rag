@@ -70,32 +70,38 @@ Atenciosamente."""
 
 
 def test_ato_pronto_output_model_validate():
+    # Caso juridicamente correto: certidão de matrícula a requerente identificado, sem exigir finalidade
     payload = {
-        "canal": "VERMELHO",
-        "veredito": "INDEFERIDO (NOTA DEVOLUTIVA)",
-        "instrucao_balcao": "Recusar verbalmente e emitir Nota Devolutiva formal.",
+        "canal": "VERDE",
+        "veredito": "SUGESTÃO: DEFERIR",
+        "instrucao_balcao": "Conferir a identificação do requerente e emitir a certidão da matrícula.",
         "fundamentacao": [
             {
                 "norma": "Código de Normas CGJ-CE",
-                "artigo": "Art. 1131, §10",
-                "aplicacao": "Veda o fornecimento de informação direta sem requerimento formal.",
-            }
+                "artigo": "Art. 1.128, caput",
+                "aplicacao": "Certidão de matrícula a requerente identificado, independentemente de finalidade.",
+            },
+            {
+                "norma": "Prov. CNJ 149/2023",
+                "artigo": "Art. 123",
+                "aplicacao": "Pedido de certidão de matrícula depende de identificação e independe de finalidade.",
+            },
         ],
-        "minuta_ato": "NOTA DEVOLUTIVA Nº 01/2026...",
+        "minuta_ato": "DESPACHO: expeça-se a certidão da matrícula ao requerente identificado.",
         "auditoria_lgpd": {
-            "finalidade": "Controle de legalidade",
+            "finalidade": "Publicidade registral",
             "base_legal_lgpd": "Art. 7º, II",
             "categoria_titular": "Proprietário",
             "dados_tratados": ["Dados da matrícula"],
-            "salvaguardas_adotadas": "Bloqueio de acesso não justificado",
+            "salvaguardas_adotadas": "Identificação do requerente",
             "conformidade_cnj_149": "Aderência ao Prov. CNJ 149/2023",
         },
     }
     saida = AtoProntoOutput.model_validate(payload)
-    assert saida.canal == CanalRisco.VERMELHO
-    assert saida.veredito == "SUGESTÃO: INDEFERIR (NOTA DEVOLUTIVA)"  # formato antigo vira sugestão
-    assert len(saida.fundamentacao) == 1
-    assert saida.fundamentacao[0].artigo == "Art. 1131, §10"
+    assert saida.canal == CanalRisco.VERDE
+    assert saida.veredito == "SUGESTÃO: DEFERIR"
+    assert [(f.norma, f.artigo) for f in saida.fundamentacao] == [
+        ("Código de Normas CGJ-CE", "Art. 1.128, caput"), ("Prov. CNJ 149/2023", "Art. 123")]
 
 
 def test_processar_ato_pronto_com_mock():
