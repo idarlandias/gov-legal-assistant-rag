@@ -3,7 +3,7 @@
 <div align="center">
 
 # 🏛️ CartórioSeguro AI
-### ⚡ Decisão Operacional, Ato Registral de Balcão & Compliance LGPD
+### ⚡ Apoio à decisão operacional, Ato Registral de Balcão & Compliance LGPD
 *Especializado em Registro de Imóveis no Ceará (CGJ-CE × Provimento CNJ 149/2023 × Lei 6.015/73)*
 
 <br/>
@@ -12,7 +12,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.40+-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-Multilingual%20E5-005CED?style=for-the-badge&logo=onnx&logoColor=white)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-Hybrid%20Search-orange?style=for-the-badge)
-![Pytest](https://img.shields.io/badge/Pytest-121%20offline-success?style=for-the-badge&logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-137%20offline-success?style=for-the-badge&logo=pytest&logoColor=white)
 ![Licença](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 *Desenvolvido por **Idarlan Magalhães** | Residência SiDi · PPI MoD4* 🎓👋
@@ -21,7 +21,7 @@
 
 </div>
 
-> 🚨 **A Virada da Fase 3 (Narrow first, build second):** Em resposta ao parecer do Funil Discovery e à Auditoria Cética, o projeto evoluiu de um assistente conversacional horizontal genérico para uma **plataforma vertical de decisão e conformidade registral**. Substituímos a caixa de chat aberta por um **Gerador de Ato Pronto de Balcão** e criamos um **Tarjador Inteligente de Matrículas com Carimbo Criptográfico SHA-256**, atacando diretamente os custos, a morosidade e a fricção dos cartórios extrajudiciais.
+> 🚨 **A Virada da Fase 3 (Narrow first, build second):** Em resposta ao parecer do Funil Discovery e à Auditoria Cética, o projeto evoluiu de um assistente conversacional horizontal genérico para uma **plataforma vertical de decisão e conformidade registral**. Substituímos a caixa de chat aberta por um **Gerador de Ato Pronto de Balcão**, atacando diretamente os custos, a morosidade e a fricção dos cartórios extrajudiciais.
 
 ---
 
@@ -46,14 +46,10 @@
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 CARTÓRIOSEGURO AI                                      │
 ├────────────────────────────────┬───────────────────────────────────────────────────────┤
-│ 1. ATO PRONTO DE BALCÃO        │ Mata o chat. Triagem em 3 cliques com a Analogia da   │
-│    (Analogia da Alfândega)     │ Alfândega: Canais Verde, Amarelo e Vermelho.          │
-├────────────────────────────────┼───────────────────────────────────────────────────────┤
-│ 2. TARJADOR INTELIGENTE DE PII │ Inspeciona o texto da matrícula e aplica redaction    │
-│    (Redaction Cirúrgico)       │ automático.                                           │
-├────────────────────────────────┼───────────────────────────────────────────────────────┤
-│ 3. CARIMBO DIGITAL SHA-256     │ Hash SHA-256 de integridade do texto gerado. Não é    │
-│    (Blindagem Regulatória)     │ assinatura digital nem certificação de autenticidade. │
+│ 1. ATO PRONTO DE BALCÃO        │ O Ato Pronto substitui a conversa livre no fluxo de   │
+│    (Analogia da Alfândega)     │ balcão; o chat permanece como consulta de apoio.      │
+│                                │ Triagem em 3 cliques com a Analogia da Alfândega:     │
+│                                │ Canais Verde, Amarelo e Vermelho.                     │
 └────────────────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
@@ -65,7 +61,7 @@
 ### 🛡️ 2. Tarjador Inteligente & Carimbo Criptográfico SHA-256
 No CartórioSeguro AI:
 * O atendente cola o texto da matrícula (ou carrega o exemplo pré-configurado de Limoeiro do Norte/CE);
-* O sistema identifica dados pessoais em `< 0.05 segundos` e gera o texto da certidão pronto com as tarjas oficiais;
+* O sistema identifica dados pessoais e gera o texto da certidão;
 * Hash SHA-256 de integridade do texto gerado. Não é assinatura digital nem certificação de autenticidade.
 
 ---
@@ -75,7 +71,7 @@ No CartórioSeguro AI:
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
 |:---|:---|:---|:---|
 | **Tempo de Decisão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
-| **Interface Operacional** | não medido | não medido | **3 seletores objetivos (Zero-UI de chat)** |
+| **Interface Operacional** | não medido | não medido | **3 seletores objetivos; o Ato Pronto substitui a conversa livre no fluxo de balcão; o chat permanece como consulta de apoio** |
 | **Formato de Saída** | não medido | não medido | **Ato Pronto (Despacho / Nota Devolutiva / ROPA)** |
 | **Normas Regionais CE** | não medido | não medido | **Código CGJ-CE + Prov. 15/2026 integrados** |
 | **Proteção de Documento** | não medido | não medido | **Tarjador desativado: sem base normativa identificada no corpus** |
@@ -103,7 +99,6 @@ No CartórioSeguro AI:
 - O veredito do semáforo é gerado por LLM e constitui sugestão, não decisão.
 - Não há gabarito validado por Oficial ou DPO; "respondida" não significa "correta".
 - A taxa de citações verificadas mede ancoragem no contexto recuperado, não correção jurídica do conteúdo.
-- A aba do tarjador está desativada por ausência de base normativa identificada no corpus.
 - Limite de 200 mil tokens/dia no provedor atual (Groq, gpt-oss-20b).
 - A funcionalidade de supressão de dados (tarjador) está desativada por ausência de base normativa identificada no corpus do projeto.
 
@@ -113,28 +108,39 @@ No CartórioSeguro AI:
 
 ```mermaid
 flowchart TD
-    subgraph UI["Interface de Operação (Streamlit 4 Abas)"]
-        A1[1. Balcão: Ato Pronto]
-        A2[2. Tarjador Inteligente]
-        A3[3. Consulta Livre Chat]
-        A4[4. Benchmark 25 Casos]
+    subgraph UI["Interface Streamlit - 3 abas"]
+        A1[1. Balcão Registral: Ato Pronto]
+        A2[2. Consulta Especializada: Chat RAG]
+        A3[3. Casos de Balcão e Eficiência]
     end
 
-    subgraph ENGINE["Motor de Recuperação & Decisão (Fase 3)"]
-        B[Entrada Estruturada: Pedido + Solicitante + PII]
-        C[Hybrid Retriever: E5 ONNX + BM25 Especializado]
-        D[Fusão RRF: k=60 sobre Corpus Oficial 4.359 chunks]
-        E[Filtro por Especialidade: Registro de Imóveis + Geral]
+    subgraph ENGINE["Recuperação - Fase 3"]
+        B[Pedido estruturado + expansão normativa da consulta]
+        C[Hybrid Retriever: E5 ONNX + BM25]
+        D[Fusão RRF k=60 sobre o corpus oficial: 4.359 chunks]
+        E[Filtro por especialidade: Registro de Imóveis + Geral]
     end
 
-    subgraph OUTPUT["Artefatos de Saída Acionáveis"]
-        F1[Veredito & Semáforo Alfândega: Verde / Amarelo / Vermelho]
-        F2[Minuta Cartorial Pronta: Despacho ou Nota Devolutiva]
-        F3[Ficha ROPA de Auditoria LGPD: Art. 37/38]
-        F4[Matrícula Tarjada + Carimbo Criptográfico SHA-256]
+    subgraph LLM["Geração - Groq"]
+        G1[Prompt do Ato Pronto com REGRAS_DECISAO]
+        G2[Prompt do chat com REGRAS_DECISAO]
     end
 
-    A1 & A2 --> B --> C --> D --> E --> F1 & F2 & F3 & F4
+    subgraph OUTPUT["Saídas"]
+        F1[Canal sugerido: Verde / Amarelo / Vermelho, ou INDEFINIDO em falha]
+        F2[Minuta: despacho ou nota devolutiva]
+        F3[Ficha ROPA de auditoria LGPD]
+        F4[Resposta do chat com fontes]
+        V[Verificador de citações contra os trechos recuperados]
+    end
+
+    A1 --> B --> C
+    A2 --> C
+    C --> D --> E
+    E --> G1 --> F1 & F2 & F3
+    E --> G2 --> F4
+    F2 & F4 --> V
+    A3 --> Q[Perguntas do benchmark: docs/fase3/benchmark/perguntas.json]
 ```
 
 ### Acervo Normativo Oficial Indexado (Coleção `fase3` - 4.359 Chunks):
@@ -171,7 +177,7 @@ EMBED_MODEL=local
 ### 3. Rodar a Bateria de Testes Automatizados
 ```powershell
 .venv\Scripts\python.exe -m pytest
-# Resultado: 43 passed em ~6.8s
+# Resultado: 137 testes offline passando; os 7 testes de rede dependem da cota do provedor
 ```
 
 ### 4. Iniciar a Aplicação Streamlit
@@ -204,8 +210,8 @@ gov-legal-assistant-rag/
 │   │   └── pipeline.py          # Pipeline integrado com prompt da CGJ-CE
 │   ├── pipeline/                # Componentes legados (Cache, Routing, CTB Tools)
 │   └── ui/
-│       └── streamlit_app.py     # Interface moderna com 4 abas e presets
-├── tests/                       # 43 testes unitários automatizados
+│       └── streamlit_app.py     # Interface moderna com 3 abas e presets
+├── tests/                       # 137 testes offline + 7 de rede
 ├── requirements.txt             # Dependências oficiais para deploy na nuvem
 ├── pyproject.toml               # Configuração do projeto
 └── README.md                    # Este documento
@@ -218,7 +224,7 @@ gov-legal-assistant-rag/
 | Critério | Peso | Status da Entrega |
 |:---|:---:|:---|
 | **Inovação & Unfair Advantage** | 40% | Gerador de Ato Pronto de Balcão implementado; validação com cartórios pendente. |
-| **Engenharia de Software** | 30% | 121 testes offline; 7 testes de rede dependem de cota do provedor. ONNX local, tipagem Pydantic e CI/CD. |
+| **Engenharia de Software** | 30% | 137 testes offline; 7 testes de rede dependem de cota do provedor. ONNX local e tipagem Pydantic. |
 | **Viabilidade & Custos** | 20% | Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, câmbio 5,50). Preço das alternativas de mercado: não medido. |
 | **Demonstração & Deploy** | 10% | **Online:** Streamlit Cloud ativo com bundle pré-indexado e presets de 1 clique. |
 

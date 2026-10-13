@@ -91,7 +91,7 @@ Agrupamento das ideias em categorias conceituais totalmente distintas:
    - O assistente genérico diz: *"Segundo o artigo 17 da Lei 6.015, qualquer pessoa pode requerer certidão..."*
    - A nossa entrega radical gera:
      - **Veredito:** `FORNECER COM TARJAMENTO`
-     - **Fundamento Legal:** Art. 17 da Lei 6.015 c/c Art. 1131, §10 do Código de Normas TJCE e Provimento CNJ 149/2023.
+     - **Fundamento Legal:** Art. 17 da Lei 6.015 e Provimento CNJ 149/2023.[^retificacao]
      - **Peça Pronta:** Nota de Devolução / Despacho fundamentado com os campos do protocolo preenchidos.
      - **Log de Auditoria:** Registro no livro eletrônico de tratamento de dados (art. 37 da LGPD).
 
@@ -146,3 +146,5 @@ Esta entrega radical responde ponto a ponto às exigências que travaram o proje
 1. Validar esta matriz de saída com 1 Oficial Registrador ou DPO no Ceará.
 2. Incorporar a geração da minuta e do registro de auditoria no pipeline [`src/fase3/pipeline.py`](../../src/fase3/pipeline.py).
 3. Testar o tempo de resposta e aceitabilidade na rotina real de balcão (Plano de Validação — Gate 1).
+
+[^retificacao]: Retificado em 13/10/2026: a citação original ao Art. 1.131 §10 invertia o sentido do dispositivo, que determina a reprodução integral do conteúdo da certidão de inteiro teor.
