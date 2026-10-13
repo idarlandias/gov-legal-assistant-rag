@@ -186,27 +186,67 @@ def agregar_status(resultados: list[dict]) -> dict[str, int]:
     return contagem
 
 
+CATEGORIAS_CITACAO = ("verificadas", "norma_divergente", "nao_recuperada", "fora_do_corpus")
+
+
 def resumo_citacoes(relatorio: Any) -> dict:
-    """Versão serializável do RelatorioCitacoes para o JSON e a planilha."""
+    """Versão serializável do RelatorioCitacoes para o JSON e a planilha (sempre com a versão)."""
     return {
+        "versao_verificador": relatorio.versao,
         "total": relatorio.total,
-        "verificadas": relatorio.verificadas,
-        "norma_divergente": relatorio.norma_divergente,
-        "nao_recuperada": relatorio.nao_recuperada,
+        **{k: getattr(relatorio, k) for k in CATEGORIAS_CITACAO},
         "taxa_verificavel": relatorio.taxa_verificavel,
         "nao_verificadas": [c.descricao() for c in relatorio.nao_verificadas()],
     }
 
 
 def agregar_citacoes(resultados: list[dict]) -> dict | None:
-    """Totais da execução: taxa_verificavel = verificadas / total de citações (None se não houve)."""
+    """Totais da execução, com a versão do verificador.
+
+    - taxa_verificavel = verificadas / total de CITAÇÕES (None se não houve citação);
+    - cobertura_fundamentada = perguntas com ao menos uma citação VERIFICADA / total de PERGUNTAS do
+      benchmark (inclui as não respondidas, vazias e com erro).
+    """
+    from src.fase3.verificador_citacoes import VERIFICADOR_VERSAO
+
     com = [r["citacoes"] for r in resultados if r.get("citacoes")]
     if not com:
         return None
-    soma = {k: sum(c[k] for c in com) for k in ("total", "verificadas", "norma_divergente", "nao_recuperada")}
+    soma = {k: sum(c.get(k, 0) for c in com) for k in ("total", *CATEGORIAS_CITACAO)}
     soma["taxa_verificavel"] = soma["verificadas"] / soma["total"] if soma["total"] else None
+    fundamentadas = sum(1 for c in com if c["verificadas"] > 0)
+    soma["perguntas_fundamentadas"] = fundamentadas
+    soma["total_perguntas"] = len(resultados)
+    soma["cobertura_fundamentada"] = fundamentadas / len(resultados) if resultados else None
     soma["perguntas_sem_citacao"] = sum(1 for c in com if c["total"] == 0)
+    soma["versao_verificador"] = VERIFICADOR_VERSAO
     return soma
+
+
+def formatar_metricas_citacao(cit: dict) -> str:
+    """As duas métricas lado a lado, sempre com a versão do verificador."""
+    def pct(x):
+        return f"{x:.0%}" if x is not None else "n/a"
+
+    return (f"Citações (verificador v{cit['versao_verificador']}): "
+            f"taxa_verificavel {cit['verificadas']}/{cit['total']} = {pct(cit['taxa_verificavel'])} (sobre citações) | "
+            f"cobertura_fundamentada {cit['perguntas_fundamentadas']}/{cit['total_perguntas']} = "
+            f"{pct(cit['cobertura_fundamentada'])} (sobre perguntas) · "
+            f"{cit['norma_divergente']} norma divergente · {cit['nao_recuperada']} não recuperadas · "
+            f"{cit['fora_do_corpus']} fora do corpus")
+
+
+def reverificar(salvo: dict) -> dict:
+    """Re-pontua um resultado salvo sem LLM: trechos reconstruídos dos rótulos do campo `fontes`."""
+    from src.fase3.verificador_citacoes import trechos_de_rotulos, verificar
+
+    for r in salvo["resultados"]:
+        r["citacoes"] = None if r.get("erro") else resumo_citacoes(
+            verificar(r["resposta"], trechos_de_rotulos(r.get("fontes", ""))))
+        r["status_resposta"] = classificar_resposta(r)
+    salvo["meta"]["citacoes"] = agregar_citacoes(salvo["resultados"])
+    salvo["meta"]["status_resposta"] = agregar_status(salvo["resultados"])
+    return salvo
 
 
 def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -> tuple[int, int]:
@@ -247,6 +287,15 @@ def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -
             ws[f"U{r}"] = cit["verificadas"]
             ws[f"W{r}"] = "; ".join(cit["nao_verificadas"])
         escritas += 1
+
+    # Nenhuma taxa sem a versão do verificador ao lado
+    versao = (meta.get("citacoes") or {}).get("versao_verificador")
+    if versao is not None:
+        ws["V1"] = f"Taxa verificável (verificador v{versao})"
+        resumo = wb["Resumo"]
+        resumo["L3"] = f"Taxa verificável (citações, v{versao})"
+        resumo["P3"] = f"Cobertura fundamentada (perguntas, v{versao})"
+        wb["Parametros"]["B6"] = versao
     try:
         wb.save(path)
     except PermissionError:
@@ -272,6 +321,9 @@ def main() -> int:
                     help="fase3: busca em todas as especialidades (padrão: só Registro de Imóveis + geral)")
     ap.add_argument("--from-json", type=Path,
                     help="não roda o RAG: preenche a planilha a partir de um results/*.json salvo")
+    ap.add_argument("--reverificar", action="store_true",
+                    help="com --from-json: re-pontua as citações sem LLM (verificador atual) e grava "
+                         "<execução>-reverificado.json")
     ap.add_argument("--overwrite", action="store_true", help="sobrescreve respostas já preenchidas")
     ap.add_argument("--dry-run", action="store_true", help="só lista as perguntas, sem chamar o LLM")
     ap.add_argument("--no-routing", action="store_true",
@@ -288,10 +340,24 @@ def main() -> int:
     if args.xlsx and not XLSX_PATH.exists():
         raise SystemExit(f"ERRO: {XLSX_PATH} não existe. Rode scripts/benchmark/build_planilha.py")
 
+    if args.reverificar and not args.from_json:
+        raise SystemExit("ERRO: --reverificar exige --from-json")
     if args.from_json:
-        if not args.xlsx:
-            raise SystemExit("ERRO: --from-json só faz sentido com --xlsx")
+        if not (args.xlsx or args.reverificar):
+            raise SystemExit("ERRO: --from-json só faz sentido com --xlsx ou --reverificar")
         salvo = json.loads(args.from_json.read_text(encoding="utf-8"))
+        if args.reverificar:
+            salvo = reverificar(salvo)
+            base = args.from_json.stem.removesuffix("-reverificado")
+            salvo["meta"]["reverificacao"] = {
+                **salvo["meta"].get("reverificacao", {}),
+                "derivado_de": f"{base}.json", "verificador_versao": salvo["meta"]["citacoes"]["versao_verificador"],
+                "metodo": "citações recalculadas sem LLM sobre as mesmas respostas; trechos reconstruídos dos "
+                          "rótulos 'Norma — Art. N:pP' do campo fontes",
+            }
+            out = args.from_json.with_name(f"{base}-reverificado.json")
+            out.write_text(json.dumps(salvo, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"Re-pontuado: {out}", file=sys.stderr)
         meta, resultados = salvo["meta"], salvo["resultados"]
         if ids:
             resultados = [r for r in resultados if r["id"] in ids]
@@ -314,10 +380,10 @@ def main() -> int:
     print("Desfechos: " + " · ".join(f"{k}={v}" for k, v in st.items()), file=sys.stderr)
 
     cit = meta.get("citacoes")
-    if cit:
-        taxa = f"{cit['taxa_verificavel']:.0%}" if cit["taxa_verificavel"] is not None else "n/a"
-        print(f"Citações: {cit['verificadas']}/{cit['total']} verificadas ({taxa}) · "
-              f"{cit['norma_divergente']} norma divergente · {cit['nao_recuperada']} não recuperadas",
+    if cit and "versao_verificador" in cit:
+        print(formatar_metricas_citacao(cit), file=sys.stderr)
+    elif cit:
+        print("Citações: resultado sem versão do verificador; use --reverificar antes de publicar a taxa.",
               file=sys.stderr)
 
     erros = [r for r in resultados if r["erro"]]

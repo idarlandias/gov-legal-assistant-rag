@@ -64,15 +64,19 @@ Testes: **96, todos passando** (eram 43 antes da auditoria).
 - **"Não encontrado" (6):** #2, #6, #7, #10, #11, #17.
 - **Custo medido:** cerca de R$ 0,0045 por pergunta (preço do 120b como teto, câmbio 5,50).
 
-### 3.2 Verificação de citações (execução das 11h35, re-pontuada com `47a6adb`)
+### 3.2 Verificação de citações (execução das 11h35, re-pontuada com o verificador **v2**)
 
-| Métrica | Valor |
+| Métrica (verificador v2) | Valor |
 |---|---|
 | Citações distintas (artigo + norma) | 55 |
-| VERIFICADA | **47 (85%)** |
+| VERIFICADA | **47** → **taxa_verificavel = 85%** (sobre citações) |
+| **cobertura_fundamentada** | **18/25 = 72%** (perguntas com ao menos 1 citação verificada ÷ total de perguntas) |
 | NORMA_DIVERGENTE | 1 |
-| NAO_RECUPERADA | 7 |
+| NAO_RECUPERADA (falha de recuperação) | 6 |
+| FORA_DO_CORPUS (norma inexistente no corpus) | 1 (#14, Código Civil Art. 543) |
 | Perguntas sem nenhuma citação | 6 |
+
+> Toda taxa de citações depende das regras do verificador; este documento usa a **v2** (`VERIFICADOR_VERSAO` em `src/fase3/verificador_citacoes.py`).
 
 **Não verificadas:**
 - #25: "Assegurar a conformidade com a LGPD (Art. 178)". O 178 recuperado é do Código CGJ-CE, e a LGPD tem 65 artigos → **NORMA_DIVERGENTE**.
@@ -135,7 +139,7 @@ Testes: **96, todos passando** (eram 43 antes da auditoria).
 ## 7. Perguntas abertas para o analista
 
 1. As correções 2.1–2.7 eliminam o risco jurídico ou só o escondem? (ex.: a aba do tarjador escondida vs. corrigida)
-2. A taxa de 85% de citações verificadas é um indicador defensável perante a auditoria cética, sabendo que ela não mede a correção do conteúdo?
+2. A taxa de 85% de citações verificadas (verificador v2; cobertura fundamentada de 72% das perguntas) é um indicador defensável perante a auditoria cética, sabendo que ela não mede a correção do conteúdo?
 3. Com o limite de 200 mil tokens/dia da Groq, qual é a estratégia de infraestrutura para o teste com 3 cartórios (outro provedor, cache, modelo local)?
 4. Vale implementar a tabela de decisão (item 5.1) antes da validação com cartórios, ou validar primeiro com o produto atual?
 5. Qual é o menor conjunto de evidências que preenche as 4 lacunas do parecer da professora em 2 a 3 semanas?

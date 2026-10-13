@@ -245,6 +245,8 @@ def build_parametros(wb: Workbook, ferramentas: list[str]) -> None:
         ("Preço saída (US$ / 1M tokens)", 0.60,
          "Premissa: preço do gpt-oss-120b na Groq (teto; o 20b é mais barato). Conferir em groq.com/pricing"),
         ("Câmbio (R$ / US$)", 5.50, "Premissa: atualizar com a cotação do dia da coleta"),
+        ("Versão do verificador de citações", None,
+         "Preenchida pelo run_rag_benchmark.py; nenhuma taxa de citações vale sem esta versão"),
     ]
     for r, (k, v, note) in enumerate(params, start=2):
         ws.cell(row=r, column=1, value=k).font = F_BOLD
@@ -276,10 +278,10 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
     heads = ["Ferramenta", "Avaliadas", "Nota média (0-10)", "Veredito", "Fundamentação",
              "Norma CE", "Acionável", "Sem alucinação", "% notas ≥ 8",
              "Latência média (s)", "Custo / consulta (R$)", "Taxa verificável (citações)",
-             "Respondidas", "Não encontrado", "Resposta vazia"]
+             "Respondidas", "Não encontrado", "Resposta vazia", "Cobertura fundamentada (perguntas)"]
     _header(ws, 3, heads)
     ws.column_dimensions["A"].width = 18
-    for col in "BCDEFGHIJKLMNO":
+    for col in "BCDEFGHIJKLMNOP":
         ws.column_dimensions[col].width = 14
     ws.row_dimensions[3].height = 30
 
@@ -311,13 +313,16 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
         # desfechos separados: resposta vazia não conta como respondida
         for col_resumo, status in (("M", "RESPONDIDA"), ("N", "NAO_ENCONTRADO"), ("O", "RESPOSTA_VAZIA")):
             cells[col_resumo] = f'=COUNTIFS({rng("B")},$A{r},{rng("X")},"{status}")'
+        # perguntas com ≥1 citação verificada / TODAS as perguntas da ferramenta (não só as respondidas)
+        cells["P"] = (f'=IF(COUNTIFS({rng("B")},$A{r},{rng("T")},">=0")=0,"",'
+                      f'COUNTIFS({rng("B")},$A{r},{rng("U")},">0")/COUNTIFS({rng("B")},$A{r}))')
         for col, v in cells.items():
             c = ws[f"{col}{r}"]
             c.value = v
             _style(c, "key" if col == "A" else "formula")
             if col in "CDEFGHJ" and col != "A":
                 c.number_format = "0.00"
-            if col in ("I", "L"):
+            if col in ("I", "L", "P"):
                 c.number_format = "0%"
             if col == "K":
                 c.number_format = "0.0000"

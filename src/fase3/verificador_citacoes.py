@@ -1,10 +1,17 @@
 """Verificador determinístico de citações (sem LLM): mede alucinação de fundamento.
 
-Cada "Art. N" citado numa resposta é conferido contra os trechos efetivamente recuperados:
+Agnóstico à origem: recebe (texto_da_resposta, lista_de_trechos) de qualquer sistema — nosso RAG
+ou um concorrente. Os trechos podem ser dicts, tuplas (norma, artigo) ou rótulos "Norma — Art. N".
+
+Cada "Art. N" citado numa resposta é conferido contra os trechos:
   - VERIFICADA: o artigo está nos trechos E atribuído à mesma norma;
   - NORMA_DIVERGENTE: o artigo está nos trechos, mas a resposta o atribui a outra norma
     (ex.: "Art. 1128 da Lei 6.015/73" quando o 1.128 recuperado é do Código de Normas CGJ-CE);
-  - NAO_RECUPERADA: o artigo não aparece em nenhum trecho recuperado.
+  - NAO_RECUPERADA: a norma é do corpus, mas o artigo não veio nos trechos (falha de recuperação);
+  - FORA_DO_CORPUS: a norma citada não existe no corpus (ex.: Código Civil Art. 543) — fonte
+    inventada ou externa, nunca confundir com falha de recuperação.
+
+Toda taxa publicada deve vir com VERIFICADOR_VERSAO ao lado: mudar as regras muda a taxa.
 
 Associação artigo → norma: a menção de norma mais próxima na mesma frase ("Art. 18 da LGPD",
 "LGPD – Art. 18"); sem norma na frase, herda a última do mesmo parágrafo. Sem nenhuma norma,
@@ -22,11 +29,16 @@ from pydantic import BaseModel, Field
 from src.fase3.retrieval import norma_do_chunk
 from src.fase3.sources import FONTES_POR_ID
 
+# v1 = 848e955; v2 = 47a6adb (herança só de títulos, norma entre parênteses, "CNJ" isolado).
+# FORA_DO_CORPUS apenas separa a antiga NAO_RECUPERADA em duas: o total de verificadas não muda.
+VERIFICADOR_VERSAO = 2
+
 
 class StatusCitacao(str, Enum):
     VERIFICADA = "VERIFICADA"
     NORMA_DIVERGENTE = "NORMA_DIVERGENTE"
     NAO_RECUPERADA = "NAO_RECUPERADA"
+    FORA_DO_CORPUS = "FORA_DO_CORPUS"
 
 
 class Citacao(BaseModel):
@@ -49,7 +61,9 @@ class RelatorioCitacoes(BaseModel):
     verificadas: int = 0
     norma_divergente: int = 0
     nao_recuperada: int = 0
+    fora_do_corpus: int = 0
     taxa_verificavel: float | None = None  # verificadas / total; None quando total == 0
+    versao: int = VERIFICADOR_VERSAO
 
     @classmethod
     def de(cls, citacoes: list[Citacao]) -> "RelatorioCitacoes":
@@ -62,6 +76,7 @@ class RelatorioCitacoes(BaseModel):
             citacoes=citacoes, total=total, verificadas=verificadas,
             norma_divergente=conta(StatusCitacao.NORMA_DIVERGENTE),
             nao_recuperada=conta(StatusCitacao.NAO_RECUPERADA),
+            fora_do_corpus=conta(StatusCitacao.FORA_DO_CORPUS),
             taxa_verificavel=(verificadas / total) if total else None,
         )
 
@@ -128,7 +143,6 @@ def _mencoes_de_norma(minusculo: str) -> list[tuple[int, int, str]]:
 _NUM = r"(?:\d{1,3}(?:\.\d{3})+|\d{1,4})(?:\s*[o°])?(?:\s?-[A-Z]{1,2}\b)?"
 _CITACAO = re.compile(rf"(?i:\bart(?:igo)?s?)\.?\s*({_NUM}(?:\s*(?:,|\be\b|\ba\b)\s*{_NUM})*)")
 _ITEM = re.compile(r"(\d{1,3}(?:\.\d{3})+|\d{1,4})(?:\s*[o°])?(?:\s?-([A-Z]{1,2})\b)?")
-_DISPOSITIVO = re.compile(r"Art\.\s*(\d+)(?:-([A-Z]{1,2}))?")
 # Norma logo depois do artigo, ligada por "da/do..." ou entre parênteses: "Art. 1.680, § 1º (CGJ-CE)"
 _CONECTOR_DEPOIS = re.compile(
     r"^[\s,§\w°.-]{0,30}?(?:\b(?:d[aoe]s?|dest[ae]|conforme|nos termos d[aoe])\b\s*[^\w]*|\(\s*)$")
@@ -195,19 +209,62 @@ def _extrair(resposta: str) -> list[tuple[str, tuple[int, str], str | None, bool
 
 # ---------------------------------------------------------------- verificação
 
-def _indice_recuperado(chunks: list[dict]) -> dict[tuple[int, str], set[str]]:
-    """{chave do artigo: normas em que ele foi recuperado}. Trechos sem norma ficam de fora."""
+_ARTIGO_SOLTO = re.compile(rf"(?i:\bart(?:igo)?s?)\.?\s*({_NUM})")
+_SIGLAS = {f.sigla for f in FONTES_POR_ID.values()}
+_ROTULO = re.compile(r"\s*([^;]+?) — ([^;:]+?)(?::p\d+)?\s*(?=;|$)")
+
+
+def _canonizar_norma(nome: str | None) -> str | None:
+    """Nome livre de norma → sigla do corpus ("Lei nº 6.015/73" → "Lei 6.015/1973"), se reconhecido."""
+    if not nome:
+        return None
+    nome = nome.strip()
+    if nome in _SIGLAS:
+        return nome
+    mencoes = _mencoes_de_norma(_normalizar(nome).lower())
+    return mencoes[0][2] if mencoes else nome
+
+
+def _chave_de_artigo(texto: str) -> tuple[int, str] | None:
+    """"Art. 1.128", "art 123", "Artigo 213-A" → chave; dispositivo sem artigo (ex.: "p. 8") → None."""
+    m = _ARTIGO_SOLTO.search(_normalizar(texto or ""))
+    if not m:
+        return None
+    item = _ITEM.match(m.group(1))
+    return _chave(item.group(1), item.group(2))
+
+
+def trechos_de_rotulos(fontes: str) -> list[tuple[str, str]]:
+    """Reconstrói trechos a partir de rótulos "Norma — Art. N:pP; …" (formato do campo fontes do benchmark)."""
+    return [(m.group(1).strip(), m.group(2).strip()) for m in _ROTULO.finditer(fontes or "")]
+
+
+def _norma_e_artigo(trecho) -> tuple[str | None, str]:
+    """Aceita dict (norma/fonte_id + dispositivo/artigo), tupla (norma, artigo) ou rótulo "Norma — Art. N"."""
+    if isinstance(trecho, dict):
+        return trecho.get("norma") or norma_do_chunk(trecho), trecho.get("dispositivo") or trecho.get("artigo") or ""
+    if isinstance(trecho, (tuple, list)) and len(trecho) == 2:
+        return trecho[0], trecho[1]
+    if isinstance(trecho, str):
+        rot = trechos_de_rotulos(trecho)
+        return rot[0] if rot else (None, trecho)
+    raise TypeError(f"trecho em formato não suportado: {type(trecho).__name__}")
+
+
+def _indice_recuperado(trechos: list) -> dict[tuple[int, str], set[str]]:
+    """{chave do artigo: normas em que ele foi recuperado}. Trechos sem norma ou sem artigo ficam de fora."""
     indice: dict[tuple[int, str], set[str]] = {}
-    for h in chunks:
-        m = _DISPOSITIVO.match(h.get("dispositivo") or "")
-        norma = h.get("norma") or norma_do_chunk(h)
-        if m and norma:
-            indice.setdefault(_chave(m.group(1), m.group(2)), set()).add(norma)
+    for t in trechos:
+        norma, artigo = _norma_e_artigo(t)
+        chave, norma = _chave_de_artigo(artigo), _canonizar_norma(norma)
+        if chave and norma:
+            indice.setdefault(chave, set()).add(norma)
     return indice
 
 
-def verificar(resposta: str, chunks_recuperados: list[dict]) -> RelatorioCitacoes:
-    indice = _indice_recuperado(chunks_recuperados)
+def verificar(resposta: str, trechos: list) -> RelatorioCitacoes:
+    """Confere as citações de `resposta` contra `trechos` (de qualquer sistema; ver _norma_e_artigo)."""
+    indice = _indice_recuperado(trechos)
     vistas: set[tuple[tuple[int, str], str | None]] = set()
     citacoes: list[Citacao] = []
 
@@ -217,7 +274,9 @@ def verificar(resposta: str, chunks_recuperados: list[dict]) -> RelatorioCitacoe
         vistas.add((chave, norma))
         normas = sorted(indice.get(chave, set()))
         inferida = False
-        if not normas:
+        if norma and norma.startswith("OUTRA:"):
+            status = StatusCitacao.FORA_DO_CORPUS  # norma inexistente no corpus: fonte externa/inventada
+        elif not normas:
             status = StatusCitacao.NAO_RECUPERADA
         elif norma in normas:
             status = StatusCitacao.VERIFICADA

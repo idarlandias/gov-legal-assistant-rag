@@ -17,9 +17,14 @@
       "total": 55,
       "verificadas": 47,
       "norma_divergente": 1,
-      "nao_recuperada": 7,
+      "nao_recuperada": 6,
+      "fora_do_corpus": 1,
       "taxa_verificavel": 0.8545454545454545,
-      "perguntas_sem_citacao": 6
+      "perguntas_fundamentadas": 18,
+      "total_perguntas": 25,
+      "cobertura_fundamentada": 0.72,
+      "perguntas_sem_citacao": 6,
+      "versao_verificador": 2
     },
     "status_resposta": {
       "RESPONDIDA": 19,
@@ -31,7 +36,8 @@
       "derivado_de": "rag-fase3-20261013-113528.json",
       "verificador_commit": "47a6adb",
       "metodo": "citações recalculadas sem LLM sobre as mesmas respostas; trechos reconstruídos dos rótulos 'Norma — Art. N:pP' do campo fontes",
-      "motivo": "nova execução bateu no limite diário de tokens da Groq (429) em 13/25 perguntas"
+      "motivo": "nova execução bateu no limite diário de tokens da Groq (429) em 13/25 perguntas",
+      "verificador_versao": 2
     }
   },
   "resultados": [
@@ -43,10 +49,12 @@
       "resposta": "**Resposta:**  \nSim. A certidão de inteiro teor pode ser emitida ao requerente, ainda que ele seja um terceiro sem vínculo ou sem apresentar justificativa para o pedido.\n\n**Fundamentação normativa**\n\n1. **Lei nº 6.015/1973 – Art. 19, § 11**  \n   > “No âmbito do registro de imóveis, a certidão de inteiro teor da matrícula conterá a reprodução de todo seu conteúdo e será suficiente para fins de comprovação de propriedade, direitos, ônus reais e restrições sobre o imóvel, independentemente de certificação específica pelo oficial.”  \n\n   O dispositivo não impõe a exigência de motivação ou vínculo do requerente para a expedição da certidão.\n\n2. **Código de Normas da CGJ‑CE – Art. 1.131, §§ 1‑2**  \n   > “Ao receber o pedido de certidão, o Oficial fornecerá, obrigatoriamente, ao requerente protocolo… e o prazo para a entrega do documento que não poderá exceder a 05 (cinco) dias úteis… A certidão será lavrada em inteiro teor… não podendo ser retardada por mais de 5 (cinco) dias úteis.”  \n\n   Não há previsão de necessidade de justificativa ou de vínculo do interessado; o oficial apenas cumpre o prazo e informa os custos.\n\n3. **Provimento CNJ 149/2023 – Art. 327**  \n   > “A certidão de inteiro teor digital solicitada durante o horário de expediente… será emitida e disponibilizada dentro de no máximo 2 horas… e ficará disponível para download pelo requerente pelo prazo mínimo de 30 dias.”  \n\n   O provimento regula apenas o prazo e a forma de disponibilização, não condicionando a emissão a motivo ou vínculo.\n\n4. **Provimento CNJ 149/2023 – Art. 200** (restrição que não se aplica ao caso)  \n   > “É vedada a expedição de nova certidão de inteiro teor… tendo como única fonte de consulta anterior certidão expedida por unidade do serviço extrajudicial.”  \n\n   Essa vedação refere‑se à origem da informação, não à identidade do requerente.\n\n**Conclusão prática**  \nO ato registral deve ser praticado integralmente: a serventia pode expedir a certidão de inteiro teor da matrícula ao terceiro, sem necessidade de exigir motivo ou comprovar vínculo. O oficial observará apenas os requisitos de protocolo, pagamento de emolumentos e os prazos estabelecidos nos dispositivos citados.",
       "fontes": "Lei 6.015/1973 — Art. 19:p0; Código de Normas CGJ-CE — Art. 1131:p229; Provimento CNJ 149/2023 — Art. 327:p209; Provimento CNJ 149/2023 — Art. 200:p94",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 4,
         "verificadas": 4,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -65,10 +73,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "Código de Normas CGJ-CE — Art. 1502:p308; Código de Normas CGJ-CE — Art. 1131:p229; Lei 6.015/1973 — Art. 19:p0; Código de Normas CGJ-CE — Art. 1633:p333",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -87,10 +97,12 @@
       "resposta": "**Decisão:** Indeferir o pedido via **Nota Devolutiva** – a certidão deverá conter apenas os ônus reais **não cancelados**, nos termos da normativa vigente.\n\n**Fundamentação normativa**\n\n1. **Código de Normas da CGJ‑CE – Art. 1.129**  \n   > “As certidões dos imóveis que já forem objeto de matrícula eletrônica, após a ‘primeira qualificação eletrônica’, serão expedidas … contendo a situação jurídica atual do imóvel, ou seja, sua descrição, titularidade e os ônus reais **não cancelados**.”  \n\n   O dispositivo delimita expressamente o conteúdo da certidão à situação jurídica **atual**, excluindo, portanto, ônus que já tenham sido cancelados.\n\n2. **Código de Normas da CGJ‑CE – Art. 1.682, parágrafo único**  \n   > “A expedição de certidão de atos anteriores da cadeia filiatória do imóvel depende de identificação segura do requerente e de indicação da finalidade.”  \n\n   Não há previsão de que a certidão de histórico completo (incluindo ônus cancelados) seja emitida de forma automática; sua expedição exigiria requisitos adicionais que não foram atendidos no pedido.\n\n**Conclusão operacional**\n\n- O pedido de certidão contendo **todo o histórico de ônus, inclusive penhoras já canceladas**, ultrapassa o escopo definido pelos artigos acima.  \n- Assim, o ato registral **não deve ser praticado integralmente**.  \n- O cartório deve **indeferir** o pedido mediante **Nota Devolutiva**, orientando o requerente a formular novo pedido específico, com identificação segura e indicação de finalidade, caso deseje acesso a atos anteriores da cadeia filiatória, nos termos do art. 1.682, § único.",
       "fontes": "Lei 6.015/1973 — Art. 230:p0; Código de Normas CGJ-CE — Art. 1129:p229; Código de Normas CGJ-CE — Art. 1682:p345; Código de Normas CGJ-CE — Art. 1259:p256",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -109,10 +121,12 @@
       "resposta": "**Resposta:** Indeferir o pedido via **Nota Devolutiva**.\n\n**Fundamentação normativa**\n\n- **Código de Normas CGJ‑CE – Art. 1.128, § 2º, inc. IV**:  \n  “as requisições de buscas fundadas exclusivamente no indicador pessoal ou real” são vedadas. O pedido “todos os imóveis em nome de fulano”, apresentado apenas com o nome (indicador pessoal), enquadra‑se exatamente nessa hipótese, não havendo a exigência de identificação do requerente nem de finalidade específica.\n\n- **Lei Geral de Proteção de Dados (LGPD) – Art. 7º** (não explicitado no corpus, mas aplicável por analogia): o tratamento de dados pessoais (lista de imóveis vinculados a pessoa física) só pode ocorrer mediante consentimento ou outra hipótese legal, o que não foi demonstrado no pedido.\n\n**Conclusão operacional**\n\n- O registro não deve ser praticado integralmente nem com tarja protetiva; o pedido deve ser **indeferido** mediante emissão de Nota Devolutiva, informando ao solicitante a impossibilidade de atender à busca baseada exclusivamente no nome.",
       "fontes": "Lei 6.015/1973 — Art. 234:p0; Lei 6.015/1973 — Art. 222:p0; Código de Normas CGJ-CE — Art. 1416:p287; Código de Normas CGJ-CE — Art. 1311:p267; Código de Normas CGJ-CE — Art. 1128:p229",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 1,
         "norma_divergente": 0,
         "nao_recuperada": 1,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 0.5,
         "nao_verificadas": [
           "Art. 7 (LGPD (Lei 13.709/2018)) → NAO_RECUPERADA [recuperado em: nenhum trecho recuperado]"
@@ -133,10 +147,12 @@
       "resposta": "**Procedimento para busca de bens do devedor por CPF**\n\n1. **Requerimento ao Oficial do Registro de Imóveis**  \n   O credor deve protocolar um requerimento ao Oficial do Registro de Imóveis, contendo:\n   - CPF e nome do devedor (e, se for casado, do cônjuge) – **Art. 1659, inciso I**;\n   - Endereço residencial atual e anterior, se houver – **Art. 1659, inciso II**;\n   - Endereço comercial, se houver – **Art. 1659, inciso III**;\n   - Qualificação completa das partes (nome, domicílio, nacionalidade, estado civil, regime de bens, profissão, CPF ou documento de identidade) – **Art. 1.103 do Provimento 15/2026/CGJCE**.\n\n2. **Busca de bens**  \n   O Oficial, com base no CPF informado, realiza a busca no Registro de Imóveis e emite um **certificado de busca de bens** (lista de imóveis registrados em nome do CPF).  \n\n3. **Intimação do devedor (se necessário)**  \n   Caso o devedor não seja localizado nos endereços indicados, o Oficial procede à intimação conforme **Art. 1666** (intimação por hora certa, com possibilidade de intimar pessoas próximas ou funcionários de portaria, se aplicável).  \n\n4. **Entrega do resultado**  \n   O certificado de busca, acompanhado de eventuais comprovantes de intimação, é entregue ao credor, permitindo-lhe prosseguir com as medidas de cobrança ou execução.\n\n> **Resumo**: O credor solicita a busca de bens do devedor por CPF, seguindo os requisitos de Art. 1659 e Art. 1.103, e o Oficial realiza a busca e, se necessário, a intimação conforme Art. 1666.",
       "fontes": "Código de Normas CGJ-CE — Art. 1666:p342; Código de Normas CGJ-CE — Art. 1659:p339; Código de Normas CGJ-CE — Art. 1621:p330; Provimento 15/2026/CGJCE — Art. 1:p2",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 4,
         "verificadas": 2,
         "norma_divergente": 0,
         "nao_recuperada": 2,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 0.5,
         "nao_verificadas": [
           "Art. 1103 (Provimento 15/2026/CGJCE) → NAO_RECUPERADA [recuperado em: nenhum trecho recuperado]",
@@ -158,10 +174,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "Código de Normas CGJ-CE — Art. 1394:p282; Código de Normas CGJ-CE — Art. 1456:p297; Código de Normas CGJ-CE — Art. 1386:p281; Provimento CNJ 149/2023 — Art. 426:p269; Código de Normas CGJ-CE — Art. 1364:p277",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -180,10 +198,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "Lei 6.015/1973 — Art. 279:p0; Lei 6.015/1973 — Art. 276:p0; Código de Normas CGJ-CE — Art. 1333:p271; Lei 6.015/1973 — Art. 292:p0; Código de Normas CGJ-CE — Art. 1412:p286",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -202,10 +222,12 @@
       "resposta": "**Resposta:** Forneça a lista, porém o fornecimento deve ser realizado **integralmente, porém condicionado ao cumprimento das normas de proteção de dados** (LGPD) e ao uso da interface eletrônica prevista no Provimento CNJ 149/2023.\n\n**Fundamentação normativa**\n\n1. **Provimento CNJ 149/2023 – Art. 184‑A, §§ 4º, 5º e 6º**  \n   > “§ 4º O CNB/CF e o ONR disponibilizarão acesso aos municípios, para obtenção das informações, mediante convênio padronizado, para fins de os destinatários das informações atenderem ao disposto nas regras de proteção de dados e de sigilo fiscal.”  \n   > “§ 5º O acesso pode ocorrer mediante plataforma que permita aos municípios obterem, em um mesmo ambiente eletrônico, as informações.”  \n   > “§ 6º Caberão ao CNB/CF e ao ONR a elaboração de manual técnico em que serão estabelecidos o formato dos dados e o padrão dos programas de interface eletrônica (API), a serem utilizados no intercâmbio de dados estruturados entre as serventias extrajudiciais e as municipalidades.”\n\n   Esses dispositivos autorizam o compartilhamento de dados cadastrais (matrícula, proprietário, CPF) com a municipalidade, **desde que obedecidos**:\n   * o **convênio padronizado** entre a serventia e o município;  \n   * o **manual técnico** que define o **formato** (arquivo estruturado – ex.: JSON ou XML) e a **API** a ser utilizada;  \n   * as **regras de proteção de dados e sigilo fiscal** previstas na LGPD (Lei 13.709/2018).\n\n2. **LGPD (Lei 13.709/2018)** – embora não haja artigo específico citado no corpus, a própria norma impõe que o tratamento de dados pessoais (nome, CPF) seja realizado em conformidade com os princípios de finalidade, adequação, necessidade e segurança, o que reforça a necessidade de uso da interface eletrônica prevista no provimento acima.\n\n**Procedimento operacional**\n\n| Etapa | Descrição | Base legal |\n|------|-----------|------------|\n| **a) Convênio** | Verificar a existência de convênio padronizado entre o cartório e a prefeitura. | Prov. CNJ 149/2023, art. 184‑A, § 4º |\n| **b) Manual técnico** | Utilizar o manual técnico elaborado pelo CNB/CF e ONR para gerar o arquivo no formato definido (ex.: JSON / XML) e disponibilizá‑lo via API. | Prov. CNJ 149/2023, art. 184‑A, § 6º |\n| **c) Proteção de dados** | Garantir que o acesso seja autenticado, que o arquivo contenha apenas os campos necessários (matrícula, nome, CPF) e que seja armazenado e transmitido com criptografia, em observância à LGPD. | LGPD – princípios de necessidade e segurança |\n| **d) Registro da transmissão** | Arquivar a solicitação da prefeitura, o comprovante de envio da API e o relatório de conformidade LGPD. | Não há dispositivo específico no corpus; prática recomendada de controle interno. |\n\n**Conclusão**\n\n- O ato de fornecer a lista de imóveis com proprietários e CPFs à prefeitura **deve ser praticado integralmente**, porém **condicionado** ao cumprimento das exigências de **proteção de dados** e ao **uso da interface eletrônica (API) prevista** nos §§ 4º, 5º e 6º do **Art. 184‑A do Provimento CNJ 149/2023**.  \n- Não há necessidade de “tarjamento protetivo” (cobertura de dados) quando o compartilhamento ocorre via canal oficial (API) e dentro do escopo do convênio, pois a proteção será assegurada pelos mecanismos de segurança da própria plataforma.  \n- Caso não exista convênio ou a prefeitura exija o envio em formato físico (planilha impressa), o fornecimento **deve ser indeferido via Nota Devolutiva**, pois violaria a exigência de uso da interface eletrônica e de observância da LGPD.  \n\n**Portanto:** forneça a lista **integralmente**, mediante a API padronizada estabelecida pelo CNB/CF e ONR, observando integralmente as regras de proteção de dados da LGPD.",
       "fontes": "Código de Normas CGJ-CE — Art. 1416:p287; Código de Normas CGJ-CE — Art. 1394:p282; Código de Normas CGJ-CE — Art. 1498:p307; Provimento CNJ 149/2023 — Art. 184-A:p88",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 1,
         "verificadas": 1,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -224,10 +246,12 @@
       "resposta": "**Resposta Jurídica e Operacional**\n\nO ato de fornecer os dados solicitados pela polícia, sem que exista ordem judicial que autorize tal tratamento, deve ser **indeferido por meio de Nota Devolutiva**.\n\n**Fundamentação:**\n\n- **Código de Normas CGJ‑CE, Art. 1128, § 4º**: “Caracterizada tentativa de tratamento de dados em desacordo com as finalidades do Registro de Imóveis e com os princípios da Lei Geral de Proteção de Dados Pessoais, poderá o Oficial recusar o fornecimento em nota fundamentada, do que caberá revisão pelo juízo competente.”\n\nComo não há ordem judicial que autorize a divulgação dos dados pessoais do proprietário, a solicitação viola os princípios da LGPD e as finalidades do Registro de Imóveis. Portanto, o oficial deve recusar o pedido, emitindo uma Nota Devolutiva fundamentada no Art. 1128, § 4º.",
       "fontes": "Código de Normas CGJ-CE — Art. 1464:p299; Lei 6.015/1973 — Art. 283:p0; Provimento CNJ 149/2023 — Art. 320-AE:p205; Código de Normas CGJ-CE — Art. 1128:p229; Provimento CNJ 149/2023 — Art. 320-AK:p206",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 2,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -246,10 +270,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "Código de Normas CGJ-CE — Art. 1367:p277; Código de Normas CGJ-CE — Art. 1141:p232; Código de Normas CGJ-CE — Art. 1128:p229; Código de Normas CGJ-CE — Art. 1127:p229; Lei 6.015/1973 — Art. 176-O:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -268,10 +294,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "LAI (Lei 12.527/2011) — Art. 8:p0; LAI (Lei 12.527/2011) — Art. 14:p0; LAI (Lei 12.527/2011) — Art. 11:p0; LAI (Lei 12.527/2011) — Art. 41:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -290,10 +318,12 @@
       "resposta": "**Resposta Jurídica e Operacional**\n\nSim, é dever responder ao pedido de acesso à informação sobre os emolumentos arrecadados pela serventia.\n\n**Fundamentação normativa**\n\n- **LAI – Art. 10**  \n  - § 1º: “Qualquer interessado poderá apresentar pedido de acesso a informações … devendo o pedido conter a identificação do requerente e a especificação da informação requerida.”  \n  - § 2º: “Os órgãos e entidades do poder público devem viabilizar alternativa de encaminhamento de pedidos de acesso por meio de seus sítios oficiais na internet.”  \n  - § 3º: “São vedadas quaisquer exigências relativas aos motivos determinantes da solicitação de informações de interesse público.”  \n\n- **LAI – Art. 14**  \n  - “É direito do requerente obter o inteiro teor de decisão de negativa de acesso, por certidão ou cópia.”  \n\nPortanto, a serventia deve atender ao pedido, fornecendo a informação solicitada ou, se houver motivo legítimo para negar, deve apresentar a decisão de negativa com o inteiro teor, conforme Art. 14.  \n\n**Conclusão**  \nO ato registral de resposta ao pedido via LAI deve ser praticado integralmente, obedecendo aos dispositivos citados.",
       "fontes": "LAI (Lei 12.527/2011) — Art. 14:p0; Provimento CNJ 149/2023 — Art. 228-U:p134; LAI (Lei 12.527/2011) — Art. 10:p0; LAI (Lei 12.527/2011) — Art. 13:p0; Provimento CNJ 149/2023 — Art. 71-J:p35",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -312,10 +342,12 @@
       "resposta": "**Resposta**  \nA certidão não pode ser emitida sem incluir a averbação de interdição/curatela que consta na matrícula.  \n\n**Dispositivo legal**  \n- Lei 6.015/1973, Art. 19, § 11: “No âmbito do registro de imóveis, a certidão de inteiro teor da matrícula conterá a reprodução de todo seu conteúdo e será suficiente para fins de comprovação de propriedade, direitos, ônus reais e restrições sobre o imóvel, independentemente de certificação específica pelo oficial.”  \n\n- Lei 6.015/1973, Art. 230: “Se na certidão constar ônus, o oficial fará a matrícula, e, logo em seguida ao registro, averbará a existência do ônus, sua natureza e valor, certificando o fato no título que devolverá à parte.”\n\n**Conclusão**  \nO ato deve ser **indefere via Nota Devolutiva**. A certidão de inteiro teor deve reproduzir integralmente a averbação de interdição/curatela; omiti-la violaria o disposto nos dispositivos citados.",
       "fontes": "Código de Normas CGJ-CE — Art. 1131:p229; Lei 6.015/1973 — Art. 19:p0; Lei 6.015/1973 — Art. 230:p0; Código de Normas CGJ-CE — Art. 1416:p287; Provimento CNJ 149/2023 — Art. 201:p94",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 2,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -334,13 +366,15 @@
       "resposta": "**Resposta Jurídica e Operacional**\n\nNão é necessário tarjar a averbação de doação a menor de idade (incapaz).  \n\n**Fundamentação normativa**\n\n- **Art. 1.267, § 1º – Código de Normas CGJ‑CE**  \n  “Os relativamente incapazes poderão aceitar a doação, não constituindo óbice à lavratura do registro a inexistência de representação ou assistência destas pessoas no título apresentado.”  \n\n- **Art. 1.267, § 3º – Código de Normas CGJ‑CE**  \n  “Não se exigirá alvará judicial para a realização de doação pura e simples para menores, na forma do artigo 543 do Código Civil.”  \n\nEsses dispositivos dispõem que a doação a menor pode ser registrada sem a necessidade de representação, assistência ou alvará judicial, e não há previsão de tarjar (proteção) nesse caso.  \n\n**Conclusão**  \nA averbação pode ser praticada integralmente, sem tarjar. Se houver dúvidas sobre a documentação, basta verificar a aceitação do menor e a ausência de impedimentos legais.",
       "fontes": "Código de Normas CGJ-CE — Art. 1267:p258; Provimento CNJ 149/2023 — Art. 3 (ato de aprovação):p3; Código de Normas CGJ-CE — Art. 157:p62; Lei 6.015/1973 — Art. 247:p0; Lei 6.015/1973 — Art. 232:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 1,
         "norma_divergente": 0,
-        "nao_recuperada": 1,
+        "nao_recuperada": 0,
+        "fora_do_corpus": 1,
         "taxa_verificavel": 0.5,
         "nao_verificadas": [
-          "Art. 543 (OUTRA: codigo civil) → NAO_RECUPERADA [recuperado em: nenhum trecho recuperado]"
+          "Art. 543 (OUTRA: codigo civil) → FORA_DO_CORPUS [recuperado em: nenhum trecho recuperado]"
         ]
       },
       "status": "OK",
@@ -358,10 +392,12 @@
       "resposta": "**Resposta:** O pedido deve ser **praticado condicionado com tarjamento protetivo** (ou, na ausência de consentimento do titular, indeferido mediante Nota Devolutiva).  \n\n---\n\n### Fundamentação Legal\n\n| Norma | Dispositivo | Aplicação ao caso |\n|-------|-------------|-------------------|\n| **LGPD – Lei 13.709/2018** | **Art. 11, inc. I** | O tratamento de dados pessoais sensíveis (dados de saúde) só pode ocorrer com consentimento **específico e destacado** do titular para a finalidade pretendida. Não há indicação de que o titular tenha consentido com a cópia do título. |\n| LGPD | **Art. 11, inc. II‑e‑f** | As hipóteses de tratamento sem consentimento são: cumprimento de obrigação legal, proteção da vida/incolumidade, tutela da saúde etc. O simples fornecimento de cópia a terceiro não se enquadra em nenhuma dessas exceções. |\n| LGPD | **Art. 19** | O direito de acesso (cópia integral) só pode ser exercido **pelo titular** ou por seu representante legal, mediante requisição. Se o requerente não for o titular, o acesso não é permitido. |\n| **Provimento CNJ 149/2023** | **Art. 123, §§ 1‑4** | Pedidos de certidão ou cópia de documentos arquivados dependem de identificação do requerente; quando houver tentativa de tratamento em desacordo com as finalidades do Registro de Imóveis, aplica‑se o § 4º (tratamento inadequado). |\n| **Código de Normas CGJ‑CE** | **Art. 1.680, §§ 1‑4** | Reforça a necessidade de identificação e indica que, na ausência de finalidade compatível, o tratamento (cópia) deve ser vetado ou limitado (tarjamento). |\n| **Código de Normas CGJ‑CE** | **Art. 1.128, § 2** | Exige indicação de finalidade para pedidos de certidão de documentos arquivados sem previsão legal específica – o que se aplica ao título que contém dados de saúde. |\n\n---\n\n### Conclusão Operacional\n\n1. **Verificar a identidade do requerente** – confirmar se ele é o titular dos dados de saúde ou seu representante legal.  \n2. **Se o requerente for o titular** e houver **consentimento explícito** para a cópia, o documento pode ser fornecido integralmente, observando os requisitos de LGPD (art. 19).  \n3. **Se o requerente não for o titular** ou não houver consentimento, o tratamento (cópia integral) viola o art. 11 da LGPD. Nesse caso:  \n   - **Tarjamento protetivo** – disponibilizar a certidão ou cópia contendo apenas as informações necessárias ao ato registral, **ocultando ou anonimizando** os dados de saúde (ex.: rasurar o campo sensível).  \n   - **Nota Devolutiva** – caso o tarjamento inviabilize a finalidade do pedido (ex.: a parte requer a íntegra para comprovar condição de saúde em processo judicial), o pedido deve ser indeferido mediante Nota Devolutiva, indicando a impossibilidade de fornecimento sem violação da LGPD.  \n\n---\n\n### Procedimento recomendado\n\n| Etapa | Ação | Base legal |\n|-------|------|------------|\n| **1. Identificação** | Solicitar documento de identidade e, se necessário, procuração que comprove a qualidade de titular ou representante. | Art. 123, § 1º (CNJ) / Art. 1.680, § 1º (CGJ‑CE) |\n| **2. Verificação de consentimento** | Exigir declaração assinada de consentimento específico para a cópia do título contendo dados de saúde. | LGPD, Art. 11, I |\n| **3. Avaliação da finalidade** | Confirmar se a finalidade do pedido está amparada por alguma exceção do art. 11, II (ex.: tutela da saúde em procedimento médico). | LGPD, Art. 11, II |\n| **4. Decisão** | - **Consentimento válido** → expedir cópia integral.<br>- **Sem consentimento** → aplicar tarjamento protetivo ou indeferir com Nota Devolutiva. | LGPD, Art. 11; CNJ, Art. 123, § 4º; CGJ‑CE, Art. 1.680, § 4º |\n| **5. Registro** | Anotar a decisão (tarjamento ou indeferimento) no livro de notas e arquivar a cópia tarjada, se houver. | Princípio da transparência e prestação de contas (LGPD). |\n\n---\n\n**Resumo:**  \n- **Fornecimento integral** → somente se houver **consentimento específico** do titular ou se o requerente for o próprio titular exercendo o direito de acesso (LGPD, art. 19).  \n- **Tarjamento protetivo** → a solução padrão quando o requerente não for titular e não houver consentimento.  \n- **Indeferimento (Nota Devolutiva)** → quando o tarjamento impossibilitar a finalidade do pedido ou quando a solicitação for manifestamente incompatível com as hipóteses de tratamento previstas no art. 11 da LGPD.  \n\n> **“Não encontrado no corpus.”** (caso a pergunta exigisse norma não presente no contexto fornecido).",
       "fontes": "LGPD (Lei 13.709/2018) — Art. 11:p0; Provimento CNJ 149/2023 — Art. 123:p56; Código de Normas CGJ-CE — Art. 1128:p229; Código de Normas CGJ-CE — Art. 1680:p344; LGPD (Lei 13.709/2018) — Art. 19:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 5,
         "verificadas": 5,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -380,10 +416,12 @@
       "resposta": "**Ato registral:** praticado integralmente, desde que atendidos os requisitos de LGPD.\n\n**Fundamentação legal:**\n\n- **Art. 100 do Provimento CNJ 149/2023** – “Em caso de requerimento de certidões por meio da telemática, havendo necessidade de justificação do interesse na certidão, o solicitante será identificado por meio idôneo, reconhecido pela entidade responsável pela tramitação do serviço eletrônico compartilhado da respectiva especialidade cartorial.”  \n- **Art. 195 do Código de Normas CGJ‑CE** – “Em caso de requerimento de certidões por via telemática, havendo necessidade de justificação do interesse na certidão, o solicitante será identificado por meio idôneo, reconhecido pela entidade responsável pela tramitação do serviço eletrônico compartilhado da respectiva especialidade cartorial.”\n\n**Cuidados LGPD a observar ao enviar a certidão por e‑mail/WhatsApp:**\n\n1. **Identificação do solicitante** – confirmar a identidade do requerente por meio idôneo (ex.: assinatura digital, certificado digital, ou outro meio reconhecido pela entidade responsável).  \n2. **Transmissão segura** – utilizar canais criptografados (e‑mail com TLS, WhatsApp com criptografia de ponta a ponta) para evitar interceptação de dados pessoais.  \n3. **Limitação de acesso** – garantir que apenas o destinatário legítimo receba a certidão, evitando divulgação indevida.  \n4. **Registro de tratamento** – documentar o envio, incluindo data, hora, destinatário e meio de transmissão, conforme exigido pela LGPD.  \n5. **Consentimento ou base legal** – assegurar que o envio esteja respaldado por uma base legal adequada (ex.: consentimento do titular ou cumprimento de obrigação legal).  \n\n**Conclusão:** O envio da certidão por e‑mail ou WhatsApp é permitido, mas deve ser realizado **integralmente** apenas após a verificação da identidade do requerente e adoção de medidas de segurança previstas na LGPD. Se esses requisitos não forem atendidos, o ato deve ser **condicionado com tarjamento protetivo** ou, em caso de descumprimento grave, **indeferido via Nota Devolutiva**.",
       "fontes": "Provimento CNJ 149/2023 — Art. 124:p57; Provimento CNJ 149/2023 — Art. 105:p52; Provimento CNJ 149/2023 — Art. 100:p51; Código de Normas CGJ-CE — Art. 195:p68; Provimento CNJ 149/2023 — Art. 104:p52",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 2,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -402,10 +440,12 @@
       "resposta": "Não encontrado no corpus.",
       "fontes": "Código de Normas CGJ-CE — Art. 193:p67; Provimento CNJ 149/2023 — Art. 105:p52; Provimento CNJ 149/2023 — Art. 124:p57; Provimento CNJ 149/2023 — Art. 104:p52; Provimento CNJ 149/2023 — Art. 128:p57",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 0,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": null,
         "nao_verificadas": []
       },
@@ -424,10 +464,12 @@
       "resposta": "**Decisão:** Praticar o ato registral integralmente – proceder à exclusão dos dados pessoais do titular da matrícula.\n\n**Fundamentação normativa**\n\n1. **LGPD – Art. 18, § 5º** – “O requerimento referido no § 3º deste artigo será atendido sem custos para o titular, nos prazos e nos termos previstos em regulamento.”  \n   → O pedido de exclusão constitui requerimento previsto no art. 18 e, portanto, deve ser atendido.\n\n2. **LGPD – Art. 18, § 6º** – “O responsável deverá informar, de maneira imediata, aos agentes de tratamento com os quais tenha realizado uso compartilhado de dados a correção, a eliminação, a anonimização ou o bloqueio dos dados…”  \n   → Após a exclusão no cartório, o responsável deve comunicar a eliminação aos demais agentes de tratamento que eventualmente tenham recebido esses dados.\n\n3. **LGPD – Art. 9, incisos I a VII** – Impõe ao controlador a obrigação de disponibilizar ao titular informações claras sobre a finalidade, forma e duração do tratamento, bem como os direitos do titular (art. 9, § 1º).  \n   → O cartório, na qualidade de controlador, deve garantir ao titular a transparência sobre o procedimento de exclusão e confirmar que o tratamento cessará.\n\n**Procedimento operacional**\n\n- Receber o requerimento por escrito (ou meio eletrônico que assegure a autenticidade do titular).  \n- Verificar a identidade do titular e a titularidade dos dados constantes na matrícula.  \n- Efetuar a exclusão dos dados pessoais solicitados, observando a necessidade de preservação de informações indispensáveis ao registro público (ex.: dados indispensáveis à validade do ato registral, nos termos da Lei 6.015/1973 – não abordado no corpus, mas que, se necessário, será tratado mediante **tarjamento protetivo**).  \n- Emitir nota de devolutiva confirmando a exclusão e informando a comunicação aos demais agentes de tratamento, nos termos do art. 18, § 6º.  \n- Arquivar o procedimento conforme a política de tratamento de dados pessoais do cartório.  \n\n**Conclusão:** Conforme o disposto no art. 18, §§ 5º e 6º da LGPD, o pedido de exclusão deve ser atendido integralmente, devendo o cartório proceder à eliminação dos dados pessoais do titular da matrícula e comunicar a eliminação aos demais agentes de tratamento.",
       "fontes": "LGPD (Lei 13.709/2018) — Art. 9:p0; LGPD (Lei 13.709/2018) — Art. 18:p0; LGPD (Lei 13.709/2018) — Art. 11:p0; LGPD (Lei 13.709/2018) — Art. 4:p0; LGPD (Lei 13.709/2018) — Art. 20:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -446,10 +488,12 @@
       "resposta": "Sim.  \nDe acordo com o art. 18 da LGPD, “os direitos dos titulares são, em regra, exercidos em face do controlador, a quem compete, entre outras providências, **fornecer informações relativas ao tratamento**”. Como o registro de imóveis é o controlador dos dados pessoais do titular, você tem obrigação de informar quem consultou a matrícula.",
       "fontes": "Guia ANPD — Agentes de Tratamento — p. 8:p8; Código de Normas CGJ-CE — Art. 1461:p299; Provimento CNJ 149/2023 — Art. 415:p265; LAI (Lei 12.527/2011) — Art. 30:p0; Provimento CNJ 149/2023 — Art. 89:p47",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 1,
         "verificadas": 0,
         "norma_divergente": 0,
         "nao_recuperada": 1,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 0.0,
         "nao_verificadas": [
           "Art. 18 (LGPD (Lei 13.709/2018)) → NAO_RECUPERADA [recuperado em: nenhum trecho recuperado]"
@@ -470,10 +514,12 @@
       "resposta": "**Procedimento a ser adotado:** **Retificação registral praticada integralmente** (sem tarja protetiva e sem indeferimento).\n\n**Fundamentação normativa**\n\n1. **Código de Normas da CGJ‑CE – Art. 1.386**  \n   > “No que diz respeito à retificação de dados de qualificação pessoal das partes, caberá ao Oficial do Registro de Imóveis somente retificar o erro à margem do registro (matrícula, transcrição ou inscrição) do nome e estado civil do proprietário, que deverá apresentar requerimento com firma reconhecida ou assinado digitalmente, quando comprovado:  \n   > a) que o nome lançado no assento não corresponde ao nome apresentado no registro civil …;  \n   > b) que se trata do titular do domínio.”  \n\n   – O pedido do titular enquadra‑se exatamente na hipótese (a) e (b) do inciso acima, logo o ato de correção deve ser realizado por **retificação à margem da matrícula**, mediante requerimento formal.\n\n2. **LGPD – Art. 18, §§ 5º e 6º** (direito à correção de dados pessoais)  \n   > “§ 5º O requerimento referido no § 3º deste artigo será atendido sem custos para o titular…  \n   > § 6º O responsável deverá informar, de maneira imediata, aos agentes de tratamento … a correção, a eliminação, a anonimização ou o bloqueio dos dados…”  \n\n   – O titular exerce o direito de correção previsto na LGPD; o controlador (no caso, o Cartório de Registro de Imóveis) deve atender ao pedido, o que se operacionaliza mediante a **retificação registral** prevista no art. 1.386 da CGJ‑CE.\n\n**Conclusão prática**\n\n- O pedido deve ser **aceito** e **atendido integralmente** por meio de **retificação à margem da matrícula**, nos termos do art. 1.386 da CGJ‑CE.  \n- O requerimento deve conter:  \n  1. Petição assinada digitalmente ou com firma reconhecida;  \n  2. Documentos comprobatórios (certidão de nascimento, casamento ou registro de estrangeiro) que demonstrem o nome correto;  \n  3. Indicação clara do erro a ser corrigido.  \n\n- Não há necessidade de tarja protetiva, pois o dado a ser corrigido não se trata de informação sensível que exija restrição de acesso.  \n\n- O cartório deve ainda observar o disposto nos §§ 5º e 6º do art. 18 da LGPD, garantindo que a correção seja efetuada sem custos ao titular e comunicando, se houver outros agentes de tratamento, a atualização dos dados.",
       "fontes": "LGPD (Lei 13.709/2018) — Art. 18:p0; LGPD (Lei 13.709/2018) — Art. 5:p0; Código de Normas CGJ-CE — Art. 1386:p281; LGPD (Lei 13.709/2018) — Art. 7:p0",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 2,
         "verificadas": 2,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -492,10 +538,12 @@
       "resposta": "**Resposta:** Sim. O convênio pode ser firmado integralmente.\n\n**Fundamentação normativa**\n\n1. **Provimento CNJ 149/2023 – Art. 148** – “As entidades representativas dos notários e dos registradores poderão firmar convênio com a RFB, as Juntas Comerciais dos estados, o Departamento de Registro Empresarial e Integração (DREI), a Comissão de Valores Mobiliários (CVM) e quaisquer outros órgãos… com o objetivo de manter atualizado o cadastro de que trata esta seção.”  \n\n2. **Provimento CNJ 149/2023 – Art. 168** – Autoriza o CNB/CF a firmar convênio com a RFB, Juntas Comerciais, DREI, CVM e demais órgãos que detenham dados sobre atos constitutivos, modificativos, extintivos ou participações societárias, visando a atualização do cadastro.  \n\n3. **Provimento CNJ 149/2023 – Art. 334** – “O acesso dos oficiais de registro de imóveis ao Programa Gerador e Validador será feito mediante certificado digital ICP‑Brasil ou comunicação por Application Programming Interface (API).”  \n\n**Conclusão operativa:**  \n- É plenamente possível celebrar convênio com a empresa imobiliária/fintech para o acesso em lote ou via API aos dados de matrículas, nos termos dos artigos citados.  \n- Não há necessidade de imposição de tarja protetiva nem de indeferimento; o ato deve ser praticado integralmente.",
       "fontes": "Provimento CNJ 149/2023 — Art. 168:p83; Provimento CNJ 149/2023 — Art. 148:p71; Provimento CNJ 149/2023 — Art. 334:p212; Lei 6.015/1973 — Art. 237-A:p0; Código de Normas CGJ-CE — Art. 1167:p237",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -514,10 +562,12 @@
       "resposta": "**Resposta:** O ato registral deve ser praticado integralmente.\n\n**Fundamentação normativa**\n\n1. **Integração com o ONR** – O Código de Normas da CGJ‑CE, art. 1749, determina que as serventias “adotarão as medidas necessárias para a integração, diretamente com o representante legal do ONR – Operador Nacional de Registro Eletrônico de Imóveis”. Não há exigência de autorização adicional ou de consentimento do titular dos dados para essa integração.\n\n2. **Compartilhamento de dados com centrais eletrônicas** – O Provimento CNJ 149/2023, art. 101, dispõe que “o compartilhamento de dados com centrais de serviços eletrônicos compartilhados é compatível com a proteção de dados pessoais, devendo as centrais observar a adequação, necessidade e persecução da finalidade dos dados a serem compartilhados…”. O parágrafo único ainda enfatiza a preferência pela **descentralização** das bases, evitando a transferência de bases de dados quando possível. Não há menção à necessidade de consentimento do titular para o compartilhamento nos termos previstos.\n\n3. **Reforço da mesma regra** – O Código de Normas da CGJ‑CE, art. 196, repete integralmente o conteúdo do art. 101 do Provimento CNJ 149/2023, confirmando que o compartilhamento é permitido desde que observados os princípios de adequação, necessidade e finalidade, sem exigir consentimento adicional.\n\n**Conclusão prática**\n\n- Não é necessária **base legal adicional** nem **consentimento explícito** do titular dos dados para o compartilhamento com o ONR/SREI e as centrais eletrônicas, desde que o procedimento observe os requisitos de adequação, necessidade e finalidade previstos nos dispositivos citados.\n- Portanto, o ato registral pode ser **praticado integralmente**, atendendo às exigências dos artigos acima mencionados.",
       "fontes": "Código de Normas CGJ-CE — Art. 1749:p357; Provimento CNJ 149/2023 — Art. 101:p51; Código de Normas CGJ-CE — Art. 196:p68; Provimento CNJ 149/2023 — Art. 321:p208; Provimento CNJ 149/2023 — Art. 219:p118",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -536,10 +586,12 @@
       "resposta": "**O que mudou com o Provimento nº 15/2026/CGJCE na qualificação das partes para registro?**\n\nO provimento alterou a redação dos dispositivos que tratam da qualificação das partes nos registros, tornando‑a mais rigorosa e detalhada. As principais mudanças são:\n\n| Dispositivo | Alteração | Conteúdo exigido |\n|-------------|-----------|------------------|\n| **Art. 817, I a)** | Redação atualizada | Qualificação completa de pessoa física: nacionalidade, estado civil, profissão, número do documento de identidade e repartição expedidora, número de inscrição no CPF, filiação, domicílio e residência, nome do cônjuge ou companheiro (quando houver) e regime de bens do casamento ou da união estável (se declarado). Vedada a utilização das expressões “regime comum” ou “regime legal”. |\n| **Art. 1.103, II a) e b)** | Redação atualizada | 1. **Pessoa natural**: além dos dados já citados, deve constar o número de inscrição no CPF ou documento de identidade, ou, na falta deste, a filiação. <br>2. **Pessoa jurídica**: denominação social, número de inscrição no CNPJ e sede. |\n\nEssas alterações reforçam a exigência de **qualificação completa e não genérica** das partes, impedindo a prática de atos registrais com qualificação incompleta, genérica ou indeterminada (conforme o § único do Art. 1 do Provimento 15/2026/CGJCE).  \n\n**Conclusão**: O Provimento nº 15/2026/CGJCE atualizou a qualificação das partes, exigindo que todas as informações obrigatórias estejam presentes e expressas de forma clara, sem o uso de termos genéricos.",
       "fontes": "Provimento 15/2026/CGJCE — Art. 1:p2; Provimento 15/2026/CGJCE — Preâmbulo:p1",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 1,
         "norma_divergente": 0,
         "nao_recuperada": 2,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 0.3333333333333333,
         "nao_verificadas": [
           "Art. 817 (norma não informada) → NAO_RECUPERADA [recuperado em: nenhum trecho recuperado]",
@@ -561,10 +613,12 @@
       "resposta": "**Requisitos para emissão de certidão digital (Código de Normas CGJ‑CE)**  \n\n| Requisito | Dispositivo normativo |\n|-----------|-----------------------|\n| 1. Utilizar formulário próprio, timbrado e oficial, proibida a utilização de impressos não oficiais. | Art. 1127, § 1º, I |\n| 2. Se a certidão for assinada ou enviada pela Internet, deve atender aos requisitos da Infraestrutura de Chaves Públicas Brasileira (ICP‑Brasil). | Art. 1127, § 1º, único |\n| 3. Certidões de imóveis já objeto de matrícula eletrônica, após a “primeira qualificação eletrônica”, devem ser expedidas em formato nato‑digital estruturado, contendo a situação jurídica atual do imóvel (descrição, titularidade e ônus reais não cancelados). | Art. 1129 |\n| 4. Para escrituração de livros em formato digital, o arquivo deve ser assinado eletronicamente com certificado digital padrão ICP‑Brasil, pode incluir carimbo do tempo e deve ser mantido na própria serventia, com cópia de segurança regular. | Art. 140, § 3º |\n\nEsses são os requisitos expressos no Código de Normas CGJ‑CE para a emissão de certidão digital.",
       "fontes": "Código de Normas CGJ-CE — Art. 1127:p229; Código de Normas CGJ-CE — Art. 1128:p229; Código de Normas CGJ-CE — Art. 1685:p345; Código de Normas CGJ-CE — Art. 1129:p229; Código de Normas CGJ-CE — Art. 140:p58",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 3,
         "verificadas": 3,
         "norma_divergente": 0,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 1.0,
         "nao_verificadas": []
       },
@@ -583,10 +637,12 @@
       "resposta": "**Obrigação da serventia**  \nO envio de uma certidão contendo dados pessoais para o e‑mail errado configura, no mínimo, um erro de tratamento de dados que exige correção imediata e medidas de mitigação, nos termos das normas de proteção de dados aplicáveis à serventia.\n\n| O que deve ser feito | Dispositivo normativo que fundamenta |\n|----------------------|--------------------------------------|\n| **Corrigir o envio** – a serventia deve reenviar a certidão ao destinatário correto e impedir a divulgação indevida. | Art. 103 do Provimento CNJ 149/2023 – “o responsável pela serventia extrajudicial efetuará, sempre que possível, a criptografia ou a pseudonimização de dados pessoais para o acesso a informações ou transferência dos dados para terceiros.” |\n| **Aplicar criptografia ou pseudonimização** – caso a certidão contenha dados sensíveis ou de natureza pessoal, a serventia deve, sempre que possível, proteger esses dados antes de qualquer reenvio ou correção. | Art. 103 do Provimento CNJ 149/2023 |\n| **Garantir a conformidade com a LGPD** – a serventia deve assegurar que o tratamento de dados pessoais, inclusive a correção de erro, esteja em conformidade com os princípios, fundamentos e obrigações da Lei Geral de Proteção de Dados. | Art. 178 do Código de Normas CGJ‑CE |\n| **Fornecer transparência ao titular** – a serventia deve disponibilizar, de forma clara e acessível, informações sobre o tratamento de dados, incluindo a ocorrência do erro e as medidas adotadas para corrigi‑lo. | Art. 97 do Provimento CNJ 149/2023 (aviso de privacidade e proteção de dados) |\n| **Identificar o solicitante** – se a certidão foi solicitada por meio telemático, a serventia deve ter identificado o solicitante de forma idônea, conforme exigido para a tramitação do serviço eletrônico. | Art. 100 do Provimento CNJ 149/2023 |\n\nEm síntese, a serventia deve:  \n1. **Corrigir imediatamente** o envio incorreto;  \n2. **Aplicar criptografia ou pseudonimização** (se possível) antes de reenviar ou corrigir a certidão;  \n3. **Assegurar a conformidade com a LGPD** (Art. 178);  \n4. **Fornecer transparência** ao titular dos dados (Art. 97); e  \n5. **Confirmar a identificação do solicitante** (Art. 100).",
       "fontes": "Provimento CNJ 149/2023 — Art. 103:p52; Provimento CNJ 149/2023 — Art. 105:p52; Provimento CNJ 149/2023 — Art. 100:p51; Código de Normas CGJ-CE — Art. 178:p65; Provimento CNJ 149/2023 — Art. 97:p50",
       "citacoes": {
+        "versao_verificador": 2,
         "total": 7,
         "verificadas": 6,
         "norma_divergente": 1,
         "nao_recuperada": 0,
+        "fora_do_corpus": 0,
         "taxa_verificavel": 0.8571428571428571,
         "nao_verificadas": [
           "Art. 178 (LGPD (Lei 13.709/2018)) → NORMA_DIVERGENTE [recuperado em: Código de Normas CGJ-CE]"

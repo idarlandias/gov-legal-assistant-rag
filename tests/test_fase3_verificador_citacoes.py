@@ -8,7 +8,7 @@ import pytest
 
 from src.fase3.ato_pronto import PedidoBalcao, processar_ato_pronto
 from src.fase3.pipeline import Fase3Pipeline
-from src.fase3.verificador_citacoes import StatusCitacao, verificar
+from src.fase3.verificador_citacoes import VERIFICADOR_VERSAO, StatusCitacao, trechos_de_rotulos, verificar
 
 CE = "Código de Normas CGJ-CE"
 LEI = "Lei 6.015/1973"
@@ -120,10 +120,45 @@ def test_sem_norma_e_artigo_ambiguo_nao_e_verificado():
     assert _status("Aplica-se o Art. 123.") == [("Art. 123", StatusCitacao.NORMA_DIVERGENTE)]
 
 
-def test_norma_fora_do_corpus_nunca_e_verificada():
+def test_norma_fora_do_corpus_e_categoria_propria():
+    # mesmo com "Art. 17" existindo nos trechos (da Lei 6.015), a norma citada não está no corpus
     rel = verificar("Art. 17 da Lei 14.382/2022.", CHUNKS)
     assert rel.citacoes[0].norma_citada.startswith("OUTRA")
-    assert rel.citacoes[0].status == StatusCitacao.NORMA_DIVERGENTE
+    assert rel.citacoes[0].status == StatusCitacao.FORA_DO_CORPUS
+
+
+def test_fora_do_corpus_nao_se_mistura_com_nao_recuperada():
+    # Código Civil não existe no corpus (fonte inventada/externa); LGPD existe, mas o Art. 7 não veio
+    rel = verificar("Doação conforme o Art. 543 do Código Civil. Base: art. 7º da LGPD.", CHUNKS)
+    assert _status_de(rel) == [("Art. 543", StatusCitacao.FORA_DO_CORPUS), ("Art. 7", StatusCitacao.NAO_RECUPERADA)]
+    assert (rel.fora_do_corpus, rel.nao_recuperada) == (1, 1)
+
+
+def _status_de(rel):
+    return [(c.artigo, c.status) for c in rel.citacoes]
+
+
+# ---------------------------------------------------------------- agnóstico à origem
+
+def test_aceita_trechos_de_qualquer_sistema():
+    resposta = "Art. 17 da Lei 6.015/1973 e Art. 1.128 do Código de Normas CGJ-CE."
+    como_tuplas = [("Lei nº 6.015/73", "art. 17"), ("Código de Normas da CGJ-CE", "Artigo 1.128")]
+    como_rotulos = ["Lei 6.015/1973 — Art. 17", "Código de Normas CGJ-CE — Art. 1128:p229"]
+    como_dicts = [{"norma": "Lei 6.015/1973", "artigo": "Art. 17"}, {"fonte_id": "codigo_normas_ce",
+                                                                       "dispositivo": "Art. 1128"}]
+    for trechos in (como_tuplas, como_rotulos, como_dicts):
+        assert verificar(resposta, trechos).verificadas == 2, trechos
+
+
+def test_trechos_de_rotulos_do_campo_fontes():
+    fontes = ("Código de Normas CGJ-CE — Art. 1128:p229; Provimento CNJ 149/2023 — Art. 320-AE:p205; "
+              "Guia ANPD — Agentes de Tratamento — p. 8:p8")
+    assert trechos_de_rotulos(fontes)[:2] == [("Código de Normas CGJ-CE", "Art. 1128"),
+                                              ("Provimento CNJ 149/2023", "Art. 320-AE")]
+
+
+def test_relatorio_carrega_a_versao():
+    assert verificar("Art. 17 da Lei 6.015/1973.", CHUNKS).versao == VERIFICADOR_VERSAO == 2
 
 
 def test_chunk_de_indice_antigo_usa_fonte_id():
@@ -203,6 +238,11 @@ def test_benchmark_agrega_e_grava_na_planilha(tmp_path):
     total = rb.agregar_citacoes([{"citacoes": c} for c in por_pergunta] + [{"citacoes": None}])
     assert (total["total"], total["verificadas"], total["perguntas_sem_citacao"]) == (2, 1, 1)
     assert total["taxa_verificavel"] == 0.5
+    # cobertura: 1 pergunta fundamentada / 3 perguntas (a sem resultado também conta no denominador)
+    assert (total["perguntas_fundamentadas"], total["total_perguntas"]) == (1, 3)
+    assert total["cobertura_fundamentada"] == pytest.approx(1 / 3)
+    assert total["versao_verificador"] == VERIFICADOR_VERSAO
+    assert f"v{VERIFICADOR_VERSAO}" in rb.formatar_metricas_citacao(total)
 
     out = tmp_path / "p.xlsx"
     sys.argv = ["build_planilha.py", "--out", str(out)]
@@ -211,9 +251,31 @@ def test_benchmark_agrega_e_grava_na_planilha(tmp_path):
             "git_commit": "x", "ferramenta": "RAG Fase 3"}
     rec = {"id": 1, "resposta": "r", "fontes": "f", "latencia_s": 1.0, "tokens_entrada": 1,
            "tokens_saida": 1, "erro": None, "citacoes": por_pergunta[0]}
+    meta["citacoes"] = total
     assert rb.fill_xlsx(out, meta, [rec], overwrite=False) == (1, 0)
-    ws = openpyxl.load_workbook(out)["Respostas"]
+    wb = openpyxl.load_workbook(out)
+    # versão gravada junto de toda taxa
+    assert wb["Parametros"]["B6"].value == VERIFICADOR_VERSAO
+    assert f"v{VERIFICADOR_VERSAO}" in wb["Resumo"]["L3"].value and f"v{VERIFICADOR_VERSAO}" in wb["Resumo"]["P3"].value
+    assert "COUNTIFS" in wb["Resumo"]["P8"].value
+    ws = wb["Respostas"]
+    assert f"v{VERIFICADOR_VERSAO}" in ws["V1"].value
     r = next(i for i in range(2, ws.max_row + 1) if ws[f"A{i}"].value == 1 and ws[f"B{i}"].value == "RAG Fase 3")
     assert (ws[f"T{r}"].value, ws[f"U{r}"].value) == (2, 1)
     assert ws[f"V{r}"].value.startswith("=IF(")
     assert "NORMA_DIVERGENTE" in ws[f"W{r}"].value
+
+
+def test_reverificar_resultado_salvo_sem_llm():
+    import run_rag_benchmark as rb
+
+    salvo = {"meta": {}, "resultados": [
+        {"id": 1, "resposta": "Art. 1128 do Código de Normas CGJ-CE.", "fontes": "Código de Normas CGJ-CE — Art. 1128:p229",
+         "erro": None},
+        {"id": 2, "resposta": "Art. 543 do Código Civil.", "fontes": "Lei 6.015/1973 — Art. 17:p0", "erro": None},
+        {"id": 3, "resposta": "", "fontes": "", "erro": None},  # vazia: conta no denominador da cobertura
+    ]}
+    cit = rb.reverificar(salvo)["meta"]["citacoes"]
+    assert (cit["verificadas"], cit["fora_do_corpus"], cit["total"]) == (1, 1, 2)
+    assert cit["cobertura_fundamentada"] == pytest.approx(1 / 3)
+    assert cit["versao_verificador"] == VERIFICADOR_VERSAO
