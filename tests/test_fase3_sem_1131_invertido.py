@@ -13,6 +13,7 @@ Os termos de restrição existem porque o payload que motivou esta guarda usava 
 Menção correta e documentada: marcar a linha com "guarda-1131: ok".
 """
 
+import ast
 import re
 from pathlib import Path
 
@@ -89,3 +90,66 @@ def test_mencao_sem_omissao_nem_restricao_passa(tmp_path):
     (tmp_path / "x.py").write_text("# inteiro teor: art. 1.131 §10 manda reproduzir todo o conteúdo\n",
                                    encoding="utf-8")
     assert not _suspeitos([tmp_path])
+
+
+# ---------------------------------------------------------------- texto de interface (src/ui)
+PASTAS_UI = (RAIZ / "src" / "ui",)
+# O problema é a afirmação jurídica, não a palavra: "tarj" e "vinculante" sempre; supressão só quando
+# a mesma string fala de certidão/matrícula/inteiro teor/CPF/dado pessoal.
+SEMPRE_UI = re.compile(r"tarj|vinculante", re.IGNORECASE)
+SUPRESSAO = re.compile(r"suprim|supress", re.IGNORECASE)  # "supress" cobre supressão/supressões
+ALVO_SUPRESSAO = re.compile(r"certid[ãa]o|matr[íi]cula|inteiro teor|\bcpf\b|dados? pessoa(l|is)", re.IGNORECASE)
+# chave de session_state, key=, variável de ambiente e nome de arquivo: identificadores, não texto exibido
+IDENTIFICADOR = re.compile(r"^(?:[a-z0-9_]+|[A-Z0-9_]+)$")
+
+
+def _textos_de_interface(codigo: str):
+    """Literais de string do arquivo, sem docstrings nem identificadores (chaves e nomes)."""
+    arvore = ast.parse(codigo)
+    docstrings = {
+        id(no.body[0].value)
+        for no in ast.walk(arvore)
+        if isinstance(no, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        and no.body and isinstance(no.body[0], ast.Expr) and isinstance(no.body[0].value, ast.Constant)
+    }
+    for no in ast.walk(arvore):
+        if (isinstance(no, ast.Constant) and isinstance(no.value, str) and id(no) not in docstrings
+                and not IDENTIFICADOR.match(no.value)):
+            yield no.lineno, no.value
+
+
+def _suspeitos_ui(pastas=PASTAS_UI) -> list[str]:
+    achados = []
+    for pasta in pastas:
+        for arquivo in sorted(pasta.rglob("*.py")):
+            for linha, texto in _textos_de_interface(arquivo.read_text(encoding="utf-8")):
+                if SEMPRE_UI.search(texto) or (SUPRESSAO.search(texto) and ALVO_SUPRESSAO.search(texto)):
+                    nome = arquivo.relative_to(RAIZ) if arquivo.is_relative_to(RAIZ) else arquivo.name
+                    achados.append(f"{nome}:{linha}: {texto.strip()[:120]}")
+    return achados
+
+
+def test_ui_sem_tarja_supressao_ou_vinculante():
+    achados = _suspeitos_ui()
+    assert not achados, "Texto de interface com tarj/suprim/vinculante:\n" + "\n".join(achados)
+
+
+def test_guarda_ui_reprova_texto_exibido(tmp_path):
+    (tmp_path / "app.py").write_text('st.expander("Fundamentação Legal Vinculante")\n'
+                                     'st.button("Aplicar Tarjamento")\n', encoding="utf-8")
+    assert len(_suspeitos_ui([tmp_path])) == 2
+
+
+def test_guarda_ui_supressao_so_reprova_junto_de_certidao_ou_dado_pessoal(tmp_path):
+    (tmp_path / "app.py").write_text('st.markdown("Aplica supressões no texto da matrícula")\n'
+                                     'st.markdown("Suprimir o CPF")\n'
+                                     'st.caption("Avisos suprimidos nesta sessão")\n'
+                                     'st.caption("Verificação automática de citações")\n', encoding="utf-8")
+    assert len(_suspeitos_ui([tmp_path])) == 2
+
+
+def test_guarda_ui_ignora_chaves_docstrings_e_comentarios(tmp_path):
+    (tmp_path / "app.py").write_text('"""Módulo do tarjador."""\n'
+                                     '# aba do tarjador\n'
+                                     'st.text_input("Protocolo:", key="tarja_protocolo")\n', encoding="utf-8")
+    assert not _suspeitos_ui([tmp_path])
