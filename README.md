@@ -36,11 +36,11 @@
 ## 🥊 O Problema Real & Por Que os Concorrentes Falham
 
 1. **A Dor no Balcão:** O conflito diário entre o **Princípio da Publicidade Registral** (Art. 17 da Lei 6.015/73) e a **Proteção de Dados Pessoais** (LGPD e Provimento CNJ 149/2023). Quando um terceiro pede certidão com CPF, regime de bens ou filiação de alguém, o escrevente fica no fogo cruzado: se negar indevidamente, comete infração perante a Corregedoria do TJCE; se fornecer na íntegra, expõe o titular e o Oficial do cartório a multas severas da ANPD.
-2. **Onde as IAs Atuais Falham (*Jus IA*, *Jurídico AI*, *ChatGPT*):** Entregam prosa longa e teórica em caixas de chat abertas. O escrevente no balcão tem fila de atendimento e não quer "bater papo com uma IA": ele precisa saber em 3 segundos se pode emitir, com quais tarjas, gerar a minuta do ato e comprovar o registro de auditoria exigido por lei.
+2. **Alternativas atuais (Jus IA, Jurídico AI, ChatGPT):** comparação ainda não medida. Ver [Hipóteses não validadas](#hipóteses-não-validadas).
 
 ---
 
-## ⚡ As Inovações Inéditas Implementadas
+## ⚡ Funcionalidades Implementadas
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -63,7 +63,7 @@
 * **🔴 Canal Vermelho (Bloqueio / Nota Devolutiva):** Pedidos de exclusão de dados da matrícula por LGPD (inaplicável a livros perpétuos), buscas informais por telefone ou pedidos sem ordem judicial. Emissão imediata de **Nota Devolutiva formal fundamentada**.
 
 ### 🛡️ 2. Tarjador Inteligente & Carimbo Criptográfico SHA-256
-Nenhum assistente jurídico no Brasil executa a edição do documento para emissão. No CartórioSeguro AI:
+No CartórioSeguro AI:
 * O atendente cola o texto da matrícula (ou carrega o exemplo pré-configurado de Limoeiro do Norte/CE);
 * O sistema identifica dados pessoais em `< 0.05 segundos` e gera o texto da certidão pronto com as tarjas oficiais;
 * Imprime no verso o **Carimbo Digital de Autenticidade Registral (SHA-256)** com a trilha de conformidade do Provimento CNJ 149/2023.
@@ -74,12 +74,12 @@ Nenhum assistente jurídico no Brasil executa a edição do documento para emiss
 
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
 |:---|:---|:---|:---|
-| **Tempo de Decisão** |  | 5 a 10 min (leitura de parecer) | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
-| **Interface Operacional** | Consulta manual e-mail/telefone | Caixa de chat (alta fricção) | **3 seletores objetivos (Zero-UI de chat)** |
-| **Formato de Saída** | Parecer dissertativo | Resposta conversacional genérica | **Ato Pronto (Despacho / Nota Devolutiva / ROPA)** |
-| **Normas Regionais CE** | Consulta física ao TJCE | Desatualizado / foco federal | **Código CGJ-CE + Prov. 15/2026 integrados** |
-| **Proteção de Documento** | Tarjamento manual na caneta | Nenhum | **Tarjador Automático com Hash SHA-256** |
-| **Custo por Consulta** | Alto (honorários DPO/SaaS) | R$ 150–500/mês por usuário | **< R$ 0,02 via Groq / Modelos Abertos** |
+| **Tempo de Decisão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
+| **Interface Operacional** | não medido | não medido | **3 seletores objetivos (Zero-UI de chat)** |
+| **Formato de Saída** | não medido | não medido | **Ato Pronto (Despacho / Nota Devolutiva / ROPA)** |
+| **Normas Regionais CE** | não medido | não medido | **Código CGJ-CE + Prov. 15/2026 integrados** |
+| **Proteção de Documento** | não medido | não medido | **Tarjador desativado: sem base normativa identificada no corpus** |
+| **Custo por Consulta** | não medido | não medido | **< R$ 0,02 via Groq / Modelos Abertos** |
 
 ## Hipóteses não validadas
 
@@ -88,6 +88,23 @@ Nenhum assistente jurídico no Brasil executa a edição do documento para emiss
 - A validar: "Aderência Regulatória 100% CGJ-CE / CNJ" (app).
 - A validar: "Garantia anti-alucinação" (app).
 - A validar: tempo do DPO de "20 a 40 min (ou dias via DPO)" (README) e "20 a 40 minutos (ou dias aguardando DPO)" (app).
+- A validar: "Tarjador inteligente inédito" — método de validação: levantamento das funcionalidades do Jus IA, Jurídico AI e similares (documentação, demonstração e teste prático); não se aplica enquanto o tarjador estiver desativado por falta de base normativa.
+- A validar: "R$ 150–500/mês por usuário" para os assistentes genéricos — método de validação: coletar preço público ou proposta comercial do Jus IA e do Jurídico AI, com data e fonte.
+- A validar: "Nenhum assistente jurídico no Brasil executa a edição do documento para emissão" — método de validação: o mesmo levantamento de funcionalidades dos concorrentes, registrado com data e fonte.
+- A validar: "Inovações inéditas" — método de validação: levantamento de mercado com fontes citáveis; até lá, o projeto descreve apenas o que implementa.
+- A validar: os assistentes genéricos (Jus IA, Jurídico AI, ChatGPT) "entregam prosa longa e teórica em caixas de chat", "resposta conversacional genérica", "caixa de chat (alta fricção)" — método de validação: rodar as 25 perguntas do benchmark nessas ferramentas e registrar formato da saída (veredito, minuta, fundamentação) na planilha.
+- A validar: os assistentes genéricos levam "5 a 10 min (leitura de parecer)" — método de validação: cronometrar escreventes resolvendo 10 casos do benchmark com cada ferramenta.
+- A validar: os assistentes genéricos são "desatualizados / foco federal" nas normas do CE e não oferecem proteção de documento — método de validação: notas das colunas "Norma CE" e "Sem alucinação" da rubrica no benchmark.
+- A validar: o fluxo tradicional usa "consulta manual e-mail/telefone", "parecer dissertativo", "consulta física ao TJCE", "tarjamento manual na caneta" e tem custo "alto (honorários DPO/SaaS)" — método de validação: entrevistas com 3 cartórios do Vale do Jaguaribe (fluxo atual, tempo e custo por consulta).
+- A validar: "Superado" no critério de inovação da rubrica — método de validação: avaliação da banca da residência.
+
+## Limitações conhecidas
+
+- O veredito do semáforo é gerado por LLM e constitui sugestão, não decisão.
+- Não há gabarito validado por Oficial ou DPO; "respondida" não significa "correta".
+- A taxa de citações verificadas mede ancoragem no contexto recuperado, não correção jurídica do conteúdo.
+- A aba do tarjador está desativada por ausência de base normativa identificada no corpus.
+- Limite de 200 mil tokens/dia no provedor atual (Groq, gpt-oss-20b).
 
 ---
 
@@ -199,7 +216,7 @@ gov-legal-assistant-rag/
 
 | Critério | Peso | Status da Entrega |
 |:---|:---:|:---|
-| **Inovação & Unfair Advantage** | 40% | **Superado:** Tarjador inteligente inédito e Gerador de Ato Pronto de Balcão. |
+| **Inovação & Unfair Advantage** | 40% | Gerador de Ato Pronto de Balcão implementado; validação com cartórios pendente. |
 | **Engenharia de Software** | 30% | **100%:** 43 testes passando no pytest, ONNX local, tipagem Pydantic e CI/CD. |
 | **Viabilidade & Custos** | 20% | Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, câmbio 5,50). Preço das alternativas de mercado: não medido. |
 | **Demonstração & Deploy** | 10% | **Online:** Streamlit Cloud ativo com bundle pré-indexado e presets de 1 clique. |

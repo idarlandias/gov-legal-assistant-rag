@@ -637,7 +637,8 @@ with tab_chat:
 with tab_benchmark:
     st.subheader("📊 Comparativo de Eficiência, Unfair Advantage e Validação")
     st.markdown(
-        "Demonstração objetiva de como a solução supera o fluxo tradicional do cartório e as ferramentas genéricas de mercado."
+        "Números medidos no benchmark interno. A comparação com o fluxo tradicional e com as ferramentas de "
+        "mercado ainda não foi medida (ver 'Hipóteses não validadas' no README)."
     )
 
     col_m1, col_m3, col_m4 = st.columns(3)
@@ -658,12 +659,12 @@ with tab_benchmark:
         """
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
 |:---|:---|:---|:---|
-| **Tempo de Decisão no Balcão** |  | 5 a 10 minutos (necessita leitura e filtro) | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
-| **Interface com o Escrevente** | Consulta verbal ou e-mail interno | Caixa de chat aberta (alta fricção cognitiva) | **3 cliques objetivos (Zero-UI de chat)** |
-| **Formato de Saída** | Resposta informal ou parecer longo | Prosa explicativa genérica | **Ato Pronto (Minuta + Despacho + ROPA)** |
-| **Normas Estaduais Vigentes** | Consulta manual aos provimentos do TJCE | Frequentemente desatualizado / normas federais | **Código de Normas CGJ-CE + Prov. 15/2026** |
-| **Verificação automática de citações: em desenvolvimento.** | Depende do conhecimento do escrevente | Risco de citar normas revogadas (ex: Prov. 134) | **Restrito ao acervo oficial vigente do CNJ/CE** |
-| **Conformidade LGPD Formal** | Registro manual frequentemente esquecido | Não gera registros de auditoria | **Ficha ROPA (Art. 37/38) gerada e exportada** |
+| **Tempo de Decisão no Balcão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
+| **Interface com o Escrevente** | não medido | não medido | **3 cliques objetivos (Zero-UI de chat)** |
+| **Formato de Saída** | não medido | não medido | **Ato Pronto (Minuta + Despacho + ROPA)** |
+| **Normas Estaduais Vigentes** | não medido | não medido | **Código de Normas CGJ-CE + Prov. 15/2026** |
+| **Verificação automática de citações: em desenvolvimento.** | não medido | não medido | **Restrito ao acervo oficial vigente do CNJ/CE** |
+| **Conformidade LGPD Formal** | não medido | não medido | **Ficha ROPA (Art. 37/38) gerada e exportada** |
         """
     )
 
