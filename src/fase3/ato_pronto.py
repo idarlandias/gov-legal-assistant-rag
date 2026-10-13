@@ -65,7 +65,7 @@ class PedidoBalcao(BaseModel):
 
 class DispositivoLegal(BaseModel):
     norma: str = Field(..., description="Nome da norma (ex: Código de Normas CGJ-CE, Provimento CNJ 149/2023, Lei 6.015/1973, LGPD)")
-    artigo: str = Field(..., description="Artigo, parágrafo ou inciso exato (ex: Art. 1131, §10)")
+    artigo: str = Field(..., description="Artigo, parágrafo ou inciso exato (ex: Art. 1.128, §2º, IV)")
     aplicacao: str = Field(..., description="Aplicação prática ao caso concreto")
 
 
