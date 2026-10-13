@@ -1,0 +1,82 @@
+{
+  "descricao": "Fontes do corpus da Fase 3 exibidas na barra lateral. As versões vêm do texto de cada documento, não de metadados do servidor.",
+  "fontes": [
+    {
+      "id": "codigo_normas_ce",
+      "norma": "Código de Normas do Serviço Notarial e Registral do Estado do Ceará (Provimento nº 04/2023/CGJCE)",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até o Prov. 15/2026/CGJCE (DJeA 08/09/2026)",
+      "criterio": "nota de alteração mais recente no Código de Normas"
+    },
+    {
+      "id": "prov_cgjce_15_2026",
+      "norma": "Provimento nº 15/2026/CGJCE",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "DJe nº 3855, 08/09/2026",
+      "criterio": "cabeçalho de publicação do DJe"
+    },
+    {
+      "id": "prov_cnj_149_2023",
+      "norma": "Provimento CNJ nº 149, de 30 de agosto de 2023",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "compilado até o Provimento CN 253, de 18/08/2026",
+      "criterio": "nota de compilação do texto"
+    },
+    {
+      "id": "lei_6015_1973",
+      "norma": "Lei nº 6.015, de 31 de dezembro de 1973",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até a Lei 15.139/2025",
+      "criterio": "nota de alteração mais recente no texto"
+    },
+    {
+      "id": "lei_8935_1994",
+      "norma": "Lei nº 8.935, de 18 de novembro de 1994",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até a Lei 15.509/2026",
+      "criterio": "nota de alteração mais recente no texto"
+    },
+    {
+      "id": "lei_13709_2018",
+      "norma": "Lei nº 13.709, de 14 de agosto de 2018 (LGPD)",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até a Lei 15.352/2026",
+      "criterio": "nota de alteração mais recente no texto"
+    },
+    {
+      "id": "lei_12527_2011",
+      "norma": "Lei nº 12.527, de 18 de novembro de 2011 (LAI)",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até a Lei 15.141/2025",
+      "criterio": "nota de alteração mais recente no texto"
+    },
+    {
+      "id": "decreto_7724_2012",
+      "norma": "Decreto nº 7.724, de 16 de maio de 2012",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "alterações até o Decreto 11.527/2023",
+      "criterio": "nota de alteração mais recente no texto"
+    },
+    {
+      "id": "res_anpd_15_2024",
+      "norma": "Resolução CD/ANPD nº 15, de 24 de abril de 2024",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "2024-04-24",
+      "criterio": "data do ato, confirmada no texto"
+    },
+    {
+      "id": "anpd_guia_agentes",
+      "norma": "Guia Orientativo para Definições dos Agentes de Tratamento de Dados Pessoais e do Encarregado (ANPD)",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "Versão 2.0, abril de 2022",
+      "criterio": "histórico de versões do documento"
+    },
+    {
+      "id": "anpd_guia_seguranca",
+      "norma": "Guia Orientativo sobre Segurança da Informação para Agentes de Tratamento de Pequeno Porte (ANPD)",
+      "baixado_em": "2026-09-23",
+      "versao_norma": "Versão 1.0, outubro de 2021",
+      "criterio": "histórico de versões do documento"
+    }
+  ]
+}

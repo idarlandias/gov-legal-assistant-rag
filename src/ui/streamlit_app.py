@@ -113,39 +113,44 @@ semantic_cache = get_semantic_cache()
 
 # ---------------------------------------------------------------- Barra Lateral (Métricas e Status)
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/courthouse.png", width=64)
     st.title("CartórioSeguro AI")
     st.caption("Residência SiDi · Fase 3 — Recorte Vertical de Registro de Imóveis (CE)")
     st.divider()
 
-    st.subheader("Status do Acervo")
+    st.subheader("Normas consultadas")
     try:
-        fase3_pipe = get_fase3_pipeline()
-        chunks_fase3 = fase3_pipe.collection.count()
-        st.metric("Corpus Fase 3 (Oficial RI/CE)", f"{chunks_fase3:,} chunks")
-        st.success("Coleção `fase3` ativa (E5 + BM25)")
+        from src.fase3.manifesto import AVISO_NORMAS, carregar_normas
+
+        for fonte in carregar_normas():
+            st.markdown(f"**{fonte['norma']}**", help=f"Critério da versão: {fonte['criterio']}")
+            st.caption(f"versão: {fonte['versao_norma']}")
+        st.caption(AVISO_NORMAS)
     except Exception as e:
-        st.error(f"Erro no pipeline Fase 3: {e}")
+        st.error(f"Manifesto de normas inválido: {e}")
 
-    try:
-        rag_pipe = get_pipeline()
-        chunks_legado = rag_pipe.collection.count()
-        st.metric("Corpus Geral (Legado)", f"{chunks_legado:,} chunks")
-    except Exception:
-        pass
+    with st.expander("Diagnóstico técnico", expanded=False):
+        try:
+            fase3_pipe = get_fase3_pipeline()
+            chunks_fase3 = fase3_pipe.collection.count()
+            st.metric("Corpus Fase 3 (Oficial RI/CE)", f"{chunks_fase3:,} chunks")
+            st.success("Coleção `fase3` ativa (E5 + BM25)")
+        except Exception as e:
+            st.error(f"Erro no pipeline Fase 3: {e}")
 
-    st.divider()
-    st.subheader("Caches e Latência")
-    st.metric("Exact Cache", exact_cache.stats()["size"])
-    st.metric("Semantic Cache", semantic_cache.stats()["size"])
+        try:
+            rag_pipe = get_pipeline()
+            chunks_legado = rag_pipe.collection.count()
+            st.metric("Corpus Geral (Legado)", f"{chunks_legado:,} chunks")
+        except Exception:
+            pass
 
-    if st.button("Limpar Caches"):
-        get_exact_cache.clear()
-        get_semantic_cache.clear()
-        st.success("Caches limpos com sucesso!")
+        st.metric("Exact Cache", exact_cache.stats()["size"])
+        st.metric("Semantic Cache", semantic_cache.stats()["size"])
 
-    st.divider()
-    st.caption("Normas Ativas: Código de Normas CGJ-CE · Prov. CNJ 149/2023 · Lei 6.015/73 · LGPD")
+        if st.button("Limpar Caches"):
+            get_exact_cache.clear()
+            get_semantic_cache.clear()
+            st.success("Caches limpos com sucesso!")
 
 
 # ---------------------------------------------------------------- Cabeçalho Principal
