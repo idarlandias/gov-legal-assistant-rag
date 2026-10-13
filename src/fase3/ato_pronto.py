@@ -1,8 +1,8 @@
 """Gerador de Ato Pronto de Balcão (Fase 3).
 
 Transfere o valor do RAG para o fluxo de trabalho real do cartório de Registro de Imóveis:
-- Substitui o chat conversacional por triagem objetiva de balcão (Semáforo Alfândega: Verde, Amarelo, Vermelho).
-- Devolve veredito, fundamentação vinculante (TJCE/CNJ), minuta cartorial pronta e registro de auditoria LGPD (ROPA).
+- Substitui o chat conversacional por triagem objetiva de balcão (semáforo: Verde, Amarelo, Vermelho).
+- Devolve veredito, fundamentação referenciada (TJCE/CNJ), minuta cartorial pronta e registro de auditoria LGPD (ROPA).
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from src.fase3.regras_prompt import REGRA_INTEIRO_TEOR, REGRAS_DECISAO  # noqa: F401 (REGRA_INTEIRO_TEOR reexportada)
 from src.fase3.retrieval import rotulo_fonte
 from src.fase3.verificador_citacoes import RelatorioCitacoes, verificar
 
@@ -65,7 +66,7 @@ class PedidoBalcao(BaseModel):
 class DispositivoLegal(BaseModel):
     norma: str = Field(..., description="Nome da norma (ex: Código de Normas CGJ-CE, Provimento CNJ 149/2023, Lei 6.015/1973, LGPD)")
     artigo: str = Field(..., description="Artigo, parágrafo ou inciso exato (ex: Art. 1131, §10)")
-    aplicacao: str = Field(..., description="Aplicação prática e vinculante ao caso concreto")
+    aplicacao: str = Field(..., description="Aplicação prática ao caso concreto")
 
 
 class RegistroAuditoriaLGPD(BaseModel):
@@ -88,7 +89,7 @@ class RegistroFalha(BaseModel):
 class AtoProntoOutput(BaseModel):
     """Saída completa do Ato Pronto para o escrevente no balcão."""
 
-    canal: CanalRisco = Field(..., description="Classificação de risco da analogia da alfândega (VERDE, AMARELO ou VERMELHO)")
+    canal: CanalRisco = Field(..., description="Classificação de risco do semáforo (VERDE, AMARELO ou VERMELHO)")
     veredito: str = Field(..., description="Sugestão: SUGESTÃO: DEFERIR, SUGESTÃO: DEFERIR MEDIANTE EXIGÊNCIA PRÉVIA "
                                            "ou SUGESTÃO: INDEFERIR (NOTA DEVOLUTIVA)")
     instrucao_balcao: str = Field(..., description="Instrução em até 2 linhas para execução imediata no balcão")
@@ -174,12 +175,6 @@ CANAIS_PROMPT = """- Canal VERDE: Pedido seguro, obrigação de publicidade imed
 - Canal AMARELO: Fornecimento permitido mediante EXIGÊNCIA PRÉVIA — identificação do requerente e indicação da finalidade — nas hipóteses do Art. 1.128, §2º, I a V, do Código de Normas da CGJ-CE, com abertura da ficha prevista no §3º do mesmo artigo.
 - Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada."""
 
-REGRA_INTEIRO_TEOR = (
-    "Nunca instrua a suprimir, tarjar ou omitir dados de uma certidão de inteiro teor. Se o caso parecer "
-    "exigir conteúdo reduzido, indique a certidão de situação jurídica atual (Prov. CNJ 149/2023, Art. 125) "
-    "como alternativa."
-)
-
 VEREDITOS = (
     "SUGESTÃO: DEFERIR",
     "SUGESTÃO: DEFERIR MEDIANTE EXIGÊNCIA PRÉVIA",
@@ -194,7 +189,7 @@ def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao) -> str:
 
     return f"""Você é o Assessor Técnico Especialista em Registro de Imóveis do Ceará e Compliance Registral (LGPD × Lei 6.015/1973 × Provimento CNJ 149/2023 × Código de Normas da Corregedoria Geral da Justiça do Ceará - CGJ-CE).
 
-Sua missão é emitir uma SUGESTÃO DE ATO OPERACIONAL para o escrevente de balcão utilizando a analogia da alfândega:
+Sua missão é emitir uma SUGESTÃO DE ATO OPERACIONAL para o escrevente de balcão, classificando o pedido em um destes canais:
 {CANAIS_PROMPT}
 
 REGRAS DE CONFORMIDADE:
@@ -202,7 +197,7 @@ REGRAS DE CONFORMIDADE:
 2. A minuta_ato deve ser um texto formal, profissional e completo para uso imediato pelo escrevente (incluindo número de protocolo `{pedido.protocolo}`, fundamentação e conclusão formal).
 3. A auditoria_lgpd deve atender com rigor aos artigos 37 e 38 da LGPD (ROPA).
 4. Retorne APENAS um objeto JSON válido, sem texto explicativo adicional fora do JSON.
-5. {REGRA_INTEIRO_TEOR}
+5. {REGRAS_DECISAO}
 
 FORMATO OBRIGATÓRIO (JSON):
 {{

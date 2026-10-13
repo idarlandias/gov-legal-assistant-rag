@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from src.fase3.corpus import GERAL, REGISTRO_IMOVEIS
 from src.fase3.index import COLLECTION, open_collection
+from src.fase3.regras_prompt import REGRAS_DECISAO
 from src.fase3.retrieval import HybridRetriever, rotulo_fonte
 from src.fase3.verificador_citacoes import verificar
 from src.pipeline.rag import RESPOSTA_VAZIA, RAGPipeline, RespostaVaziaError
@@ -21,7 +22,7 @@ def build_cartorio_prompt(context: str, query: str) -> str:
 Responda à consulta jurídica de balcão com base EXCLUSIVAMENTE no contexto normativo abaixo.
 
 DIRETRIZES DE RESPOSTA OBRIGATÓRIAS:
-1. Responda diretamente e com segurança técnica: indique se o ato registral deve ser praticado integralmente, condicionado com tarjamento protetivo ou indeferido via Nota Devolutiva.
+1. Responda diretamente e com segurança técnica. {REGRAS_DECISAO}
 2. Cite SEMPRE o dispositivo legal ou normativo específico correspondente (artigo, parágrafo ou inciso do Código de Normas da CGJ-CE, do Provimento CNJ 149/2023, da Lei 6.015/1973 ou da LGPD).
 3. NUNCA cite provimentos já revogados (ex.: Provimento CNJ 134/2022). O Provimento vigente do CNJ é o 149/2023.
 4. Se a informação não constar expressamente no contexto fornecido, responda exatamente: "Não encontrado no corpus."
