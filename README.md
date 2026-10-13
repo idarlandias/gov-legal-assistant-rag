@@ -12,7 +12,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.40+-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-Multilingual%20E5-005CED?style=for-the-badge&logo=onnx&logoColor=white)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-Hybrid%20Search-orange?style=for-the-badge)
-![Pytest](https://img.shields.io/badge/Pytest-43%20Passed-success?style=for-the-badge&logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-121%20offline-success?style=for-the-badge&logo=pytest&logoColor=white)
 ![Licença](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 *Desenvolvido por **Idarlan Magalhães** | Residência SiDi · PPI MoD4* 🎓👋
@@ -50,23 +50,23 @@
 │    (Analogia da Alfândega)     │ Alfândega: Canais Verde, Amarelo e Vermelho.          │
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
 │ 2. TARJADOR INTELIGENTE DE PII │ Inspeciona o texto da matrícula e aplica redaction    │
-│    (Redaction Cirúrgico)       │ automático [CPF OMITIDO - ART. 1131 CGJ-CE].          │
+│    (Redaction Cirúrgico)       │ automático.                                           │
 ├────────────────────────────────┼───────────────────────────────────────────────────────┤
-│ 3. CARIMBO DIGITAL SHA-256     │ Gera selo oficial de integridade com Hash SHA-256 no   │
-│    (Blindagem Regulatória)     │ rodapé da certidão e ficha de auditoria ROPA (LGPD).  │
+│ 3. CARIMBO DIGITAL SHA-256     │ Hash SHA-256 de integridade do texto gerado. Não é    │
+│    (Blindagem Regulatória)     │ assinatura digital nem certificação de autenticidade. │
 └────────────────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
 ### 🚦 1. A Analogia da Alfândega (Canais de Risco)
-* **🟢 Canal Verde (Liberação Ordinária):** Próprio titular solicitando matrícula ou certidão sem dados excessivos. Emissão direta amparada no Art. 17 da Lei 6.015/73.
-* **🟡 Canal Amarelo (Tarjamento Obrigatório):** Terceiro solicitando inteiro teor com CPF, filiação ou regime de bens. Deferimento condicionado com aplicação automática de tarjas de proteção.
-* **🔴 Canal Vermelho (Bloqueio / Nota Devolutiva):** Pedidos de exclusão de dados da matrícula por LGPD (inaplicável a livros perpétuos), buscas informais por telefone ou pedidos sem ordem judicial. Emissão imediata de **Nota Devolutiva formal fundamentada**.
+* **🟢 Canal Verde:** deferimento mediante identificação do requerente, sem exigência de finalidade (CGJ-CE Art. 1.128 caput; Prov. CNJ 149/2023 Art. 123).
+* **🟡 Canal Amarelo:** deferimento mediante **exigência prévia** de identificação e finalidade, com abertura da ficha do CGJ-CE Art. 1.128 §3º. Sem tarja.
+* **🔴 Canal Vermelho:** indeferimento em **nota devolutiva fundamentada** (CGJ-CE Art. 1.128 §4º).
 
 ### 🛡️ 2. Tarjador Inteligente & Carimbo Criptográfico SHA-256
 No CartórioSeguro AI:
 * O atendente cola o texto da matrícula (ou carrega o exemplo pré-configurado de Limoeiro do Norte/CE);
 * O sistema identifica dados pessoais em `< 0.05 segundos` e gera o texto da certidão pronto com as tarjas oficiais;
-* Imprime no verso o **Carimbo Digital de Autenticidade Registral (SHA-256)** com a trilha de conformidade do Provimento CNJ 149/2023.
+* Hash SHA-256 de integridade do texto gerado. Não é assinatura digital nem certificação de autenticidade.
 
 ---
 
@@ -105,6 +105,7 @@ No CartórioSeguro AI:
 - A taxa de citações verificadas mede ancoragem no contexto recuperado, não correção jurídica do conteúdo.
 - A aba do tarjador está desativada por ausência de base normativa identificada no corpus.
 - Limite de 200 mil tokens/dia no provedor atual (Groq, gpt-oss-20b).
+- A funcionalidade de supressão de dados (tarjador) está desativada por ausência de base normativa identificada no corpus do projeto.
 
 ---
 
@@ -217,7 +218,7 @@ gov-legal-assistant-rag/
 | Critério | Peso | Status da Entrega |
 |:---|:---:|:---|
 | **Inovação & Unfair Advantage** | 40% | Gerador de Ato Pronto de Balcão implementado; validação com cartórios pendente. |
-| **Engenharia de Software** | 30% | **100%:** 43 testes passando no pytest, ONNX local, tipagem Pydantic e CI/CD. |
+| **Engenharia de Software** | 30% | 121 testes offline; 7 testes de rede dependem de cota do provedor. ONNX local, tipagem Pydantic e CI/CD. |
 | **Viabilidade & Custos** | 20% | Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, câmbio 5,50). Preço das alternativas de mercado: não medido. |
 | **Demonstração & Deploy** | 10% | **Online:** Streamlit Cloud ativo com bundle pré-indexado e presets de 1 clique. |
 
