@@ -20,6 +20,31 @@ EMBED_REPO = "intfloat/multilingual-e5-small"  # MIT, 384 dim, ~450 MB em ONNX f
 EMBED_ONNX = "onnx/model.onnx"
 EMBED_TOKENIZER = "onnx/tokenizer.json"
 
+NORMA_NAO_IDENTIFICADA = "NORMA NÃO IDENTIFICADA"
+
+
+# ---------------------------------------------------------------- rótulo das fontes
+
+def norma_do_chunk(meta: dict) -> str | None:
+    """Nome legível da norma: metadado `norma` ou, em índices antigos, a sigla do `fonte_id`."""
+    from src.fase3.sources import FONTES_POR_ID
+
+    if meta.get("norma"):
+        return meta["norma"]
+    fonte = FONTES_POR_ID.get(meta.get("fonte_id") or "")
+    return fonte.sigla if fonte else None
+
+
+def rotulo_fonte(hit: dict) -> str:
+    """Rótulo verificável "<norma> — <dispositivo>" (ex.: "Lei 6.015/1973 — Art. 17").
+
+    Há numeração colidente entre as 11 normas (ex.: Art. 123), então a norma nunca é omitida:
+    sem ela, o rótulo diz NORMA NÃO IDENTIFICADA.
+    """
+    norma = hit.get("norma") or NORMA_NAO_IDENTIFICADA
+    dispositivo = hit.get("dispositivo") or "DISPOSITIVO NÃO IDENTIFICADO"
+    return f"{norma} — {dispositivo}"
+
 
 # ---------------------------------------------------------------- embedding E5 (ONNX, sem torch)
 
@@ -203,7 +228,8 @@ class HybridRetriever:
                          self.sparse(query, self.candidatos, especialidades)], k=self.rrf_k)
         return [
             {"id": i, "text": self.docs[i], "source": self.metas[i]["source"],
-             "page": self.metas[i]["page"], "distance": -score, **{
+             "page": self.metas[i]["page"], "distance": -score,
+             "norma": norma_do_chunk(self.metas[i]), **{
                  key: self.metas[i].get(key) for key in ("fonte_id", "dispositivo", "especialidade")}}
             for i, score in fused[:k]
         ]

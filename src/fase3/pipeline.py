@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from src.fase3.corpus import GERAL, REGISTRO_IMOVEIS
 from src.fase3.index import COLLECTION, open_collection
-from src.fase3.retrieval import HybridRetriever
+from src.fase3.retrieval import HybridRetriever, rotulo_fonte
 from src.pipeline.rag import RAGPipeline
 
 # Recorte vertical: Registro de Imóveis + normas comuns a todas as serventias (LGPD, LAI,
@@ -56,9 +56,7 @@ class Fase3Pipeline(RAGPipeline):
         if not hits:
             return {"answer": "Não encontrado no corpus.", "sources": []}
 
-        context = "\n\n---\n\n".join(
-            f"[{h.get('dispositivo') or h['source']}:p{h['page']}]\n{h['text']}" for h in hits
-        )
+        context = "\n\n---\n\n".join(f"[{rotulo_fonte(h)}]\n{h['text']}" for h in hits)
 
         prompt = build_cartorio_prompt(context=context, query=question)
         messages = [{"role": "user", "content": prompt}]
@@ -76,7 +74,7 @@ class Fase3Pipeline(RAGPipeline):
 
         return {
             "answer": answer_text,
-            "sources": [(h.get("dispositivo") or h["source"], h["page"]) for h in hits],
+            "sources": [(rotulo_fonte(h), h["page"]) for h in hits],
         }
 
     def gerar_ato_pronto(self, pedido, k: int = 5):

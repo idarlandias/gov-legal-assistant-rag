@@ -16,6 +16,8 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from src.fase3.retrieval import rotulo_fonte
+
 if TYPE_CHECKING:
     from src.fase3.pipeline import Fase3Pipeline
 
@@ -212,10 +214,7 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
         saida.latencia_s = round(time.perf_counter() - t0, 2)
         return saida
 
-    contexto = "\n\n---\n\n".join(
-        f"[{h.get('dispositivo') or h['source']}:p{h['page']}]\n{h['text']}"
-        for h in hits
-    )
+    contexto = "\n\n---\n\n".join(f"[{rotulo_fonte(h)}]\n{h['text']}" for h in hits)
 
     # 2. Prompt Estruturado
     prompt = build_ato_pronto_prompt(context=contexto, pedido=pedido)
@@ -254,6 +253,6 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
 
     saida.latencia_s = round(time.perf_counter() - t0, 2)
     saida.fontes_corpus = [
-        f"{h.get('dispositivo') or h['source']} (pág. {h['page']})" for h in hits
+        f"{rotulo_fonte(h)} (pág. {h['page']})" for h in hits
     ]
     return saida

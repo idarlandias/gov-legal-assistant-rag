@@ -61,6 +61,7 @@ def build_chunks(fonte: Fonte, dispositivos: list[Dispositivo]) -> list[Chunk]:
                     "tipo_documento": fonte.tipo,
                     "esfera": fonte.esfera,
                     "fonte_id": fonte.id,
+                    "norma": fonte.sigla,
                     "dispositivo": d.dispositivo,
                     "secao": d.secao,
                     "especialidade": d.especialidade,
