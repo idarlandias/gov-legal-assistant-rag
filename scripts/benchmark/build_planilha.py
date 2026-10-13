@@ -68,6 +68,8 @@ RESP_COLS = [
     ("U", "Citações verificadas", 12, "input"),
     ("V", "Taxa verificável", 11, "formula"),
     ("W", "Citações não verificadas", 50, "input"),
+    # Desfecho: RESPONDIDA | NAO_ENCONTRADO | RESPOSTA_VAZIA | ERRO (preenchido pelo script)
+    ("X", "Status da resposta", 18, "input"),
 ]
 
 RUBRICA = [
@@ -224,7 +226,7 @@ def build_respostas(wb: Workbook, perguntas: list[dict], ferramentas: list[str])
         CellIsRule(operator="lessThan", formula=["6"],
                    fill=PatternFill("solid", fgColor="FFC7CE")))
     ws.freeze_panes = "E2"
-    ws.auto_filter.ref = f"A1:W{last}"
+    ws.auto_filter.ref = f"A1:X{last}"
     return last
 
 
@@ -273,10 +275,11 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
 
     heads = ["Ferramenta", "Avaliadas", "Nota média (0-10)", "Veredito", "Fundamentação",
              "Norma CE", "Acionável", "Sem alucinação", "% notas ≥ 8",
-             "Latência média (s)", "Custo / consulta (R$)", "Taxa verificável (citações)"]
+             "Latência média (s)", "Custo / consulta (R$)", "Taxa verificável (citações)",
+             "Respondidas", "Não encontrado", "Resposta vazia"]
     _header(ws, 3, heads)
     ws.column_dimensions["A"].width = 18
-    for col in "BCDEFGHIJKL":
+    for col in "BCDEFGHIJKLMNO":
         ws.column_dimensions[col].width = 14
     ws.row_dimensions[3].height = 30
 
@@ -305,6 +308,9 @@ def build_resumo(wb: Workbook, perguntas: list[dict], ferramentas: list[str], la
         # total da ferramenta: soma das verificadas / soma das citações (não a média das taxas)
         cells["L"] = (f'=IF(SUMIFS({rng("T")},{rng("B")},$A{r})=0,"",'
                       f'SUMIFS({rng("U")},{rng("B")},$A{r})/SUMIFS({rng("T")},{rng("B")},$A{r}))')
+        # desfechos separados: resposta vazia não conta como respondida
+        for col_resumo, status in (("M", "RESPONDIDA"), ("N", "NAO_ENCONTRADO"), ("O", "RESPOSTA_VAZIA")):
+            cells[col_resumo] = f'=COUNTIFS({rng("B")},$A{r},{rng("X")},"{status}")'
         for col, v in cells.items():
             c = ws[f"{col}{r}"]
             c.value = v

@@ -17,6 +17,46 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.pipeline.tools import TOOLS, run_tool_call
 from src.pipeline.security_skill import get_env_secret, build_secure_prompt, build_concursos_prompt
 
+RESPOSTA_VAZIA = "RESPOSTA_VAZIA"
+MAX_TOKENS_NOVA_TENTATIVA = 8192
+
+
+class RespostaVaziaError(RuntimeError):
+    """O LLM não produziu conteúdo nem após a nova tentativa com o modelo premium."""
+
+    def __init__(self, modelo: str, finish_reason: str | None) -> None:
+        self.modelo = modelo
+        self.finish_reason = finish_reason
+        super().__init__(f"{RESPOSTA_VAZIA}: sem conteúdo após nova tentativa com {modelo} "
+                         f"(finish_reason={finish_reason})")
+
+
+def _finish_reason(response: Any) -> str | None:
+    return getattr(response.choices[0], "finish_reason", None)
+
+
+def resposta_vazia(response: Any) -> bool:
+    """True se o modelo cortou por tamanho ou não devolveu texto útil.
+
+    Resposta com tool_calls não conta: nela, conteúdo vazio é o comportamento normal.
+    """
+    message = response.choices[0].message
+    tool_calls = getattr(message, "tool_calls", None)
+    if isinstance(tool_calls, list) and tool_calls:
+        return False
+    return _finish_reason(response) == "length" or not (getattr(message, "content", None) or "").strip()
+
+
+def _modelo_nova_tentativa(modelo_atual: str) -> str:
+    """Modelo premium para a nova tentativa (na Groq, o gpt-oss-120b)."""
+    from src.pipeline.routing import GROQ_MODEL_FALLBACKS
+
+    premium = os.environ.get("PREMIUM_MODEL")
+    if not premium:
+        provider = os.environ.get("LLM_PROVIDER", "gemini").lower()
+        premium = "openai/gpt-oss-120b" if provider == "groq" else modelo_atual
+    return GROQ_MODEL_FALLBACKS.get(premium, premium)
+
 
 def _make_client() -> tuple[OpenAI, str | None]:
     """Inicializa cliente OpenAI-compatible conforme provider escolhido no .env."""
@@ -143,6 +183,26 @@ class RAGPipeline:
             )
 
     def _call_chat_completions(self, **kwargs) -> Any:
+        """Chama o LLM e não aceita resposta vazia em silêncio.
+
+        Se o modelo esgotar os tokens raciocinando (finish_reason == "length") ou devolver só
+        espaço em branco, faz UMA nova tentativa com o modelo premium e mais tokens de saída.
+        Se ainda vier vazia, lança RespostaVaziaError (nunca devolve string vazia calada).
+        """
+        response = self._criar_completion(**kwargs)
+        if not resposta_vazia(response):
+            return response
+
+        motivo = _finish_reason(response)
+        modelo = _modelo_nova_tentativa(kwargs.get("model", self.llm_model))
+        print(f"Aviso: resposta vazia (finish_reason={motivo}, modelo={kwargs.get('model')}). "
+              f"Nova tentativa com {modelo} e max_tokens={MAX_TOKENS_NOVA_TENTATIVA}...")
+        response = self._criar_completion(**{**kwargs, "model": modelo, "max_tokens": MAX_TOKENS_NOVA_TENTATIVA})
+        if resposta_vazia(response):
+            raise RespostaVaziaError(modelo=modelo, finish_reason=_finish_reason(response))
+        return response
+
+    def _criar_completion(self, **kwargs) -> Any:
         """Wrapper para chamar chat.completions.create com retry exponencial e auto-fallback para modelos da Groq."""
         import time
         from openai import RateLimitError

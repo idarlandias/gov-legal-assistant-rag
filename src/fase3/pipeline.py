@@ -6,7 +6,7 @@ from src.fase3.corpus import GERAL, REGISTRO_IMOVEIS
 from src.fase3.index import COLLECTION, open_collection
 from src.fase3.retrieval import HybridRetriever, rotulo_fonte
 from src.fase3.verificador_citacoes import verificar
-from src.pipeline.rag import RAGPipeline
+from src.pipeline.rag import RESPOSTA_VAZIA, RAGPipeline, RespostaVaziaError
 
 # Recorte vertical: Registro de Imóveis + normas comuns a todas as serventias (LGPD, LAI,
 # Lei 6.015 Título I, CNJ Livro I...). Registro Civil, Notas, Protesto e RTD ficam de fora.
@@ -55,7 +55,8 @@ class Fase3Pipeline(RAGPipeline):
         """Pipeline completo da Fase 3: busca híbrida + contexto com dispositivos oficiais + prompt cartorial."""
         hits = self.retrieve(question, k=k)
         if not hits:
-            return {"answer": "Não encontrado no corpus.", "sources": [], "citacoes": verificar("", [])}
+            return {"answer": "Não encontrado no corpus.", "sources": [], "citacoes": verificar("", []),
+                    "status": "OK"}
 
         context = "\n\n---\n\n".join(f"[{rotulo_fonte(h)}]\n{h['text']}" for h in hits)
 
@@ -70,14 +71,22 @@ class Fase3Pipeline(RAGPipeline):
         if not is_reasoner:
             api_kwargs["temperature"] = 0.0
 
-        response = self._call_chat_completions(**api_kwargs)
+        sources = [(rotulo_fonte(h), h["page"]) for h in hits]
+        try:
+            response = self._call_chat_completions(**api_kwargs)
+        except RespostaVaziaError as e:
+            # resultado marcado, nunca string vazia silenciosa
+            return {"answer": f"{RESPOSTA_VAZIA}: o modelo não produziu resposta (finish_reason={e.finish_reason}) "
+                              f"nem após nova tentativa com {e.modelo}. Consulte as fontes manualmente.",
+                    "sources": sources, "citacoes": verificar("", hits), "status": RESPOSTA_VAZIA}
         answer_text = response.choices[0].message.content or ""
 
         return {
             "answer": answer_text,
-            "sources": [(rotulo_fonte(h), h["page"]) for h in hits],
+            "sources": sources,
             # conferência determinística de cada "Art. N" citado contra os trechos recuperados
             "citacoes": verificar(answer_text, hits),
+            "status": "OK",
         }
 
     def gerar_ato_pronto(self, pedido, k: int = 5):

@@ -51,9 +51,9 @@ def git_commit() -> str | None:
 
 
 def instrument_usage(pipeline: Any) -> dict[str, int]:
-    """Envolve _call_chat_completions para somar tokens de todas as chamadas (inclui tools)."""
+    """Envolve cada chamada real à API para somar tokens (inclui tools e a nova tentativa por resposta vazia)."""
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "calls": 0, "calls_sem_usage": 0}
-    original = pipeline._call_chat_completions
+    original = pipeline._criar_completion
 
     def wrapped(**kwargs: Any) -> Any:
         resp = original(**kwargs)
@@ -66,8 +66,30 @@ def instrument_usage(pipeline: Any) -> dict[str, int]:
             usage["completion_tokens"] += getattr(u, "completion_tokens", 0) or 0
         return resp
 
-    pipeline._call_chat_completions = wrapped
+    pipeline._criar_completion = wrapped
     return usage
+
+
+# Categorias de desfecho: "respondida" não pode incluir resposta vazia nem "não encontrado"
+RESPONDIDA = "RESPONDIDA"
+NAO_ENCONTRADO = "NAO_ENCONTRADO"
+RESPOSTA_VAZIA = "RESPOSTA_VAZIA"
+ERRO = "ERRO"
+STATUS_RESPOSTA = (RESPONDIDA, NAO_ENCONTRADO, RESPOSTA_VAZIA, ERRO)
+
+
+def classificar_resposta(rec: dict) -> str:
+    """Desfecho da pergunta. Funciona também com JSONs antigos (sem o campo `status`)."""
+    import re
+
+    if rec.get("erro"):
+        return ERRO
+    texto = rec.get("resposta") or ""
+    if rec.get("status") == RESPOSTA_VAZIA or not texto.strip():
+        return RESPOSTA_VAZIA
+    if re.search(r"n[aã]o encontrad", texto, re.IGNORECASE) and len(texto) < 250:
+        return NAO_ENCONTRADO
+    return RESPONDIDA
 
 
 def fmt_sources(sources: list) -> str:
@@ -82,7 +104,7 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
 
     load_dotenv(ROOT / ".env")
     from src.observability.trace import trace
-    from src.pipeline.rag import RAGPipeline
+    from src.pipeline.rag import RAGPipeline, RespostaVaziaError
     from src.pipeline.routing import classify_complexity
 
     # RAGPipeline direto (não build_rag_pipeline) para nunca resetar/reindexar o banco aqui
@@ -132,10 +154,15 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
             rec["fontes"] = fmt_sources(out.get("sources", []))
             # só a Fase 3 devolve a conferência de citações; a coleção docs fica sem (None)
             rec["citacoes"] = resumo_citacoes(out["citacoes"]) if out.get("citacoes") is not None else None
+            rec["status"] = out.get("status")
             rec["erro"] = None
+        except RespostaVaziaError as e:  # RAG da Fase 2 não converte; aqui vira categoria própria
+            rec["resposta"], rec["fontes"], rec["erro"] = str(e), "", None
+            rec["citacoes"], rec["status"] = None, RESPOSTA_VAZIA
         except Exception as e:  # registra e segue; o exit code sinaliza a falha
             rec["resposta"], rec["fontes"], rec["erro"] = "", "", f"{type(e).__name__}: {e}"
-            rec["citacoes"] = None
+            rec["citacoes"], rec["status"] = None, None
+        rec["status_resposta"] = classificar_resposta(rec)
         rec["latencia_s"] = round(time.perf_counter() - t0, 2)
         tem_usage = usage["calls"] > before["calls"] and usage["calls_sem_usage"] == before["calls_sem_usage"]
         rec["tokens_entrada"] = usage["prompt_tokens"] - before["prompt_tokens"] if tem_usage else None
@@ -147,7 +174,16 @@ def run(perguntas: list[dict], k: int, domain: str, sleep_s: float, routing: boo
         if sleep_s and i < len(perguntas) - 1:
             time.sleep(sleep_s)
     meta["citacoes"] = agregar_citacoes(resultados)
+    meta["status_resposta"] = agregar_status(resultados)
     return meta, resultados
+
+
+def agregar_status(resultados: list[dict]) -> dict[str, int]:
+    """Contagem por desfecho; inclui as categorias zeradas para o relatório ser comparável."""
+    contagem = {s: 0 for s in STATUS_RESPOSTA}
+    for r in resultados:
+        contagem[r.get("status_resposta") or classificar_resposta(r)] += 1
+    return contagem
 
 
 def resumo_citacoes(relatorio: Any) -> dict:
@@ -204,6 +240,7 @@ def fill_xlsx(path: Path, meta: dict, resultados: list[dict], overwrite: bool) -
         ws[f"I{r}"] = rec["latencia_s"]
         ws[f"J{r}"] = rec["tokens_entrada"]
         ws[f"K{r}"] = rec["tokens_saida"]
+        ws[f"X{r}"] = rec.get("status_resposta") or classificar_resposta(rec)
         cit = rec.get("citacoes")
         if cit:  # V (taxa) é fórmula na planilha
             ws[f"T{r}"] = cit["total"]
@@ -272,6 +309,9 @@ def main() -> int:
     if args.xlsx:
         escritas, puladas = fill_xlsx(XLSX_PATH, meta, resultados, args.overwrite)
         print(f"Planilha: {escritas} linhas escritas, {puladas} puladas", file=sys.stderr)
+
+    st = meta.get("status_resposta") or agregar_status(resultados)
+    print("Desfechos: " + " · ".join(f"{k}={v}" for k, v in st.items()), file=sys.stderr)
 
     cit = meta.get("citacoes")
     if cit:
