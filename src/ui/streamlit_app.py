@@ -206,7 +206,8 @@ with tab_balcao:
         st.session_state["trigger_auto"] = True
         st.rerun()
 
-    if p4.button("🔴 Info Verbal por Telefone", use_container_width=True, help="Pedido de informação verbal por telefone"):
+    # 🟡, não 🔴: o CE Art. 1.128 §2º V permite a informação mediante identificação e finalidade
+    if p4.button("🟡 Info Verbal por Telefone", use_container_width=True, help="Pedido de informação verbal por telefone"):
         st.session_state["preset_pedido"] = "Informação Verbal no Balcão ou por Telefone"
         st.session_state["preset_solicitante"] = "Terceiro sem comprovação de vínculo ou interesse jurídico"
         st.session_state["preset_dados"] = ["CPF completo"]
@@ -287,7 +288,7 @@ with tab_balcao:
         if btn_gerar or auto_run:
             with st.spinner("Consultando acervo da CGJ-CE e Prov. CNJ 149/2023..."):
                 try:
-                    from src.fase3.ato_pronto import PedidoBalcao
+                    from src.fase3.ato_pronto import AVISO_RESPONSABILIDADE, PedidoBalcao
 
                     fase3_pipe = get_fase3_pipeline()
                     pedido = PedidoBalcao(
@@ -315,7 +316,7 @@ with tab_balcao:
                         canal_cor = "#e0a800"
                         canal_bg = "#fef9e7"
                         canal_icone = "🟡"
-                        canal_titulo = "CANAL AMARELO — Liberação com Tarjamento Obrigatório"
+                        canal_titulo = "CANAL AMARELO — Fornecimento mediante Exigência Prévia (identificação e finalidade)"
                     else:
                         canal_cor = "#dc3545"
                         canal_bg = "#fdf2e9"
@@ -326,8 +327,9 @@ with tab_balcao:
                         f"""
                         <div style="background-color: {canal_bg}; border-left: 6px solid {canal_cor}; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
                             <h4 style="margin: 0; color: {canal_cor};">{canal_icone} {canal_titulo}</h4>
-                            <p style="margin: 4px 0 0 0; font-size: 1.15em; font-weight: bold; color: #222;">Veredito: {resultado.veredito}</p>
+                            <p style="margin: 4px 0 0 0; font-size: 1.15em; font-weight: bold; color: #222;">Ato sugerido: {resultado.veredito}</p>
                             <p style="margin: 8px 0 0 0; color: #444;"><strong>Orientação de Balcão:</strong> {resultado.instrucao_balcao}</p>
+                            <p style="margin: 8px 0 0 0; color: #555; font-style: italic;">{AVISO_RESPONSABILIDADE}</p>
                         </div>
                         """,
                         unsafe_allow_html=True,
@@ -397,7 +399,8 @@ with tab_balcao:
                 "👈 **Selecione os parâmetros ao lado ou clique em um dos Cenários Práticos no topo.**\n\n"
                 "A analogia da alfândega classifica a demanda instantaneamente:\n"
                 "- 🟢 **Canal Verde:** Pedidos com dever legal de publicidade sem excesso de dados pessoais.\n"
-                "- 🟡 **Canal Amarelo:** Pedidos deferíveis mediante tarjamento protetivo (CPF, filiação, etc.).\n"
+                "- 🟡 **Canal Amarelo:** Pedidos deferíveis mediante exigência prévia de identificação e finalidade "
+                "(Código de Normas CGJ-CE, Art. 1.128, §2º).\n"
                 "- 🔴 **Canal Vermelho:** Pedidos ilegais, excessivos ou sem ordem judicial, gerando Nota Devolutiva."
             )
 

@@ -93,7 +93,7 @@ def test_ato_pronto_output_model_validate():
     }
     saida = AtoProntoOutput.model_validate(payload)
     assert saida.canal == CanalRisco.VERMELHO
-    assert saida.veredito == "INDEFERIDO (NOTA DEVOLUTIVA)"
+    assert saida.veredito == "SUGESTÃO: INDEFERIR (NOTA DEVOLUTIVA)"  # formato antigo vira sugestão
     assert len(saida.fundamentacao) == 1
     assert saida.fundamentacao[0].artigo == "Art. 1131, §10"
 
@@ -150,7 +150,7 @@ def test_processar_ato_pronto_com_mock():
 
     resultado = processar_ato_pronto(mock_pipeline, pedido)
     assert resultado.canal == CanalRisco.VERDE
-    assert resultado.veredito == "DEFERIDO INTEGRAL"
+    assert resultado.veredito == "SUGESTÃO: DEFERIR INTEGRAL"  # formato antigo vira sugestão
     assert "Lei 6.015/1973" in resultado.fundamentacao[0].norma
     assert len(resultado.fontes_corpus) == 1
     assert resultado.latencia_s >= 0.0

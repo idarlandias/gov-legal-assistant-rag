@@ -14,7 +14,7 @@ import time
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.fase3.retrieval import rotulo_fonte
 from src.fase3.verificador_citacoes import RelatorioCitacoes, verificar
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class CanalRisco(str, Enum):
     VERDE = "VERDE"        # Liberação direta (baixo risco / dever legal / próprio titular)
-    AMARELO = "AMARELO"    # Liberação condicionada (tarjamento obrigatório de dados pessoais excessivos)
+    AMARELO = "AMARELO"    # Fornecimento mediante exigência prévia: identificação + finalidade (CE Art. 1.128 §2º)
     VERMELHO = "VERMELHO"  # Bloqueio / Exigência formal (Nota Devolutiva fundamentada)
     INDEFINIDO = "INDEFINIDO"  # Falha na análise: nada é decidido, exige revisão manual
 
@@ -75,7 +75,7 @@ class RegistroAuditoriaLGPD(BaseModel):
     base_legal_lgpd: str = Field(..., description="Base legal da LGPD (ex: Art. 7º, II - Cumprimento de obrigação legal ou regulatória)")
     categoria_titular: str = Field(..., description="Titular dos dados (ex: Proprietário do imóvel, Requerente)")
     dados_tratados: list[str] = Field(..., description="Dados pessoais afetados no ato")
-    salvaguardas_adotadas: str = Field(..., description="Medidas técnicas e de compliance (ex: Tarjamento prévio, protocolo retido)")
+    salvaguardas_adotadas: str = Field(..., description="Medidas técnicas e de compliance (ex: identificação do requerente, protocolo retido)")
     conformidade_cnj_149: str = Field(default="Em conformidade com as diretrizes de proteção de dados do Provimento CNJ 149/2023.")
 
 
@@ -89,7 +89,8 @@ class AtoProntoOutput(BaseModel):
     """Saída completa do Ato Pronto para o escrevente no balcão."""
 
     canal: CanalRisco = Field(..., description="Classificação de risco da analogia da alfândega (VERDE, AMARELO ou VERMELHO)")
-    veredito: str = Field(..., description="Veredito direto: DEFERIDO INTEGRAL, DEFERIDO COM TARJAMENTO ou INDEFERIDO (NOTA DEVOLUTIVA)")
+    veredito: str = Field(..., description="Sugestão: SUGESTÃO: DEFERIR, SUGESTÃO: DEFERIR MEDIANTE EXIGÊNCIA PRÉVIA "
+                                           "ou SUGESTÃO: INDEFERIR (NOTA DEVOLUTIVA)")
     instrucao_balcao: str = Field(..., description="Instrução em até 2 linhas para execução imediata no balcão")
     fundamentacao: list[DispositivoLegal] = Field(default_factory=list, description="Artigos vigentes aplicáveis")
     minuta_ato: str = Field(..., description="Texto pronto formatado para colar no sistema do cartório ou imprimir (Despacho ou Nota Devolutiva)")
@@ -98,6 +99,23 @@ class AtoProntoOutput(BaseModel):
     latencia_s: float = Field(default=0.0, description="Tempo total de processamento em segundos")
     citacoes: RelatorioCitacoes | None = Field(
         default=None, description="Conferência das citações contra os trechos recuperados (preenchida pelo sistema)")
+
+    @field_validator("veredito")
+    @classmethod
+    def _veredito_como_sugestao(cls, v: str) -> str:
+        """Todo veredito é sugestão ao Oficial; formato antigo é convertido, supressão de dados é rejeitada."""
+        v = v.strip()
+        if v == VEREDITO_FALHA:
+            return v
+        if re.search(r"tarj|suprim", v, re.IGNORECASE):
+            # vira INDEFINIDO no processar_ato_pronto: o prompt proíbe sugerir supressão no inteiro teor
+            raise ValueError("veredito sugere suprimir dados da certidão")
+        if not v.upper().startswith("SUGESTÃO"):
+            v = re.sub(r"^indeferid[oa]", "SUGESTÃO: INDEFERIR", v, flags=re.IGNORECASE)
+            v = re.sub(r"^deferid[oa]", "SUGESTÃO: DEFERIR", v, flags=re.IGNORECASE)
+            if not v.upper().startswith("SUGESTÃO"):
+                v = f"SUGESTÃO: {v}"
+        return v
 
     @model_validator(mode="after")
     def _falha_so_com_indefinido(self) -> "AtoProntoOutput":
@@ -120,26 +138,46 @@ def gerar_query_recuperacao(pedido: PedidoBalcao) -> str:
     return " ".join(termos)
 
 
+# Definição dos canais: nenhuma menção a supressão de dados (não há norma no corpus que a autorize
+# na certidão de inteiro teor; o CE Art. 1.131 §10 manda reproduzir todo o conteúdo).
+CANAIS_PROMPT = """- Canal VERDE: Pedido seguro, obrigação de publicidade imediata e integral (ex: próprio titular requerendo sua matrícula, terceiro pedindo certidão de situação jurídica atual sem dados excessivos).
+- Canal AMARELO: Fornecimento permitido mediante EXIGÊNCIA PRÉVIA — identificação do requerente e indicação da finalidade — nas hipóteses do Art. 1.128, §2º, I a V, do Código de Normas da CGJ-CE, com abertura da ficha prevista no §3º do mesmo artigo.
+- Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada."""
+
+REGRA_INTEIRO_TEOR = (
+    "Nunca instrua a suprimir, tarjar ou omitir dados de uma certidão de inteiro teor. Se o caso parecer "
+    "exigir conteúdo reduzido, indique a certidão de situação jurídica atual (Prov. CNJ 149/2023, Art. 125) "
+    "como alternativa."
+)
+
+VEREDITOS = (
+    "SUGESTÃO: DEFERIR",
+    "SUGESTÃO: DEFERIR MEDIANTE EXIGÊNCIA PRÉVIA",
+    "SUGESTÃO: INDEFERIR (NOTA DEVOLUTIVA)",
+)
+AVISO_RESPONSABILIDADE = "Sugestão de ato. A decisão e a responsabilidade são do Oficial Registrador."
+
+
 def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao) -> str:
     dados_str = ", ".join(pedido.dados_sensiveis) if pedido.dados_sensiveis else "Nenhum informado"
-    
+    vereditos = " | ".join(f'"{v}"' for v in VEREDITOS)
+
     return f"""Você é o Assessor Técnico Especialista em Registro de Imóveis do Ceará e Compliance Registral (LGPD × Lei 6.015/1973 × Provimento CNJ 149/2023 × Código de Normas da Corregedoria Geral da Justiça do Ceará - CGJ-CE).
 
-Sua missão é emitir um ATO PRONTO OPERACIONAL para o escrevente de balcão utilizando a analogia da alfândega:
-- Canal VERDE: Pedido seguro, obrigação de publicidade imediata e integral (ex: próprio titular requerendo sua matrícula, terceiro pedindo certidão de situação jurídica atual sem dados excessivos).
-- Canal AMARELO: Fornecimento permitido, mas com TARJAMENTO OBRIGATÓRIO de dados pessoais excessivos.
-- Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada.
+Sua missão é emitir uma SUGESTÃO DE ATO OPERACIONAL para o escrevente de balcão utilizando a analogia da alfândega:
+{CANAIS_PROMPT}
 
 REGRAS DE CONFORMIDADE:
 1. Baseie-se ESTRITAMENTE no contexto normativo fornecido abaixo. NUNCA cite normas revogadas (como Provimento CNJ 134/2022). Cite as normas vigentes (Provimento CNJ 149/2023, Código de Normas da CGJ-CE, Lei 6.015/73, LGPD).
 2. A minuta_ato deve ser um texto formal, profissional e completo para uso imediato pelo escrevente (incluindo número de protocolo `{pedido.protocolo}`, fundamentação e conclusão formal).
 3. A auditoria_lgpd deve atender com rigor aos artigos 37 e 38 da LGPD (ROPA).
 4. Retorne APENAS um objeto JSON válido, sem texto explicativo adicional fora do JSON.
+5. {REGRA_INTEIRO_TEOR}
 
 FORMATO OBRIGATÓRIO (JSON):
 {{
   "canal": "VERDE" | "AMARELO" | "VERMELHO",
-  "veredito": "DEFERIDO INTEGRAL" | "DEFERIDO COM TARJAMENTO" | "INDEFERIDO (NOTA DEVOLUTIVA)",
+  "veredito": {vereditos},
   "instrucao_balcao": "Texto conciso de até 2 linhas orientando a ação física imediata no balcão.",
   "fundamentacao": [
     {{
@@ -154,7 +192,7 @@ FORMATO OBRIGATÓRIO (JSON):
     "base_legal_lgpd": "Dispositivo da LGPD (ex: Art. 7º, II)",
     "categoria_titular": "Categoria do titular afetado",
     "dados_tratados": ["lista", "de", "dados"],
-    "salvaguardas_adotadas": "Salvaguardas aplicadas (ex: tarjamento, arquivo do protocolo)",
+    "salvaguardas_adotadas": "Salvaguardas aplicadas (ex: identificação do requerente, registro da finalidade, arquivo do protocolo)",
     "conformidade_cnj_149": "Conformidade com o Livro I do Prov. CNJ 149/2023"
   }}
 }}
