@@ -3,8 +3,8 @@
 O que nenhum assistente jurídico concorrente faz:
 1. Inspeciona o texto bruto da matrícula ou certidão.
 2. Identifica dados pessoais protegidos (CPF, RG, Regime de bens, Filiação, Saúde, Ônus cancelados).
-3. Aplica tarjamento seletivo com fundamentação legal explícita (Art. 1131 CGJ-CE e Prov. CNJ 149/2023).
-4. Emite Carimbo Digital de Integridade Registral com Hash Criptográfico SHA-256 para comprovação jurídica.
+3. Aplica supressão seletiva por determinação do oficial, com marcação neutra (sem citar artigo).
+4. Gera hash SHA-256 de integridade do texto gerado (não é assinatura digital nem certificação de autenticidade).
 """
 
 from __future__ import annotations
@@ -47,16 +47,18 @@ class DadoSensivelDetectado(BaseModel):
     tipo: str = Field(..., description="Tipo do dado (ex: CPF, RG, Regime de Bens, Filiação)")
     valor_original: str = Field(..., description="Valor original no texto")
     acao_aplicada: str = Field(..., description="TARJADO ou MANTIDO")
-    motivo_legal: str = Field(..., description="Dispositivo aplicável (ex: Art. 1131, §10 CGJ-CE)")
+    motivo_legal: str = Field(..., description="Motivo registrado para a ação aplicada")
+
+
+AVISO_HASH = "Hash SHA-256 de integridade do texto gerado. Não é assinatura digital nem certificação de autenticidade."
+MARCACAO_SUPRESSAO = "[DADO SUPRIMIDO POR DETERMINAÇÃO DO OFICIAL]"
 
 
 class CarimboIntegridade(BaseModel):
-    codigo_autenticidade: str = Field(..., description="Código curto de autenticidade (ex: REG-CE-8F9B2C)")
-    hash_sha256: str = Field(..., description="Hash SHA-256 do texto original + parâmetros de conformidade")
+    codigo_autenticidade: str = Field(..., description="Código curto derivado do hash (ex: REG-CE-8F9B2C)")
+    hash_sha256: str = Field(..., description="Hash SHA-256 do texto já modificado (após supressões) + protocolo + data/hora")
     timestamp: str = Field(..., description="Data e hora de emissão")
-    normas_aplicadas: str = Field(
-        default="Código de Normas CGJ-CE (Art. 1131) c/c Provimento CNJ 149/2023 e Art. 7º, II da LGPD."
-    )
+    normas_aplicadas: str = Field(default="")
     texto_carimbo: str = Field(..., description="Texto formatado para impressão no rodapé da certidão")
 
 
@@ -66,12 +68,12 @@ class ResultadoTarjamento(BaseModel):
     total_dados_detectados: int
     total_dados_tarjados: int
     dados_detectados: list[DadoSensivelDetectado]
-    carimbo: CarimboIntegridade
+    carimbo: CarimboIntegridade | None = None  # só existe quando houve ao menos uma supressão
     tempo_processamento_s: float = 0.0
 
 
 def gerar_hash_conformidade(texto: str, protocolo: str, timestamp: str) -> str:
-    """Gera hash SHA-256 imutável que vincula o ato à versão da certidão e aos parâmetros."""
+    """Gera hash SHA-256 de `protocolo|timestamp|texto`, onde `texto` é o texto JÁ MODIFICADO (com supressões)."""
     payload = f"{protocolo}|{timestamp}|{texto}".encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
@@ -82,11 +84,11 @@ def formatar_carimbo(protocolo: str, hash_sha256: str, timestamp: str, canal: st
     texto_carimbo = (
         f"═════════════════════════════════════════════════════════════════════════\n"
         f"🏛️ CARIMBO DE CONFORMIDADE REGISTRAL & PROTEÇÃO DE DADOS (LGPD / CNJ)\n"
-        f"Protocolo: {protocolo} | Código de Autenticidade: {codigo}\n"
-        f"Classificação Operacional: CANAL {canal} (Tarjamento Obrigatório Aplicado)\n"
-        f"Fundamentação: Código de Normas CGJ-CE (Art. 1131, §10) e Provimento CNJ 149/2023\n"
+        f"Protocolo: {protocolo} | Código: {codigo}\n"
+        f"Classificação Operacional: CANAL {canal}\n"
         f"Data/Hora: {timestamp} | Hash de Integridade: SHA-256:\n"
         f"{hash_sha256}\n"
+        f"{AVISO_HASH}\n"
         f"Emissão amparada no Art. 7º, II da Lei 13.709/2018 (Dever Legal de Registro)\n"
         f"═════════════════════════════════════════════════════════════════════════"
     )
@@ -124,7 +126,7 @@ def tarjar_texto_matricula(
         motivo = (
             "Art. 17 da Lei 6.015/73 (Acesso pelo próprio titular)"
             if e_proprio_titular
-            else "Art. 1131, §10 CGJ-CE c/c Prov. CNJ 149/2023 (Omissão de CPF a terceiros)"
+            else MARCACAO_SUPRESSAO
         )
         dados_detectados.append(
             DadoSensivelDetectado(
@@ -135,7 +137,7 @@ def tarjar_texto_matricula(
             )
         )
         if acao == "TARJADO":
-            subst = "[CPF OMITIDO - ART. 1131 CGJ-CE]"
+            subst = MARCACAO_SUPRESSAO
             texto_processado = texto_processado.replace(cpf, subst)
 
     # 2. Detecção e Tarjamento de RGs
@@ -201,12 +203,14 @@ def tarjar_texto_matricula(
             if acao == "TARJADO":
                 texto_processado = texto_processado.replace(nome_pai_mae, "[FILIAÇÃO PROTEGIDA]")
 
-    # Gera o carimbo de integridade SHA-256
-    canal_usado = "VERDE" if e_proprio_titular else "AMARELO"
-    hash_sha256 = gerar_hash_conformidade(texto_processado, protocolo, ts)
-    carimbo = formatar_carimbo(protocolo, hash_sha256, ts, canal=canal_usado)
-
     total_tarjados = sum(1 for d in dados_detectados if d.acao_aplicada == "TARJADO")
+
+    # Carimbo de integridade SHA-256: só existe se algo foi de fato suprimido
+    carimbo = None
+    if total_tarjados > 0:
+        canal_usado = "VERDE" if e_proprio_titular else "AMARELO"
+        hash_sha256 = gerar_hash_conformidade(texto_processado, protocolo, ts)
+        carimbo = formatar_carimbo(protocolo, hash_sha256, ts, canal=canal_usado)
 
     return ResultadoTarjamento(
         texto_original=texto_matricula,

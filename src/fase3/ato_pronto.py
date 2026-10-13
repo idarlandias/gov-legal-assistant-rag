@@ -122,8 +122,8 @@ def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao) -> str:
 
 Sua missão é emitir um ATO PRONTO OPERACIONAL para o escrevente de balcão utilizando a analogia da alfândega:
 - Canal VERDE: Pedido seguro, obrigação de publicidade imediata e integral (ex: próprio titular requerendo sua matrícula, terceiro pedindo certidão de situação jurídica atual sem dados excessivos).
-- Canal AMARELO: Fornecimento permitido, mas com TARJAMENTO OBRIGATÓRIO de dados pessoais excessivos (ex: terceiro requerendo certidão de inteiro teor com CPF, documentos, regime de bens ou filiação de outras pessoas — fornece a certidão, porém tarjando dados que não dizem respeito à publicidade real).
-- Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; informação verbal por telefone; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada.
+- Canal AMARELO: Fornecimento permitido, mas com TARJAMENTO OBRIGATÓRIO de dados pessoais excessivos.
+- Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada.
 
 REGRAS DE CONFORMIDADE:
 1. Baseie-se ESTRITAMENTE no contexto normativo fornecido abaixo. NUNCA cite normas revogadas (como Provimento CNJ 134/2022). Cite as normas vigentes (Provimento CNJ 149/2023, Código de Normas da CGJ-CE, Lei 6.015/73, LGPD).
