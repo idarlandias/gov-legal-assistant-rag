@@ -602,10 +602,17 @@ with tab_benchmark:
         "Demonstração objetiva de como a solução supera o fluxo tradicional do cartório e as ferramentas genéricas de mercado."
     )
 
-    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-    col_m1.metric("Tempo Médio de Resposta", "3,2 segundos", "-93% vs DPO/Chat")
-    col_m2.metric("Aderência Regulatória", "100% CGJ-CE / CNJ", "Normas estaduais vigentes")
-    col_m3.metric("Custo por Consulta", "< R$ 0,02", "-98% vs SaaS concorrente")
+    col_m1, col_m3, col_m4 = st.columns(3)
+    col_m1.metric(
+        "Tempo Médio de Resposta", "7,6 s",
+        help="Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, "
+             "híbrido E5+BM25 com filtro de especialidade).",
+    )
+    col_m3.metric(
+        "Custo por Consulta", "~R$ 0,004",
+        help="Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, "
+             "câmbio 5,50). Preço das alternativas de mercado: não medido.",
+    )
     col_m4.metric("Automação de Auditoria", "ROPA Instantâneo", "Art. 37 da LGPD")
 
     st.markdown("### 🥊 Matriz de Diferenciação (*Unfair Advantage*)")
@@ -613,11 +620,11 @@ with tab_benchmark:
         """
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
 |:---|:---|:---|:---|
-| **Tempo de Decisão no Balcão** | 20 a 40 minutos (ou dias aguardando DPO) | 5 a 10 minutos (necessita leitura e filtro) | **~3 segundos com veredito pronto** |
+| **Tempo de Decisão no Balcão** |  | 5 a 10 minutos (necessita leitura e filtro) | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
 | **Interface com o Escrevente** | Consulta verbal ou e-mail interno | Caixa de chat aberta (alta fricção cognitiva) | **3 cliques objetivos (Zero-UI de chat)** |
 | **Formato de Saída** | Resposta informal ou parecer longo | Prosa explicativa genérica | **Ato Pronto (Minuta + Despacho + ROPA)** |
 | **Normas Estaduais Vigentes** | Consulta manual aos provimentos do TJCE | Frequentemente desatualizado / normas federais | **Código de Normas CGJ-CE + Prov. 15/2026** |
-| **Garantia Anti-Alucinação** | Depende do conhecimento do escrevente | Risco de citar normas revogadas (ex: Prov. 134) | **Restrito ao acervo oficial vigente do CNJ/CE** |
+| **Verificação automática de citações: em desenvolvimento.** | Depende do conhecimento do escrevente | Risco de citar normas revogadas (ex: Prov. 134) | **Restrito ao acervo oficial vigente do CNJ/CE** |
 | **Conformidade LGPD Formal** | Registro manual frequentemente esquecido | Não gera registros de auditoria | **Ficha ROPA (Art. 37/38) gerada e exportada** |
         """
     )

@@ -74,12 +74,20 @@ Nenhum assistente jurídico no Brasil executa a edição do documento para emiss
 
 | Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **CartórioSeguro AI (Fase 3)** |
 |:---|:---|:---|:---|
-| **Tempo de Decisão** | 20 a 40 min (ou dias via DPO) | 5 a 10 min (leitura de parecer) | **~3,2 segundos no balcão (-93%)** |
+| **Tempo de Decisão** |  | 5 a 10 min (leitura de parecer) | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
 | **Interface Operacional** | Consulta manual e-mail/telefone | Caixa de chat (alta fricção) | **3 seletores objetivos (Zero-UI de chat)** |
 | **Formato de Saída** | Parecer dissertativo | Resposta conversacional genérica | **Ato Pronto (Despacho / Nota Devolutiva / ROPA)** |
 | **Normas Regionais CE** | Consulta física ao TJCE | Desatualizado / foco federal | **Código CGJ-CE + Prov. 15/2026 integrados** |
 | **Proteção de Documento** | Tarjamento manual na caneta | Nenhum | **Tarjador Automático com Hash SHA-256** |
 | **Custo por Consulta** | Alto (honorários DPO/SaaS) | R$ 150–500/mês por usuário | **< R$ 0,02 via Groq / Modelos Abertos** |
+
+## Hipóteses não validadas
+
+- A validar: "~3,2 segundos no balcão (-93%)" (README) e "3,2 segundos / -93% vs DPO/Chat" e "~3 segundos com veredito pronto" (app).
+- A validar: "Redução de 93% no tempo e 98% no custo comprovada em benchmark" (README) e "-98% vs SaaS concorrente" (app).
+- A validar: "Aderência Regulatória 100% CGJ-CE / CNJ" (app).
+- A validar: "Garantia anti-alucinação" (app).
+- A validar: tempo do DPO de "20 a 40 min (ou dias via DPO)" (README) e "20 a 40 minutos (ou dias aguardando DPO)" (app).
 
 ---
 
@@ -193,7 +201,7 @@ gov-legal-assistant-rag/
 |:---|:---:|:---|
 | **Inovação & Unfair Advantage** | 40% | **Superado:** Tarjador inteligente inédito e Gerador de Ato Pronto de Balcão. |
 | **Engenharia de Software** | 30% | **100%:** 43 testes passando no pytest, ONNX local, tipagem Pydantic e CI/CD. |
-| **Viabilidade & Custos** | 20% | **Redução de 93% no tempo e 98% no custo** (< R$ 0,02/consulta) comprovada em benchmark. |
+| **Viabilidade & Custos** | 20% | Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, câmbio 5,50). Preço das alternativas de mercado: não medido. |
 | **Demonstração & Deploy** | 10% | **Online:** Streamlit Cloud ativo com bundle pré-indexado e presets de 1 clique. |
 
 ---
