@@ -65,3 +65,23 @@ A guarda de UI aplicada a todo o `src/` (fora do escopo dela) acusa 4 linhas. Ne
 - O canal do semáforo ainda é decidido pelo LLM; a tabela de decisão fixa (CE 1.128 / CNJ 123–128) não foi feita.
 - O `chroma_bundle.zip` (65 MB) continua versionado, e o material de cursinho continua no histórico do git.
 - Validação pedida pela professora: gabarito 0/25, respostas de concorrentes 0/75, entrevistas 0.
+
+---
+
+## 5. Protocolo dos pushes
+
+Repositório `https://github.com/idarlandias/gov-legal-assistant-rag.git`, branch `main`.
+
+| # | Intervalo | Commits | Commit no topo | Data do commit no topo | Conteúdo |
+|---|---|:-:|---|---|---|
+| 1 | `6fd7fad..4c9df1e` | 16 | `4c9df1eaebec7c5c59b1e025468802bde4b25bbe` | 2026-10-13 13:44:27 -0300 | 2ª a 5ª rodadas de correções, de `799700c` a `4c9df1e` |
+| 2 | `4c9df1e..1381f31` | 1 | `1381f319248d571ceb29c691a8c101d648fc9c11` | 2026-10-13 13:45:57 -0300 | este relatório, sem a seção 5 |
+
+| Conferência | Resultado |
+|---|---|
+| Autor de todos os commits | Idarlan Magalhaes <idarlandias@gmail.com>, sem co-autor |
+| Hash local × remoto após o push 2 (`git ls-remote origin refs/heads/main`) | idênticos (`1381f31…`) |
+| Staging antes dos pushes | vazio; `chroma_bundle.zip` intocado |
+| Force push | não usado |
+
+A inclusão desta seção 5 é um commit próprio, posterior ao push 2. O hash desse commit aparece no histórico do git (`git log`); ele não pode constar aqui porque é calculado a partir do próprio conteúdo do arquivo.
