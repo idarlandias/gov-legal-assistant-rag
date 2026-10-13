@@ -31,6 +31,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 14 | [13_relatorio_rodada4_chat_ui_manifesto.md](13_relatorio_rodada4_chat_ui_manifesto.md) | 4ª rodada: regras únicas do chat e do Ato Pronto, aba do tarjador fora da UI, datas do corpus |
 | 15 | [14_relatorio_rodada5_fechamento.md](14_relatorio_rodada5_fechamento.md) | 5ª rodada: manifesto e barra lateral, README e doc 06 retificados, fechamento e push |
 | 16 | [15_relatorio_pontuacao_e_renomeacao.md](15_relatorio_pontuacao_e_renomeacao.md) | Pontuação da coleta (bloqueada: sem respostas coletadas) e classificação da renomeação |
+| 17 | [16_relatorio_renomeacao_e_pontuacao.md](16_relatorio_renomeacao_e_pontuacao.md) | Renomeação para Assistente Registral CE e pontuação em duas camadas ([pontuação do RAG](pontuacao_rag_2026-10-13.md)) |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
