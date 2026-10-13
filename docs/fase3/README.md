@@ -23,6 +23,9 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 6 | [benchmark/](benchmark/README.md) | Planilha de coleta e script que roda o RAG nas perguntas |
 | 7 | [06_entrega_radical_e_pensamento_divergente.md](06_entrega_radical_e_pensamento_divergente.md) | Ideação, mindset e formas alternativas de entrega de valor |
 | 8 | [07_entregas_professora_zandona.md](07_entregas_professora_zandona.md) | As 3 entregas consolidadas para a Profª Daniele Zandoná |
+| 9 | [08_revisao_2026-10-13.md](08_revisao_2026-10-13.md) | Revisão de 13/10: fundamento invertido do Art. 1.131 e defeitos encontrados |
+| 10 | [09_relatorio_para_analise.md](09_relatorio_para_analise.md) | Relatório autossuficiente da auditoria para análise externa |
+| 11 | [10_relatorio_pos_correcoes.md](10_relatorio_pos_correcoes.md) | Correções aplicadas, números medidos depois delas e itens abertos |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
