@@ -34,6 +34,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 17 | [16_relatorio_renomeacao_e_pontuacao.md](16_relatorio_renomeacao_e_pontuacao.md) | Renomeação para Assistente Registral CE e pontuação em duas camadas ([pontuação do RAG](pontuacao_rag_2026-10-13.md)) |
 | 18 | [18_plano_produto_pos_validacao.md](18_plano_produto_pos_validacao.md) | Plano depois da validação de 15/10: mapa de concorrentes, diferenciais D1–D5 e fases ([instrumentos de campo](../../data/validacao/README.md)) |
 | 19 | [19_relatorio_fase2_motor_regras.md](19_relatorio_fase2_motor_regras.md) | Fase 2: motor de regras do RI (canal pela norma, IA só redige) e ficha do CE 1.128 §3º |
+| 20 | [20_relatorio_fase3_registro_civil.md](20_relatorio_fase3_registro_civil.md) | Fase 3: motor de regras do Registro Civil (autorização judicial só quando a norma exige) e requerimentos |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
