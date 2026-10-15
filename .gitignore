@@ -43,3 +43,8 @@ docs/fase3/17_parecer_professora_pos_mudancas.md
 # Diários de balcão preenchidos (dados reais de cartório): só o modelo é versionado
 data/validacao/diario_balcao_*.csv
 !data/validacao/diario_balcao_modelo.csv
+# Respostas devolvidas pelos cartórios (nome do Oficial, dados reais): só os modelos são versionados
+data/validacao/gabarito.csv
+data/validacao/gabarito_rcpn.csv
+data/validacao/respostas_parte_b_*.json
+data/validacao/respostas/
