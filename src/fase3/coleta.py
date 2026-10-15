@@ -23,7 +23,13 @@ FUSO_COLETA = timezone(timedelta(hours=-3))
 
 SISTEMA_PROPRIO = "assistente_registral_ce"
 # Ordem das colunas em qualquer saída comparativa
-SISTEMAS = (SISTEMA_PROPRIO, "jus_ia", "juridico_ai", "llm_generico")
+SISTEMAS = (
+    SISTEMA_PROPRIO,
+    # IAs feitas para cartório: os concorrentes diretos (validação de 15/10/2026)
+    "aryabolt", "sele_ia", "notario_ia",
+    # IAs jurídicas gerais e substituto gratuito
+    "legjur_ai", "juridico_ai", "jus_ia", "llm_generico",
+)
 # Nome antigo do produto, aceito só na leitura (arquivos coletados antes da renomeação)
 ALIASES_SISTEMA = {"cartorioseguro": SISTEMA_PROPRIO}
 
