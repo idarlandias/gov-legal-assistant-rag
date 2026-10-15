@@ -265,6 +265,15 @@ with tab_balcao:
         solicitante = st.selectbox("2. Perfil do Requerente / Solicitante:", options=opcoes_solicitantes, index=idx_solicitante)
         dados_sensiveis = st.multiselect("3. Dados Pessoais / Sensíveis Envolvidos:", options=opcoes_dados, default=default_dados)
 
+        # Casos em que a norma muda o canal conforme um fato: o escrevente confirma antes
+        from src.fase3.regras_ri import Cobertura, decidir
+        regra_previa = decidir(tipo_pedido, solicitante, dados_sensiveis)
+        condicao = None
+        if regra_previa.cobertura == Cobertura.CONDICIONAL:
+            resposta = st.radio(f"4. {regra_previa.pergunta}", ["Não sei", "Sim", "Não"], horizontal=True,
+                                key="condicao_regra")
+            condicao = {"Sim": True, "Não": False}.get(resposta)
+
         with st.expander("Detalhes Adicionais e Protocolo (Opcional)", expanded=bool(default_detalhes)):
             protocolo_input = st.text_input("Número do Protocolo:", value="PROT-2026/0842")
             detalhes_input = st.text_area(
@@ -298,6 +307,7 @@ with tab_balcao:
                         dados_sensiveis=dados_sensiveis,
                         detalhes_caso=detalhes_input,
                         protocolo=protocolo_input,
+                        condicao_confirmada=condicao,
                     )
                     resultado = fase3_pipe.gerar_ato_pronto(pedido)
 
@@ -336,6 +346,27 @@ with tab_balcao:
                         unsafe_allow_html=True,
                     )
 
+                    # Quem decidiu o canal: a regra da norma ou a IA
+                    regra = resultado.regra
+                    if regra is not None:
+                        if regra.divergencia_llm:
+                            st.error(f"A IA divergiu da regra da norma ({regra.divergencia_llm}). "
+                                     "A minuta foi descartada: a decisão é do Oficial.")
+                        elif regra.cobertura == "REGRA":
+                            st.success("Canal definido por regra escrita a partir da norma, não pela IA. "
+                                       "A IA apenas redigiu a minuta.")
+                        elif regra.cobertura == "CONDICIONAL":
+                            st.info(f"Responda à pergunta do item 4 para aplicar a regra: {regra.pergunta}")
+                        else:
+                            st.warning("Sem regra determinística para este tipo de pedido: o canal é sugestão da IA "
+                                       "e depende de revisão do Oficial.")
+                        for alerta in regra.alertas:
+                            st.warning(alerta)
+                        if regra.fundamentos:
+                            with st.expander("Regra aplicada (texto literal da norma)"):
+                                for f in regra.fundamentos:
+                                    st.markdown(f"- **{f.norma}, {f.artigo}:** “{f.trecho}”")
+
                     # Minuta Pronta
                     st.markdown("#### Minuta Formal do Ato")
                     st.text_area(
@@ -365,6 +396,17 @@ with tab_balcao:
                             use_container_width=True,
                             disabled=indefinido,
                         )
+
+                    if resultado.ficha is not None:
+                        st.download_button(
+                            "Baixar ficha de identificação e finalidade (.txt)",
+                            data=resultado.ficha.texto(),
+                            file_name=f"ficha_{protocolo_input.replace('/', '_')}.txt",
+                            mime="text/plain",
+                            use_container_width=True,
+                        )
+                        with st.expander("Ficha de identificação e finalidade (CE Art. 1.128, §3º; CNJ Art. 128)"):
+                            st.code(resultado.ficha.texto(), language="text")
 
                     if resultado.citacoes and resultado.citacoes.nao_verificadas():
                         st.warning(

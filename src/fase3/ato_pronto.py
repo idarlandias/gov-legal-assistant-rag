@@ -11,12 +11,14 @@ import json
 import logging
 import re
 import time
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.fase3.regras_prompt import REGRA_INTEIRO_TEOR, REGRAS_DECISAO  # noqa: F401 (REGRA_INTEIRO_TEOR reexportada)
+from src.fase3.regras_ri import CNJ_128_PU, FICHA, Cobertura, ResultadoRegra, decidir
 from src.fase3.retrieval import rotulo_fonte
 from src.fase3.verificador_citacoes import RelatorioCitacoes, verificar
 
@@ -61,6 +63,10 @@ class PedidoBalcao(BaseModel):
         default="BALCAO-AUTO",
         description="Identificador de protocolo ou atendimento do balcão"
     )
+    condicao_confirmada: bool | None = Field(
+        default=None,
+        description="Resposta do escrevente à pergunta de um caso CONDICIONAL do motor de regras (None = não respondida)"
+    )
 
 
 class DispositivoLegal(BaseModel):
@@ -86,6 +92,77 @@ class RegistroFalha(BaseModel):
     falha: str = Field(..., description="Tipo da exceção ou motivo (ex: 'contexto vazio')")
 
 
+class FundamentoRegra(BaseModel):
+    norma: str
+    artigo: str
+    trecho: str = Field(..., description="Transcrição literal do dispositivo")
+
+
+class RegraAplicada(BaseModel):
+    """O que o motor de regras (src/fase3/regras_ri.py) decidiu para o pedido."""
+
+    cobertura: str = Field(..., description="REGRA, CONDICIONAL ou SEM_REGRA")
+    canal: str | None = None
+    exige_identificacao: bool = True
+    exige_finalidade: bool = False
+    fundamentos: list[FundamentoRegra] = Field(default_factory=list)
+    alertas: list[str] = Field(default_factory=list)
+    pergunta: str = ""
+    divergencia_llm: str = Field(default="", description="Preenchido quando a IA sugeriu canal diferente da regra")
+
+    @classmethod
+    def de(cls, regra: ResultadoRegra) -> "RegraAplicada":
+        return cls(cobertura=regra.cobertura.value, canal=regra.canal,
+                   exige_identificacao=regra.exige_identificacao, exige_finalidade=regra.exige_finalidade,
+                   fundamentos=[FundamentoRegra(norma=f.norma, artigo=f.artigo, trecho=f.trecho)
+                                for f in regra.fundamentos],
+                   alertas=list(regra.alertas), pergunta=regra.pergunta)
+
+
+class FichaIdentificacaoFinalidade(BaseModel):
+    """Ficha do CE Art. 1.128 §3º / prontuário do CNJ Art. 128, montada sem LLM."""
+
+    protocolo: str
+    emitida_em: str
+    tipo_pedido: str
+    perfil_requerente: str
+    campos_a_preencher: list[str]
+    fundamentos: list[FundamentoRegra]
+    direito_do_titular: str
+
+    def texto(self) -> str:
+        linhas = [
+            "FICHA DE IDENTIFICAÇÃO E INDICAÇÃO DE FINALIDADE",
+            f"Protocolo: {self.protocolo}    Emitida em: {self.emitida_em}",
+            f"Pedido: {self.tipo_pedido}",
+            f"Perfil do requerente: {self.perfil_requerente}",
+            "",
+            *[f"{c}: ______________________________________________" for c in self.campos_a_preencher],
+            "",
+            "Fundamento:",
+            *[f"- {f.norma}, {f.artigo}: \"{f.trecho}\"" for f in self.fundamentos],
+            "",
+            f"Direito do titular: \"{self.direito_do_titular}\" (Prov. CNJ 149/2023, Art. 128, parágrafo único)",
+        ]
+        return "\n".join(linhas)
+
+
+CAMPOS_FICHA = ("Nome do requerente", "Documento de identificação (tipo e número)", "Finalidade declarada",
+                "Assinatura do requerente", "Atendente")
+
+
+def montar_ficha(pedido: PedidoBalcao, regra: ResultadoRegra) -> FichaIdentificacaoFinalidade:
+    return FichaIdentificacaoFinalidade(
+        protocolo=pedido.protocolo,
+        emitida_em=datetime.now(timezone(timedelta(hours=-3))).isoformat(timespec="seconds"),
+        tipo_pedido=pedido.tipo_pedido,
+        perfil_requerente=pedido.solicitante,
+        campos_a_preencher=list(CAMPOS_FICHA),
+        fundamentos=[FundamentoRegra(norma=f.norma, artigo=f.artigo, trecho=f.trecho) for f in FICHA],
+        direito_do_titular=CNJ_128_PU.trecho,
+    )
+
+
 class AtoProntoOutput(BaseModel):
     """Saída completa do Ato Pronto para o escrevente no balcão."""
 
@@ -100,6 +177,9 @@ class AtoProntoOutput(BaseModel):
     latencia_s: float = Field(default=0.0, description="Tempo total de processamento em segundos")
     citacoes: RelatorioCitacoes | None = Field(
         default=None, description="Conferência das citações contra os trechos recuperados (preenchida pelo sistema)")
+    regra: RegraAplicada | None = Field(default=None, description="Decisão do motor de regras (preenchida pelo sistema)")
+    ficha: FichaIdentificacaoFinalidade | None = Field(
+        default=None, description="Ficha do CE 1.128 §3º / CNJ 128 quando a finalidade é exigida (preenchida pelo sistema)")
 
     @field_validator("veredito")
     @classmethod
@@ -173,7 +253,7 @@ def gerar_query_recuperacao(pedido: PedidoBalcao) -> str:
 # na certidão de inteiro teor; o CE Art. 1.131 §10 manda reproduzir todo o conteúdo).  guarda-1131: ok
 CANAIS_PROMPT = """- Canal VERDE: Pedido seguro, obrigação de publicidade imediata e integral (ex: próprio titular requerendo sua matrícula, terceiro pedindo certidão de situação jurídica atual sem dados excessivos).
 - Canal AMARELO: Fornecimento permitido mediante EXIGÊNCIA PRÉVIA — identificação do requerente e indicação da finalidade — nas hipóteses do Art. 1.128, §2º, I a V, do Código de Normas da CGJ-CE, com abertura da ficha prevista no §3º do mesmo artigo.
-- Canal VERMELHO: Bloqueio ou Exigência Formal (ex: busca ampla por CPF sem justificativa legal; pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada."""
+- Canal VERMELHO: Recusa em nota fundamentada, que é decisão do Oficial (Art. 1.128, §4º, do Código de Normas da CGJ-CE), ou Exigência Formal (ex: pedido de exclusão de dados da matrícula com base na LGPD — livros registrais têm guarda perpétua e dever legal; dados sob segredo judicial). Deve gerar NOTA DEVOLUTIVA formal fundamentada."""
 
 VEREDITOS = (
     "SUGESTÃO: DEFERIR",
@@ -183,9 +263,24 @@ VEREDITOS = (
 AVISO_RESPONSABILIDADE = "Sugestão de ato. A decisão e a responsabilidade são do Oficial Registrador."
 
 
-def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao) -> str:
+def bloco_regra(regra: ResultadoRegra) -> str:
+    """Canal já decidido pela norma: o LLM só redige, coerente com ele."""
+    fundamentos = "\n".join(f'- {f.norma}, {f.artigo}: "{f.trecho}"' for f in regra.fundamentos)
+    alertas = "".join(f"\n- Alerta: {a}" for a in regra.alertas)
+    return f"""
+CANAL DEFINIDO PELA NORMA (motor de regras; não altere): {regra.canal}
+- Exigir identificação do requerente: {"sim" if regra.exige_identificacao else "não"}
+- Exigir indicação da finalidade: {"sim" if regra.exige_finalidade else "não"}
+- Fundamentos obrigatórios:
+{fundamentos}{alertas}
+Use exatamente o canal {regra.canal} no campo "canal" e redija veredito, instrução e minuta coerentes com ele.
+"""
+
+
+def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao, regra: ResultadoRegra | None = None) -> str:
     dados_str = ", ".join(pedido.dados_sensiveis) if pedido.dados_sensiveis else "Nenhum informado"
     vereditos = " | ".join(f'"{v}"' for v in VEREDITOS)
+    decidido = bloco_regra(regra) if regra is not None and regra.cobertura == Cobertura.REGRA else ""
 
     return f"""Você é o Assessor Técnico Especialista em Registro de Imóveis do Ceará e Compliance Registral (LGPD × Lei 6.015/1973 × Provimento CNJ 149/2023 × Código de Normas da Corregedoria Geral da Justiça do Ceará - CGJ-CE).
 
@@ -198,7 +293,7 @@ REGRAS DE CONFORMIDADE:
 3. A auditoria_lgpd deve atender com rigor aos artigos 37 e 38 da LGPD (ROPA).
 4. Retorne APENAS um objeto JSON válido, sem texto explicativo adicional fora do JSON.
 5. {REGRAS_DECISAO}
-
+{decidido}
 FORMATO OBRIGATÓRIO (JSON):
 {{
   "canal": "VERDE" | "AMARELO" | "VERMELHO",
@@ -270,8 +365,19 @@ K_ATO_PRONTO = 8  # top-8: com 5, normas-chave ficavam de fora no caso mais comu
 
 
 def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int = K_ATO_PRONTO) -> AtoProntoOutput:
-    """Processa o pedido no pipeline da Fase 3 e gera o Ato Pronto estruturado."""
+    """Processa o pedido no pipeline da Fase 3 e gera o Ato Pronto estruturado.
+
+    0. Motor de regras: o canal sai da norma quando há regra; CONDICIONAL sem resposta não decide nada.
+    """
     t0 = time.perf_counter()
+
+    regra = decidir(pedido.tipo_pedido, pedido.solicitante, pedido.dados_sensiveis, pedido.condicao_confirmada)
+    regra_aplicada = RegraAplicada.de(regra)
+    if regra.cobertura == Cobertura.CONDICIONAL:
+        saida = _ato_indefinido(f"confirmação necessária: {regra.pergunta}")
+        saida.regra = regra_aplicada
+        saida.latencia_s = round(time.perf_counter() - t0, 2)
+        return saida
 
     # 1. Recuperação Híbrida especializada
     query = gerar_query_recuperacao(pedido)
@@ -283,13 +389,14 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
     if not hits:
         # Sem norma recuperada o LLM só poderia inventar: não chama o modelo
         saida = _ato_indefinido("contexto vazio")
+        saida.regra = regra_aplicada
         saida.latencia_s = round(time.perf_counter() - t0, 2)
         return saida
 
     contexto = "\n\n---\n\n".join(f"[{rotulo_fonte(h)}]\n{h['text']}" for h in hits)
 
     # 2. Prompt Estruturado
-    prompt = build_ato_pronto_prompt(context=contexto, pedido=pedido)
+    prompt = build_ato_pronto_prompt(context=contexto, pedido=pedido, regra=regra)
     messages = [{"role": "user", "content": prompt}]
 
     from src.pipeline.routing import GROQ_MODEL_FALLBACKS
@@ -326,6 +433,22 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
         # Rede, JSON inválido ou schema inválido: nunca decide canal no escuro
         logger.exception("Falha ao gerar Ato Pronto (protocolo %s)", pedido.protocolo)
         saida = _ato_indefinido(type(e).__name__)
+
+    if regra.cobertura == Cobertura.REGRA and saida.canal != CanalRisco.INDEFINIDO:
+        if saida.canal.value != regra.canal:
+            # A minuta foi escrita para outro canal: não serve. O Oficial decide.
+            regra_aplicada.divergencia_llm = f"a IA sugeriu {saida.canal.value}; a norma indica {regra.canal}"
+            logger.warning("Ato Pronto %s · divergência IA × regra: %s", pedido.protocolo,
+                           regra_aplicada.divergencia_llm)
+            saida = _ato_indefinido(f"divergência entre a IA e a regra da norma ({regra_aplicada.divergencia_llm})")
+        else:
+            da_regra = [DispositivoLegal(norma=f.norma, artigo=f.artigo, aplicacao=f.trecho)
+                        for f in regra.fundamentos]
+            vistos = {(d.norma, d.artigo) for d in da_regra}
+            saida.fundamentacao = da_regra + [d for d in saida.fundamentacao if (d.norma, d.artigo) not in vistos]
+            if regra.gera_ficha:
+                saida.ficha = montar_ficha(pedido, regra)
+    saida.regra = regra_aplicada
 
     saida.latencia_s = round(time.perf_counter() - t0, 2)
     saida.fontes_corpus = [
