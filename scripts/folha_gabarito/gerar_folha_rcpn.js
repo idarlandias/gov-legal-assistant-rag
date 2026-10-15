@@ -62,9 +62,10 @@ const opcoes = (itens) => itens.map((t) => p(`☐  ${t}`, { after: 40, size: 20 
 // ---------------------------------------------------------------- carta de apresentação
 
 const carta = [
-  p("Limoeiro do Norte (CE), ____ de ______________ de 2026.", { align: AlignmentType.RIGHT, after: 360 }),
-  p("Ao(À) Oficial do Registro Civil das Pessoas Naturais", { bold: true, after: 40 }),
-  p("Serventia: ________________________________   Município: __________________", { after: 360 }),
+  p("______________________ (CE), ____ de ______________ de 2026.", { align: AlignmentType.RIGHT, after: 360 }),
+  p("Ao(À) Oficial do Registro Civil das Pessoas Naturais", { bold: true, after: 120 }),
+  p("Serventia:  ____________________________________________________________", { after: 120 }),
+  p("Município:  ____________________________________________________________", { after: 360 }),
   p("Assunto: pedido de colaboração em pesquisa sobre o atendimento de pedidos de certidão", { bold: true,
                                                                                               after: 240 }),
   p("Prezado(a) Oficial,", { after: 200 }),
