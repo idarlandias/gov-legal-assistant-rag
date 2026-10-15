@@ -39,7 +39,7 @@ Os concorrentes diretos competem em **produzir atos** e em **atender pelo WhatsA
 | Fase | Entrega | Situação |
 |---|---|---|
 | 1 | Instrumentos de campo: diário de balcão, roteiro de conversas, gabarito do registrador, avaliação com "respostas contrárias à norma"; concorrentes reais na coleta | **feita** (`df57bb5`, `21441dd`, `6eae027`) |
-| 2 | D1 + D2 para o **Registro de Imóveis**: tabela de regras a partir do CE 1.128 e do CNJ 123–128 lidos no corpus; ficha do §3º como saída principal | próxima |
+| 2 | D1 + D2 para o **Registro de Imóveis**: tabela de regras a partir do CE 1.128 e do CNJ 123–128 lidos no corpus; ficha do §3º como saída principal | **feita** (`bb5b951`, ver [relatório 19](19_relatorio_fase2_motor_regras.md)) |
 | 3 | D1 + D2 para o **Registro Civil**: ler no corpus o CNJ 116–117 e os dispositivos do CE equivalentes antes de escrever qualquer regra; filtro por especialidade RCPN | depois da fase 2 |
 | 4 | Posicionamento: "assistente de conformidade"; README sem "multa da ANPD" nem enquadramento pela LAI; retificação dos docs 06/07 | paralela |
 | 5 | Campo: 5 conversas, diário de 1 semana em 3 cartórios, gabarito, coleta dos concorrentes; resubmissão ao funil | depende do proponente |
