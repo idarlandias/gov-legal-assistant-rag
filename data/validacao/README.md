@@ -49,7 +49,8 @@ Esta pasta guarda os instrumentos que produzem a evidência pedida na validaçã
 
 As 25 perguntas do benchmark são de Registro de Imóveis. Para o Registro Civil, `casos_rcpn.json` traz 13 situações de balcão. Elas cobrem breve relato, óbito, inteiro teor pedido pelo próprio registrado ou por terceiro, dado sensível de pessoa viva ou falecida, informação de menção vedada, quesitos, procedimento preparatório, buscas e registro bloqueado.
 - **Nenhum caso traz resposta.** O campo `entrada` só repete, de forma estruturada, os fatos já descritos no texto.
-- **Para o cartório, preferencialmente:** `documento_cartorio_registro_civil_preenchivel.pdf`, um **PDF preenchível**.
+- **Para o cartório, preferencialmente:** dois **formulários online (Google Forms)**, criados por um script pronto. São a pesquisa do Oficial e o diário de balcão para o escrevente preencher no celular. Passo a passo em [google_forms/COMO_USAR.md](google_forms/COMO_USAR.md). As respostas voltam como CSV e são convertidas por `scripts/folha_gabarito/ler_respostas_forms.py`.
+- **Alternativa offline:** `documento_cartorio_registro_civil_preenchivel.pdf`, um **PDF preenchível**.
   - O Oficial abre no Adobe Reader, Chrome ou Edge, clica nas opções, digita e salva.
   - Ao receber de volta, rode `python scripts/folha_gabarito/ler_pdf_preenchido.py <pdf> --cartorio <apelido>`. O script gera `gabarito_rcpn.csv`, `diario_balcao_<apelido>.csv` e `respostas_parte_b_<apelido>.json` sem transcrição manual.
   - Esses arquivos e os PDFs devolvidos (guarde em `data/validacao/respostas/`) ficam fora do git, porque têm o nome do Oficial e dados reais.
