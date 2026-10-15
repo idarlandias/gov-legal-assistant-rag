@@ -114,7 +114,7 @@ semantic_cache = get_semantic_cache()
 # ---------------------------------------------------------------- Barra Lateral (Métricas e Status)
 with st.sidebar:
     st.title("Assistente Registral CE")
-    st.caption("Residência SiDi · Fase 3 — Recorte Vertical de Registro de Imóveis (CE)")
+    st.caption("Residência SiDi · Fase 3 — Registro de Imóveis e Registro Civil (CE)")
     st.divider()
 
     st.subheader("Normas consultadas")
@@ -156,7 +156,8 @@ with st.sidebar:
 # ---------------------------------------------------------------- Cabeçalho Principal
 st.title("Assistente Registral CE")
 st.markdown(
-    "**Decisão Operacional & Compliance Registral** — Apoio à decisão de balcão em Registro de Imóveis: publicidade registral, LGPD e LAI."
+    "**Assistente de conformidade registral** — Aplica a cada pedido de certidão as regras de publicidade e proteção "
+    "de dados do Registro de Imóveis e do Registro Civil. A decisão é do Oficial Registrador."
 )
 
 tab_balcao, tab_chat, tab_benchmark = st.tabs([
@@ -172,8 +173,9 @@ tab_balcao, tab_chat, tab_benchmark = st.tabs([
 with tab_balcao:
     st.subheader("Triagem de pedido")
     st.markdown(
-        "Emita atos prontos com veredito direto, fundamentação referenciada no Código de Normas do Ceará e no Provimento CNJ 149/2023, "
-        "minuta pronta para despacho ou Nota Devolutiva e registro de auditoria LGPD (ROPA)."
+        "O canal sai de uma regra escrita a partir do Código de Normas do Ceará e do Provimento CNJ 149/2023, "
+        "com o texto da norma à vista. O sistema monta o documento exigido (ficha ou requerimento), a IA redige "
+        "a minuta e a decisão é do Oficial Registrador."
     )
 
     # 1-Click Preset Scenarios
@@ -624,19 +626,18 @@ with tab_benchmark:
         help="Custo medido: ~R$ 0,004 por consulta (≈1,6 mil tokens de entrada, gpt-oss-120b via Groq, "
              "câmbio 5,50). Preço das alternativas de mercado: não medido.",
     )
-    col_m4.metric("Automação de Auditoria", "ROPA Instantâneo", "Art. 37 da LGPD")
+    col_m4.metric("Documento exigido pela norma", "Montado sem IA", "CE 1.128 §3º · CNJ 117 e 121")
 
-    st.markdown("### Matriz de Diferenciação (*Unfair Advantage*)")
+    st.markdown("### Comparação com as alternativas")
     st.markdown(
         """
-| Critério de Avaliação | Fluxo Tradicional (DPO / Manuais) | Assistentes Genéricos (Jus IA / ChatGPT) | **Assistente Registral CE (Fase 3)** |
+| Critério | Fluxo atual (norma, checklist, consulta ao Oficial) | IAs para cartório (AryaBolt, Sele IA, Notário IA) | **Assistente Registral CE** |
 |:---|:---|:---|:---|
-| **Tempo de Decisão no Balcão** | não medido | não medido | **Latência média de 7,6 s no benchmark interno (25 perguntas, execução de 13/10/2026, híbrido E5+BM25 com filtro de especialidade).** |
-| **Interface com o Escrevente** | não medido | não medido | **3 cliques objetivos (Zero-UI de chat)** |
-| **Formato de Saída** | não medido | não medido | **Ato Pronto (Minuta + Despacho + ROPA)** |
-| **Normas Estaduais Vigentes** | não medido | não medido | **Código de Normas CGJ-CE + Prov. 15/2026** |
-| **Verificação automática de citações: em desenvolvimento.** | não medido | não medido | **Restrito ao acervo oficial vigente do CNJ/CE** |
-| **Conformidade LGPD Formal** | não medido | não medido | **Ficha ROPA (Art. 37/38) gerada e exportada** |
+| **Canal decidido por regra da norma com trecho literal** | não medido | não anunciado nos sites dos fornecedores (15/10/2026) | **sim, no Registro de Imóveis e no Registro Civil** |
+| **Documento exigido pela norma pronto (ficha ou requerimento)** | não medido | não anunciado nos sites dos fornecedores (15/10/2026) | **sim** |
+| **Acerto contra gabarito de registrador** | não medido | não medido | não medido |
+| **Tempo por pedido** | não medido | não medido | **latência média de 7,6 s no benchmark interno (25 perguntas, 13/10/2026)** |
+| **Verificação de citações** | não medido | não medido | **citações conferidas contra os trechos recuperados (verificador v2)** |
         """
     )
 

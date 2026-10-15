@@ -21,7 +21,7 @@ A validação de 15/10 apontou como maior risco a ferramenta **recomendar algo c
 
 | Tipo de pedido | Canal | Base (trecho literal no sistema) |
 |---|---|---|
-| Certidão de inteiro teor de matrícula (qualquer requerente identificado) | **VERDE**, sem finalidade | CE 1.128 caput; CNJ 123 caput; CE 1.131 §10 (reproduz todo o conteúdo) |
+| Certidão de inteiro teor de matrícula (qualquer requerente identificado) | **VERDE**, sem finalidade | CE 1.128 caput; CNJ 123 caput; CE 1.131 §10 (reproduz todo o conteúdo) <!-- guarda-1131: ok --> |
 | Certidão de situação jurídica atual | **VERDE** | CE 1.128 caput; CE 1.129; CNJ 125 |
 | Busca por indicador pessoal (CPF/nome) | **AMARELO** + ficha | CE 1.128 §2º IV; CNJ 126 |
 | Informação verbal, por terceiro | **AMARELO** + ficha | CE 1.128 §2º V; CNJ 127 |

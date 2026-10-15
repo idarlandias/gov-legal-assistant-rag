@@ -1,3 +1,14 @@
+> **Nota de retificação (15/10/2026).** Este documento é registro da ideação de setembro de 2026 e foi mantido como estava, com exceção da retificação já feita no item da joia principal do doc 06. Os pontos abaixo foram superados pelo projeto:
+>
+> - **Tarja ou "fornecer com tarjamento":** não há base normativa para tarjar a certidão de inteiro teor da matrícula, que reproduz todo o seu conteúdo (CE Art. 1.131, §10; Lei 6.015/1973, art. 19, §11). O tarjador saiu da interface. <!-- guarda-1131: ok -->
+> - **Exigir justificativa para certidão de matrícula:** a norma exige só a identificação do requerente, independentemente de finalidade (CE Art. 1.128, caput; Prov. CNJ 149/2023, Art. 123). A finalidade só é exigida nas hipóteses do CE Art. 1.128, §2º.
+> - **"Veredito" e "fundamentação vinculante":** o sistema produz sugestão; a decisão e a responsabilidade são do Oficial Registrador. O canal passou a sair de regras escritas a partir do texto da norma.
+> - **"Multa da ANPD":** não há caso registrado de sanção da ANPD a cartório; o risco tratado pelo projeto é o disciplinar, perante a Corregedoria.
+> - **"Conflito LAI × LGPD":** a publicidade das certidões é regida pela Lei 6.015/1973 e pelo Provimento CNJ 149/2023, não pela LAI.
+> - **Concorrentes:** os concorrentes diretos são IAs feitas para cartório (AryaBolt, Sele IA, Notário IA), não apenas Jus IA e ChatGPT.
+>
+> Estado atual do produto: [plano de produto (doc 18)](18_plano_produto_pos_validacao.md).
+
 Olá professora, tudo bem?
 
 Aqui estão as minhas respostas para as entregas que você pediu com base nas dinâmicas que fizemos em sala. 
