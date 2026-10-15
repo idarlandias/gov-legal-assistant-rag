@@ -1,0 +1,31 @@
+{
+  "descricao": "Casos de balcão do Registro Civil das Pessoas Naturais para o gabarito do registrador. Cada caso descreve uma situação e pergunta como atender; nenhum traz resposta. O campo 'entrada' repete os fatos do texto em forma estruturada, para comparar a decisão do motor de regras com a do registrador.",
+  "casos": [
+    {"id": 101, "pergunta": "Uma pessoa sem parentesco com o registrado pede, no balcão, a certidão de nascimento em breve relato de um vizinho. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão de breve relato (nascimento ou casamento)", "solicitante": "Terceiro"}},
+    {"id": 102, "pergunta": "Um terceiro, sem parentesco, pede a certidão de óbito de uma pessoa. É preciso requerimento escrito ou autorização judicial?",
+     "entrada": {"tipo": "Certidão de óbito (qualquer modalidade)", "solicitante": "Terceiro"}},
+    {"id": 103, "pergunta": "A própria registrada, maior de idade, pede a sua certidão de nascimento em inteiro teor. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão de inteiro teor (nascimento ou casamento)", "solicitante": "Próprio registrado, representante legal ou mandatário com poderes especiais"}},
+    {"id": 104, "pergunta": "Um terceiro pede a certidão de casamento em inteiro teor de um casal vivo. O assento não contém dado sensível nem informação de menção vedada na certidão. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão de inteiro teor (nascimento ou casamento)", "solicitante": "Terceiro", "dado_sensivel": false, "informacao_vedada": false, "registrado_falecido": false}},
+    {"id": 105, "pergunta": "Um terceiro pede a certidão de nascimento em inteiro teor de uma pessoa viva. O assento contém dado sensível (LGPD, art. 5º, II) e nenhuma informação de menção vedada. A certidão pode ser emitida no balcão?",
+     "entrada": {"tipo": "Certidão de inteiro teor (nascimento ou casamento)", "solicitante": "Terceiro", "dado_sensivel": true, "informacao_vedada": false, "registrado_falecido": false}},
+    {"id": 106, "pergunta": "O filho de uma pessoa falecida pede a certidão de nascimento em inteiro teor do pai. O assento contém dado sensível (LGPD, art. 5º, II) e nenhuma informação de menção vedada. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão de inteiro teor (nascimento ou casamento)", "solicitante": "Parente em linha reta", "dado_sensivel": true, "informacao_vedada": false, "registrado_falecido": true}},
+    {"id": 107, "pergunta": "Um terceiro pede a certidão de nascimento em inteiro teor de uma pessoa viva. O assento contém averbação de reconhecimento de filho e nenhum dado sensível. A certidão pode ser emitida no balcão?",
+     "entrada": {"tipo": "Certidão de inteiro teor (nascimento ou casamento)", "solicitante": "Terceiro", "dado_sensivel": false, "informacao_vedada": true, "registrado_falecido": false}},
+    {"id": 108, "pergunta": "Um terceiro pede certidão por quesitos com uma única informação do assento, que não é dado restrito, sensível nem sigiloso. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão por quesitos ou informação avulsa", "solicitante": "Terceiro", "dado_sensivel": false}},
+    {"id": 109, "pergunta": "Um terceiro pede certidão dos documentos apresentados no processo de habilitação de casamento de um casal vivo. Os documentos não são públicos de publicidade geral. Como atender?",
+     "entrada": {"tipo": "Certidão de procedimento preparatório ou documento apresentado (ex.: habilitação de casamento)", "solicitante": "Terceiro", "registrado_falecido": false}},
+    {"id": 110, "pergunta": "Um terceiro pede certidão dos documentos apresentados na habilitação de casamento de uma pessoa já falecida. Como atender e o que exigir?",
+     "entrada": {"tipo": "Certidão de procedimento preparatório ou documento apresentado (ex.: habilitação de casamento)", "solicitante": "Terceiro", "registrado_falecido": true}},
+    {"id": 111, "pergunta": "Um terceiro quer saber se existe, no cartório, registro de nascimento de uma determinada pessoa, consultando os índices. É preciso justificar ou fazer requerimento?",
+     "entrada": {"tipo": "Busca nos índices do cartório", "solicitante": "Terceiro"}},
+    {"id": 112, "pergunta": "Um terceiro pede que o cartório busque, além dos índices, em documentos arquivados, informações sobre uma pessoa. Como atender e o que exigir?",
+     "entrada": {"tipo": "Busca em outras fontes além dos índices", "solicitante": "Terceiro"}},
+    {"id": 113, "pergunta": "O próprio registrado pede a sua certidão de nascimento em breve relato, mas o registro está bloqueado por determinação judicial. Como atender?",
+     "entrada": {"tipo": "Certidão de breve relato (nascimento ou casamento)", "solicitante": "Próprio registrado, representante legal ou mandatário com poderes especiais", "registro_bloqueado": true}}
+  ]
+}

@@ -122,6 +122,45 @@ def test_avaliacao_so_conta_perguntas_validadas(tmp_path):
     assert res["assistente_registral_ce"]["pct_certo"] == 100.0
 
 
+# ---------------------------------------------------------------- casos de Registro Civil
+
+def test_modelo_rcpn_tem_os_casos_com_campos_juridicos_vazios(tmp_path):
+    destino = tmp_path / "rcpn.csv"
+    ag.gerar_modelo_rcpn(destino)
+    assert destino.read_text(encoding="utf-8") == ag.GABARITO_RCPN_MODELO.read_text(encoding="utf-8")
+    linhas = list(csv.DictReader(destino.open(encoding="utf-8")))
+    casos = {c["id"]: c["pergunta"] for c in ag.casos_rcpn()}
+    assert {int(x["pergunta_id"]): x["pergunta"] for x in linhas} == casos
+    assert all(x[c] == "" for x in linhas for c in ag.COLUNAS_GABARITO[2:]), "teste cego: nada pré-preenchido"
+
+
+def test_casos_rcpn_sao_entradas_validas_do_motor_e_cobrem_todos_os_desfechos():
+    from src.fase3 import regras_rcpn as rc
+    from src.fase3.coleta import perguntas_oficiais
+
+    casos = ag.casos_rcpn()
+    assert not set(c["id"] for c in casos) & set(perguntas_oficiais()), "ids do RCPN não podem colidir"
+    decisoes = set()
+    for c in casos:
+        assert c["entrada"]["tipo"] in rc.TIPOS_RCPN
+        assert c["entrada"]["solicitante"] in rc.SOLICITANTES_RCPN
+        decisao = ag.decisao_do_motor(c["entrada"])
+        assert decisao is not None, f"caso {c['id']}: faltam fatos para o motor decidir"
+        decisoes.add(decisao)
+    assert decisoes == {"DEFERIR", "DEFERIR_COM_EXIGENCIA", "ENCAMINHAR_JUIZ"}
+
+
+def test_concordancia_do_motor_com_o_registrador():
+    casos = [{"id": 101, "entrada": {"tipo": "Busca nos índices do cartório", "solicitante": "Terceiro"}},
+             {"id": 102, "entrada": {"tipo": "Certidão de óbito (qualquer modalidade)", "solicitante": "Terceiro"}},
+             {"id": 103, "entrada": {"tipo": "Busca em outras fontes além dos índices", "solicitante": "Terceiro"}}]
+    gabarito = {101: {"decisao_esperada": "DEFERIR"}, 102: {"decisao_esperada": "ENCAMINHAR_JUIZ"}}  # 103 sem gabarito
+    res = ag.concordancia_motor_rcpn(gabarito, casos)
+    assert (res["comparados"], res["concordantes"], res["pct_concordancia"]) == (2, 1, 50.0)
+    assert res["divergencias"] == [{"id": 102, "motor": "DEFERIR", "registrador": "ENCAMINHAR_JUIZ",
+                                    "concorda": False}]
+
+
 def test_gabarito_validado_sem_fundamento_e_rejeitado(tmp_path):
     gab = _gabarito(tmp_path, [{"pergunta_id": "1", "pergunta": "p1", "decisao_esperada": "DEFERIR",
                                 "validado_por": "Oficial A"}])

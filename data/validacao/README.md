@@ -45,6 +45,14 @@ Esta pasta guarda os instrumentos que produzem a evidência pedida na validaçã
 | `erro_grave_se` | o que tornaria a resposta contrária à norma |
 | `validado_por`, `data_validacao` | quem assinou e quando; **linha sem `validado_por` não entra na avaliação** |
 
+## Casos de Registro Civil (13 casos, ids 101 a 113)
+
+As 25 perguntas do benchmark são de Registro de Imóveis. Para o Registro Civil, `casos_rcpn.json` traz 13 situações de balcão. Elas cobrem breve relato, óbito, inteiro teor pedido pelo próprio registrado ou por terceiro, dado sensível de pessoa viva ou falecida, informação de menção vedada, quesitos, procedimento preparatório, buscas e registro bloqueado.
+- **Nenhum caso traz resposta.** O campo `entrada` só repete, de forma estruturada, os fatos já descritos no texto.
+- **Para o registrador:** entregue `gabarito_rcpn_modelo.csv`, com as mesmas colunas do gabarito do benchmark. A cópia preenchida é salva como `gabarito_rcpn.csv`.
+- **Teste cego:** não mostre ao registrador o que o sistema responde. A comparação só acontece na avaliação.
+- **Concordância:** `python scripts/avaliar_gabarito.py` compara automaticamente a decisão do **motor de regras** com a do registrador em cada caso validado. A saída é o percentual de concordância e a lista das divergências.
+
 ## Avaliação de cada sistema
 
 Uma pessoa julga cada resposta coletada contra o gabarito e registra em `avaliacao_<sistema>.csv`:

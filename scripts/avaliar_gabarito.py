@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import sys
 from pathlib import Path
 
@@ -29,6 +30,10 @@ from src.fase3.coleta import SISTEMAS, normalizar_sistema, perguntas_oficiais  #
 DIR_VALIDACAO = RAIZ / "data" / "validacao"
 GABARITO_MODELO = DIR_VALIDACAO / "gabarito_modelo.csv"
 GABARITO = DIR_VALIDACAO / "gabarito.csv"
+# Casos de Registro Civil (ids 101+): texto da situação + fatos estruturados para rodar o motor de regras
+CASOS_RCPN = DIR_VALIDACAO / "casos_rcpn.json"
+GABARITO_RCPN_MODELO = DIR_VALIDACAO / "gabarito_rcpn_modelo.csv"
+GABARITO_RCPN = DIR_VALIDACAO / "gabarito_rcpn.csv"
 
 COLUNAS_GABARITO = ("pergunta_id", "pergunta", "atribuicao", "decisao_esperada", "quem_decide", "fundamentos",
                     "resposta_esperada", "erro_grave_se", "validado_por", "data_validacao")
@@ -41,13 +46,56 @@ class ArquivoInvalido(ValueError):
     pass
 
 
-def gerar_modelo(destino: Path = GABARITO_MODELO) -> None:
+def casos_rcpn(caminho: Path = CASOS_RCPN) -> list[dict]:
+    return json.loads(caminho.read_text(encoding="utf-8"))["casos"]
+
+
+def gerar_modelo(destino: Path = GABARITO_MODELO, perguntas: dict[int, str] | None = None) -> None:
+    perguntas = perguntas if perguntas is not None else perguntas_oficiais()
     destino.parent.mkdir(parents=True, exist_ok=True)
     with destino.open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(COLUNAS_GABARITO)
-        for pid, texto in sorted(perguntas_oficiais().items()):
+        for pid, texto in sorted(perguntas.items()):
             w.writerow([pid, texto] + [""] * (len(COLUNAS_GABARITO) - 2))
+
+
+def gerar_modelo_rcpn(destino: Path = GABARITO_RCPN_MODELO) -> None:
+    gerar_modelo(destino, {c["id"]: c["pergunta"] for c in casos_rcpn()})
+
+
+# ---------------------------------------------------------------- motor de regras × registrador
+
+def decisao_do_motor(entrada: dict) -> str | None:
+    """Canal do motor de regras do Registro Civil no vocabulário do gabarito (None = o motor não decide)."""
+    from src.fase3 import regras_rcpn as rc
+    from src.fase3.regras_ri import Cobertura
+
+    r = rc.decidir(entrada["tipo"], entrada.get("solicitante", ""), entrada.get("dado_sensivel"),
+                   entrada.get("informacao_vedada"), entrada.get("registrado_falecido"),
+                   entrada.get("registro_bloqueado", False))
+    if r.cobertura != Cobertura.REGRA:
+        return None
+    if r.canal == "VERMELHO" and r.exige_autorizacao_judicial:
+        return "ENCAMINHAR_JUIZ"
+    return {"VERDE": "DEFERIR", "AMARELO": "DEFERIR_COM_EXIGENCIA"}.get(r.canal)
+
+
+def concordancia_motor_rcpn(gabarito: dict[int, dict], casos: list[dict] | None = None) -> dict:
+    """Compara a decisão do motor com a do registrador nos casos de Registro Civil já validados."""
+    casos = casos if casos is not None else casos_rcpn()
+    comparados = []
+    for c in casos:
+        if c["id"] not in gabarito:
+            continue
+        motor = decisao_do_motor(c["entrada"])
+        registrador = gabarito[c["id"]]["decisao_esperada"]
+        comparados.append({"id": c["id"], "motor": motor, "registrador": registrador, "concorda": motor == registrador})
+    n = len(comparados)
+    concordantes = sum(x["concorda"] for x in comparados)
+    return {"comparados": n, "concordantes": concordantes,
+            "pct_concordancia": round(100 * concordantes / n, 1) if n else None,
+            "divergencias": [x for x in comparados if not x["concorda"]]}
 
 
 def _ler(caminho: Path, colunas: tuple[str, ...]) -> list[dict]:
@@ -116,18 +164,26 @@ def main() -> int:
 
     if args.gerar_modelo:
         gerar_modelo(args.dir / GABARITO_MODELO.name)
-        print(f"modelo gerado: {args.dir / GABARITO_MODELO.name}")
+        gerar_modelo_rcpn(args.dir / GABARITO_RCPN_MODELO.name)
+        print(f"modelos gerados: {GABARITO_MODELO.name}, {GABARITO_RCPN_MODELO.name}")
         return 0
-    gab = args.dir / GABARITO.name
-    if not gab.exists():
-        print(f"Sem gabarito validado: o registrador deve preencher {GABARITO_MODELO.name} e salvar como {gab.name}.")
+    arquivos = [args.dir / GABARITO.name, args.dir / GABARITO_RCPN.name]
+    if not any(a.exists() for a in arquivos):
+        print("Sem gabarito validado: o registrador deve preencher os modelos e salvar como "
+              f"{GABARITO.name} (benchmark) e/ou {GABARITO_RCPN.name} (Registro Civil).")
         return 1
     try:
-        gabarito = ler_gabarito(gab)
+        gabarito = {pid: linha for a in arquivos if a.exists() for pid, linha in ler_gabarito(a).items()}
         res = avaliar(gabarito, ler_avaliacoes(sorted(args.dir.glob("avaliacao_*.csv"))))
     except ArquivoInvalido as e:
         print(f"Arquivo inválido: {e}", file=sys.stderr)
         return 2
+    conc = concordancia_motor_rcpn(gabarito)
+    if conc["comparados"]:
+        print(f"Motor de regras × registrador (Registro Civil): {conc['concordantes']} de {conc['comparados']} "
+              f"({conc['pct_concordancia']:g}%)")
+        for d in conc["divergencias"]:
+            print(f"   caso {d['id']}: motor={d['motor']} registrador={d['registrador']}")
     print(f"Perguntas com gabarito validado: {len(gabarito)}")
     print("| Sistema | Avaliadas | Certo | Parcial | Errado | Sem resposta | % certo | Contrárias à norma |")
     print("|---|---:|---:|---:|---:|---:|---:|---:|")

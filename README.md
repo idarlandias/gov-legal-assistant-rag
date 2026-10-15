@@ -76,7 +76,7 @@ Três tipos de pedido do RI não têm regra determinística: exclusão de dados 
 | Prova | Instrumento | Situação |
 |---|---|---|
 | A dúvida é frequente no balcão (≥ 1 por dia por cartório) | diário de balcão, `scripts/resumir_diario.py` | a coletar |
-| As regras acertam a norma | gabarito do registrador (`data/validacao/gabarito_modelo.csv`), `scripts/avaliar_gabarito.py` | 0 de 26 validadas |
+| As regras acertam a norma | gabarito do registrador: 26 perguntas de RI (`gabarito_modelo.csv`) e 13 casos de Registro Civil (`gabarito_rcpn_modelo.csv`), com concordância automática do motor de regras (`scripts/avaliar_gabarito.py`) | 0 de 39 validadas |
 | Há vantagem sobre os concorrentes reais | coleta + pontuação em duas camadas | só o RAG próprio pontuado |
 
 ## Comparação com as alternativas
