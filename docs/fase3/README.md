@@ -36,6 +36,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 19 | [19_relatorio_fase2_motor_regras.md](19_relatorio_fase2_motor_regras.md) | Fase 2: motor de regras do RI (canal pela norma, IA só redige) e ficha do CE 1.128 §3º |
 | 20 | [20_relatorio_fase3_registro_civil.md](20_relatorio_fase3_registro_civil.md) | Fase 3: motor de regras do Registro Civil (autorização judicial só quando a norma exige) e requerimentos |
 | 21 | [21_relatorio_fase4_posicionamento.md](21_relatorio_fase4_posicionamento.md) | Fase 4: assistente de conformidade, README e tela coerentes com a norma, retificação dos docs 06/07 |
+| 22 | [22_relatorio_casos_registro_civil.md](22_relatorio_casos_registro_civil.md) | 13 casos de Registro Civil para o gabarito (teste cego) e concordância automática do motor com o registrador |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
