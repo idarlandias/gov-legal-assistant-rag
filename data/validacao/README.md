@@ -49,7 +49,15 @@ Esta pasta guarda os instrumentos que produzem a evidência pedida na validaçã
 
 As 25 perguntas do benchmark são de Registro de Imóveis. Para o Registro Civil, `casos_rcpn.json` traz 13 situações de balcão. Elas cobrem breve relato, óbito, inteiro teor pedido pelo próprio registrado ou por terceiro, dado sensível de pessoa viva ou falecida, informação de menção vedada, quesitos, procedimento preparatório, buscas e registro bloqueado.
 - **Nenhum caso traz resposta.** O campo `entrada` só repete, de forma estruturada, os fatos já descritos no texto.
-- **Para o registrador:** entregue a folha `folha_gabarito_registro_civil.pdf` (para imprimir) ou `.docx` (para preencher no Word). Ela traz um caso por página, a decisão para marcar e espaço para fundamentos, como atender e o que seria erro grave. Depois, transcreva as respostas para `gabarito_rcpn_modelo.csv` e salve como `gabarito_rcpn.csv`. A folha é regenerada a partir de `casos_rcpn.json` com `scripts/folha_gabarito/gerar_folha_rcpn.js`.
+- **Para o cartório:** entregue o documento único `documento_cartorio_registro_civil.pdf` (para imprimir) ou `.docx` (para preencher no Word). São 18 páginas:
+  - carta de apresentação;
+  - instruções;
+  - Parte A: os 13 casos, um por página;
+  - Parte B: 7 perguntas rápidas sobre o balcão;
+  - Parte C: diário de balcão de uma semana (opcional);
+  - página de validação, com a autorização de uso do nome.
+
+  Depois, transcreva a Parte A para `gabarito_rcpn_modelo.csv` (salve como `gabarito_rcpn.csv`) e a Parte C para `diario_balcao_<cartorio>.csv`. O documento é regenerado a partir de `casos_rcpn.json` com `scripts/folha_gabarito/gerar_folha_rcpn.js`.
 - **Teste cego:** não mostre ao registrador o que o sistema responde. A comparação só acontece na avaliação.
 - **Concordância:** `python scripts/avaliar_gabarito.py` compara automaticamente a decisão do **motor de regras** com a do registrador em cada caso validado. A saída é o percentual de concordância e a lista das divergências.
 
