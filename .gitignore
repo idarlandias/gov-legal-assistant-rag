@@ -36,3 +36,10 @@ data/corpus/concursos/legislacao_transito/
 # Corpus Fase 3: originais baixados (reproduzíveis via scripts/fase3/build_corpus.py)
 data/corpus_fase3/raw/
 data/corpus_fase3/dispositivos.jsonl
+
+# Pareceres confidenciais da SiDi (repositório público): nunca versionar
+docs/fase3/*DAI*.pdf
+docs/fase3/17_parecer_professora_pos_mudancas.md
+# Diários de balcão preenchidos (dados reais de cartório): só o modelo é versionado
+data/validacao/diario_balcao_*.csv
+!data/validacao/diario_balcao_modelo.csv
