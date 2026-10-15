@@ -195,11 +195,12 @@ ATO_APROVACAO = " (ato de aprovação)"
 # Os Códigos (CNJ 149 e CGJ-CE) misturam todas as especialidades; sem isto a busca
 # respondia pergunta de Registro de Imóveis com regra de Registro Civil.
 REGISTRO_IMOVEIS = "registro_imoveis"
+REGISTRO_CIVIL = "registro_civil"
 GERAL = "geral"
 _ESPECIALIDADES: list[tuple[str, re.Pattern]] = [
     # a ordem importa: "registro civil de pessoas juridicas" antes de "registro civil"
     ("rtd_rcpj", re.compile(r"titulos e documentos|pessoas? juridicas?")),
-    ("registro_civil", re.compile(
+    (REGISTRO_CIVIL, re.compile(
         r"registro civil|pessoas? naturais|nascimento|casamento|obito|\bcrc\b|filiacao|socioafetiv"
         r"|mudanca de (?:nome|genero)|natimorto")),
     (REGISTRO_IMOVEIS, re.compile(

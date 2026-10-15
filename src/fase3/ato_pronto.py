@@ -18,6 +18,8 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from src.fase3.regras_prompt import REGRA_INTEIRO_TEOR, REGRAS_DECISAO  # noqa: F401 (REGRA_INTEIRO_TEOR reexportada)
+from src.fase3 import regras_rcpn as rc
+from src.fase3.corpus import GERAL, REGISTRO_CIVIL
 from src.fase3.regras_ri import CNJ_128_PU, FICHA, Cobertura, ResultadoRegra, decidir
 from src.fase3.retrieval import rotulo_fonte
 from src.fase3.verificador_citacoes import RelatorioCitacoes, verificar
@@ -67,6 +69,12 @@ class PedidoBalcao(BaseModel):
         default=None,
         description="Resposta do escrevente à pergunta de um caso CONDICIONAL do motor de regras (None = não respondida)"
     )
+    atribuicao: str = Field(default="RI", description="RI (Registro de Imóveis) ou RCPN (Registro Civil)")
+    # Fatos do Registro Civil que só o atendente sabe (None = não informado)
+    dado_sensivel: bool | None = None
+    informacao_vedada: bool | None = None
+    registrado_falecido: bool | None = None
+    registro_bloqueado: bool = False
 
 
 class DispositivoLegal(BaseModel):
@@ -108,6 +116,8 @@ class RegraAplicada(BaseModel):
     fundamentos: list[FundamentoRegra] = Field(default_factory=list)
     alertas: list[str] = Field(default_factory=list)
     pergunta: str = ""
+    exige_autorizacao_judicial: bool = False
+    documento: str = ""
     divergencia_llm: str = Field(default="", description="Preenchido quando a IA sugeriu canal diferente da regra")
 
     @classmethod
@@ -116,23 +126,27 @@ class RegraAplicada(BaseModel):
                    exige_identificacao=regra.exige_identificacao, exige_finalidade=regra.exige_finalidade,
                    fundamentos=[FundamentoRegra(norma=f.norma, artigo=f.artigo, trecho=f.trecho)
                                 for f in regra.fundamentos],
-                   alertas=list(regra.alertas), pergunta=regra.pergunta)
+                   alertas=list(regra.alertas), pergunta=regra.pergunta,
+                   exige_autorizacao_judicial=regra.exige_autorizacao_judicial, documento=regra.documento)
 
 
 class FichaIdentificacaoFinalidade(BaseModel):
-    """Ficha do CE Art. 1.128 §3º / prontuário do CNJ Art. 128, montada sem LLM."""
+    """Documento exigido pela norma, montado sem LLM: ficha do CE 1.128 §3º / CNJ 128 (RI) ou requerimento
+    de certidão em inteiro teor / de busca em outras fontes (Registro Civil)."""
 
+    titulo: str = "FICHA DE IDENTIFICAÇÃO E INDICAÇÃO DE FINALIDADE"
     protocolo: str
     emitida_em: str
     tipo_pedido: str
     perfil_requerente: str
     campos_a_preencher: list[str]
     fundamentos: list[FundamentoRegra]
-    direito_do_titular: str
+    direito_do_titular: str = ""
+    encaminhar_ao_juizo: bool = False
 
     def texto(self) -> str:
         linhas = [
-            "FICHA DE IDENTIFICAÇÃO E INDICAÇÃO DE FINALIDADE",
+            self.titulo,
             f"Protocolo: {self.protocolo}    Emitida em: {self.emitida_em}",
             f"Pedido: {self.tipo_pedido}",
             f"Perfil do requerente: {self.perfil_requerente}",
@@ -141,26 +155,51 @@ class FichaIdentificacaoFinalidade(BaseModel):
             "",
             "Fundamento:",
             *[f"- {f.norma}, {f.artigo}: \"{f.trecho}\"" for f in self.fundamentos],
-            "",
-            f"Direito do titular: \"{self.direito_do_titular}\" (Prov. CNJ 149/2023, Art. 128, parágrafo único)",
         ]
+        if self.encaminhar_ao_juizo:
+            linhas += ["", "ENCAMINHAMENTO: a expedição depende de autorização do juízo competente; "
+                           "submeter este requerimento antes de expedir."]
+        if self.direito_do_titular:
+            linhas += ["", f"Direito do titular: \"{self.direito_do_titular}\" "
+                           "(Prov. CNJ 149/2023, Art. 128, parágrafo único)"]
         return "\n".join(linhas)
 
 
 CAMPOS_FICHA = ("Nome do requerente", "Documento de identificação (tipo e número)", "Finalidade declarada",
                 "Assinatura do requerente", "Atendente")
+CAMPOS_REQUERIMENTO_INTEIRO_TEOR = (
+    "Nome do requerente", "Documento de identificação (tipo e número)",
+    "Motivo do pedido de certidão em inteiro teor", "Grau de parentesco com o registrado (se houver)",
+    "O registrado é falecido? (sim/não)",
+    "Assinatura (firma reconhecida, ICP-Brasil, gov.br ou confrontada com documento original)", "Atendente")
+CAMPOS_REQUERIMENTO_BUSCA = ("Nome do requerente", "Documento de identificação (tipo e número)",
+                             "Fontes em que se pede a busca", "Fundamentação e finalidade do pedido",
+                             "Assinatura do requerente", "Atendente")
+TITULOS_DOCUMENTO = {
+    "ficha_ri": "FICHA DE IDENTIFICAÇÃO E INDICAÇÃO DE FINALIDADE",
+    "requerimento_inteiro_teor": "REQUERIMENTO DE CERTIDÃO EM INTEIRO TEOR",
+    "requerimento_busca": "REQUERIMENTO DE BUSCA EM OUTRAS FONTES",
+}
 
 
 def montar_ficha(pedido: PedidoBalcao, regra: ResultadoRegra) -> FichaIdentificacaoFinalidade:
-    return FichaIdentificacaoFinalidade(
+    def conv(fs) -> list[FundamentoRegra]:
+        return [FundamentoRegra(norma=f.norma, artigo=f.artigo, trecho=f.trecho) for f in fs]
+
+    comum = dict(
+        titulo=TITULOS_DOCUMENTO[regra.documento],
         protocolo=pedido.protocolo,
         emitida_em=datetime.now(timezone(timedelta(hours=-3))).isoformat(timespec="seconds"),
         tipo_pedido=pedido.tipo_pedido,
         perfil_requerente=pedido.solicitante,
-        campos_a_preencher=list(CAMPOS_FICHA),
-        fundamentos=[FundamentoRegra(norma=f.norma, artigo=f.artigo, trecho=f.trecho) for f in FICHA],
-        direito_do_titular=CNJ_128_PU.trecho,
+        encaminhar_ao_juizo=regra.exige_autorizacao_judicial,
     )
+    if regra.documento == "ficha_ri":
+        return FichaIdentificacaoFinalidade(**comum, campos_a_preencher=list(CAMPOS_FICHA), fundamentos=conv(FICHA),
+                                            direito_do_titular=CNJ_128_PU.trecho)
+    campos = CAMPOS_REQUERIMENTO_INTEIRO_TEOR if regra.documento == "requerimento_inteiro_teor" \
+        else CAMPOS_REQUERIMENTO_BUSCA
+    return FichaIdentificacaoFinalidade(**comum, campos_a_preencher=list(campos), fundamentos=conv(regra.fundamentos))
 
 
 class AtoProntoOutput(BaseModel):
@@ -236,10 +275,29 @@ EXPANSAO_TIPO_PEDIDO: dict[str, str] = {
 }
 
 
+EXPANSAO_RCPN: dict[str, str] = {
+    rc.BREVE_RELATO.lower():
+        "certidões de breve relato informações regulamentadas em lei independentemente de requerimento ou de "
+        "identificação do requerente",
+    rc.OBITO.lower(): "certidão de óbito requerimento autorização judicial modalidades",
+    rc.INTEIRO_TEOR.lower():
+        "certidão em inteiro teor requerimento escrito firma reconhecida motivo grau de parentesco dados sensíveis "
+        "terceiros autorização do juízo competente",
+    rc.QUESITOS.lower():
+        "certidões por quesitos informações dados restritos sensíveis sigilosos mesmo tratamento inteiro teor",
+    rc.PROCEDIMENTO.lower():
+        "certidão sobre procedimentos preparatórios documentos apresentados próprio interessado titular "
+        "autorização judicial",
+    rc.BUSCA_INDICES.lower(): "buscas nos índices dos registros civis independentemente de justificação ou requerimento",
+    rc.BUSCA_OUTRAS.lower(): "buscas com base em outras fontes requerimento escrito fundamentado análise de finalidade",
+}
+
+
 def gerar_query_recuperacao(pedido: PedidoBalcao) -> str:
     """Consulta = vocabulário normativo do tipo de pedido + rótulos da UI + termos livres ao final."""
     tipo = pedido.tipo_pedido.strip()
-    expansao = EXPANSAO_TIPO_PEDIDO.get(tipo.lower())
+    expansoes = EXPANSAO_RCPN if pedido.atribuicao == "RCPN" else EXPANSAO_TIPO_PEDIDO
+    expansao = expansoes.get(tipo.lower())
     if expansao is None:
         logger.warning("Tipo de pedido sem expansão normativa, usando o rótulo: %r", tipo)
         expansao = tipo
@@ -262,6 +320,18 @@ VEREDITOS = (
 )
 AVISO_RESPONSABILIDADE = "Sugestão de ato. A decisão e a responsabilidade são do Oficial Registrador."
 
+ESPECIALIDADE_PROMPT = {"RI": "Registro de Imóveis", "RCPN": "Registro Civil das Pessoas Naturais"}
+CANAIS_PROMPT_RCPN = """- Canal VERDE: Expedição sem exigência prévia (ex: certidão de breve relato e busca nos índices, independentemente de requerimento, Prov. CNJ 149/2023, Arts. 113 e 121; certidão de óbito, Art. 118).
+- Canal AMARELO: Expedição mediante EXIGÊNCIA PRÉVIA — requerimento escrito com identificação, motivo, grau de parentesco e assinatura (certidão em inteiro teor, Prov. CNJ 149/2023, Art. 117) ou requerimento escrito fundamentado (busca em outras fontes, Art. 121, parágrafo único).
+- Canal VERMELHO: Expedição SOMENTE COM AUTORIZAÇÃO JUDICIAL, quando a norma a exige (ex: terceiro pedindo certidão com dado sensível, Prov. CNJ 149/2023, Art. 114, §1º; informação de menção vedada, Código de Normas da CGJ-CE, Art. 471, §2º; registro bloqueado, Art. 437)."""
+VEREDITOS_RCPN = (
+    "SUGESTÃO: DEFERIR",
+    "SUGESTÃO: DEFERIR MEDIANTE EXIGÊNCIA PRÉVIA",
+    "SUGESTÃO: SOMENTE COM AUTORIZAÇÃO JUDICIAL",
+)
+REGRA_5_RCPN = ("Siga exatamente o canal e os fundamentos definidos pela norma abaixo; não acrescente exigências que "
+                "eles não prevejam.")
+
 
 def bloco_regra(regra: ResultadoRegra) -> str:
     """Canal já decidido pela norma: o LLM só redige, coerente com ele."""
@@ -279,20 +349,24 @@ Use exatamente o canal {regra.canal} no campo "canal" e redija veredito, instru�
 
 def build_ato_pronto_prompt(context: str, pedido: PedidoBalcao, regra: ResultadoRegra | None = None) -> str:
     dados_str = ", ".join(pedido.dados_sensiveis) if pedido.dados_sensiveis else "Nenhum informado"
-    vereditos = " | ".join(f'"{v}"' for v in VEREDITOS)
+    rcpn = pedido.atribuicao == "RCPN"
+    vereditos = " | ".join(f'"{v}"' for v in (VEREDITOS_RCPN if rcpn else VEREDITOS))
     decidido = bloco_regra(regra) if regra is not None and regra.cobertura == Cobertura.REGRA else ""
+    especialidade = ESPECIALIDADE_PROMPT["RCPN" if rcpn else "RI"]
+    canais = CANAIS_PROMPT_RCPN if rcpn else CANAIS_PROMPT
+    regra_5 = REGRA_5_RCPN if rcpn else REGRAS_DECISAO
 
-    return f"""Você é o Assessor Técnico Especialista em Registro de Imóveis do Ceará e Compliance Registral (LGPD × Lei 6.015/1973 × Provimento CNJ 149/2023 × Código de Normas da Corregedoria Geral da Justiça do Ceará - CGJ-CE).
+    return f"""Você é o Assessor Técnico Especialista em {especialidade} do Ceará e Compliance Registral (LGPD × Lei 6.015/1973 × Provimento CNJ 149/2023 × Código de Normas da Corregedoria Geral da Justiça do Ceará - CGJ-CE).
 
 Sua missão é emitir uma SUGESTÃO DE ATO OPERACIONAL para o escrevente de balcão, classificando o pedido em um destes canais:
-{CANAIS_PROMPT}
+{canais}
 
 REGRAS DE CONFORMIDADE:
 1. Baseie-se ESTRITAMENTE no contexto normativo fornecido abaixo. NUNCA cite normas revogadas (como Provimento CNJ 134/2022). Cite as normas vigentes (Provimento CNJ 149/2023, Código de Normas da CGJ-CE, Lei 6.015/73, LGPD).
 2. A minuta_ato deve ser um texto formal, profissional e completo para uso imediato pelo escrevente (incluindo número de protocolo `{pedido.protocolo}`, fundamentação e conclusão formal).
 3. A auditoria_lgpd deve atender com rigor aos artigos 37 e 38 da LGPD (ROPA).
 4. Retorne APENAS um objeto JSON válido, sem texto explicativo adicional fora do JSON.
-5. {REGRAS_DECISAO}
+5. {regra_5}
 {decidido}
 FORMATO OBRIGATÓRIO (JSON):
 {{
@@ -362,6 +436,15 @@ def _ato_indefinido(motivo: str) -> AtoProntoOutput:
 
 
 K_ATO_PRONTO = 8  # top-8: com 5, normas-chave ficavam de fora no caso mais comum
+ESPECIALIDADES_RCPN = frozenset({REGISTRO_CIVIL, GERAL})
+
+
+def decidir_pedido(pedido: PedidoBalcao) -> ResultadoRegra:
+    """Despacha para o motor de regras da atribuição do pedido."""
+    if pedido.atribuicao == "RCPN":
+        return rc.decidir(pedido.tipo_pedido, pedido.solicitante, pedido.dado_sensivel, pedido.informacao_vedada,
+                          pedido.registrado_falecido, pedido.registro_bloqueado)
+    return decidir(pedido.tipo_pedido, pedido.solicitante, pedido.dados_sensiveis, pedido.condicao_confirmada)
 
 
 def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int = K_ATO_PRONTO) -> AtoProntoOutput:
@@ -371,7 +454,7 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
     """
     t0 = time.perf_counter()
 
-    regra = decidir(pedido.tipo_pedido, pedido.solicitante, pedido.dados_sensiveis, pedido.condicao_confirmada)
+    regra = decidir_pedido(pedido)
     regra_aplicada = RegraAplicada.de(regra)
     if regra.cobertura == Cobertura.CONDICIONAL:
         saida = _ato_indefinido(f"confirmação necessária: {regra.pergunta}")
@@ -381,7 +464,10 @@ def processar_ato_pronto(pipeline: Fase3Pipeline, pedido: PedidoBalcao, k: int =
 
     # 1. Recuperação Híbrida especializada
     query = gerar_query_recuperacao(pedido)
-    hits = pipeline.retrieve(query, k=k)
+    if pedido.atribuicao == "RCPN":
+        hits = pipeline.retrieve(query, k=k, especialidades=ESPECIALIDADES_RCPN)
+    else:
+        hits = pipeline.retrieve(query, k=k)
     logger.info("Ato Pronto %s · consulta expandida: %s", pedido.protocolo, query)
     logger.info("Ato Pronto %s · trechos recuperados (k=%d): %s", pedido.protocolo, k,
                 "; ".join(rotulo_fonte(h) for h in hits) or "nenhum")

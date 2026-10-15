@@ -46,10 +46,13 @@ class ResultadoRegra:
     pergunta: str = ""           # só em CONDICIONAL
     se_sim: "ResultadoRegra | None" = field(default=None, repr=False)
     se_nao: "ResultadoRegra | None" = field(default=None, repr=False)
+    exige_autorizacao_judicial: bool = False  # só no Registro Civil, quando a própria norma exige
+    # Documento que o sistema monta sem LLM: "ficha_ri", "requerimento_inteiro_teor" ou "requerimento_busca"
+    documento: str = ""
 
     @property
     def gera_ficha(self) -> bool:
-        return self.cobertura == Cobertura.REGRA and self.exige_finalidade
+        return self.cobertura == Cobertura.REGRA and bool(self.documento)
 
 
 # ---------------------------------------------------------------- fundamentos (texto literal)
@@ -144,7 +147,7 @@ def _verde(*fund: Fundamento, alertas: tuple[str, ...] = ()) -> ResultadoRegra:
 
 def _amarelo(*fund: Fundamento, alertas: tuple[str, ...] = ()) -> ResultadoRegra:
     return ResultadoRegra(Cobertura.REGRA, "AMARELO", exige_finalidade=True, fundamentos=fund + FICHA,
-                          alertas=alertas)
+                          alertas=alertas, documento="ficha_ri")
 
 
 SEM_REGRA = ResultadoRegra(Cobertura.SEM_REGRA, exige_identificacao=False)

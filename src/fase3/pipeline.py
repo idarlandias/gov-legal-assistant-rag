@@ -49,8 +49,11 @@ class Fase3Pipeline(RAGPipeline):
         self.especialidades = set(especialidades) if especialidades else None
         self.retriever = HybridRetriever(self.collection, self.embedder)
 
-    def retrieve(self, query: str, k: int = 5, domain: str | None = None) -> list[dict]:
-        return self.retriever.search(query, k=k, modo=self.modo, especialidades=self.especialidades)
+    def retrieve(self, query: str, k: int = 5, domain: str | None = None,
+                 especialidades: frozenset[str] | None = None) -> list[dict]:
+        """`especialidades` troca o filtro só nesta busca (ex.: Registro Civil no Ato Pronto)."""
+        filtro = set(especialidades) if especialidades else self.especialidades
+        return self.retriever.search(query, k=k, modo=self.modo, especialidades=filtro)
 
     def answer(self, question: str, k: int = 5, domain: str | None = None) -> dict:
         """Pipeline completo da Fase 3: busca híbrida + contexto com dispositivos oficiais + prompt cartorial."""

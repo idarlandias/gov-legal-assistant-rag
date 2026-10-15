@@ -184,6 +184,7 @@ with tab_balcao:
         st.session_state["preset_solicitante"] = "Terceiro sem comprovação de vínculo ou interesse jurídico"
         st.session_state["preset_dados"] = ["CPF completo", "Estado Civil / Regime de Bens"]
         st.session_state["preset_detalhes"] = "Requerente alega que deseja certidão da matrícula do vizinho sem justificar interesse."
+        st.session_state["atribuicao_ui"] = "Registro de Imóveis"  # os exemplos são de Registro de Imóveis
         st.session_state["trigger_auto"] = True
         st.rerun()
 
@@ -192,6 +193,7 @@ with tab_balcao:
         st.session_state["preset_solicitante"] = "Próprio Titular / Proprietário do Imóvel"
         st.session_state["preset_dados"] = []
         st.session_state["preset_detalhes"] = "Proprietário apresentou documento de identidade original no balcão."
+        st.session_state["atribuicao_ui"] = "Registro de Imóveis"  # os exemplos são de Registro de Imóveis
         st.session_state["trigger_auto"] = True
         st.rerun()
 
@@ -200,6 +202,7 @@ with tab_balcao:
         st.session_state["preset_solicitante"] = "Próprio Titular / Proprietário do Imóvel"
         st.session_state["preset_dados"] = ["CPF completo", "Filiação / Adoção sigilosa"]
         st.session_state["preset_detalhes"] = "Titular invoca o Art. 18 da LGPD exigindo apagar seu nome e histórico do livro da matrícula."
+        st.session_state["atribuicao_ui"] = "Registro de Imóveis"  # os exemplos são de Registro de Imóveis
         st.session_state["trigger_auto"] = True
         st.rerun()
 
@@ -209,6 +212,7 @@ with tab_balcao:
         st.session_state["preset_solicitante"] = "Terceiro sem comprovação de vínculo ou interesse jurídico"
         st.session_state["preset_dados"] = ["CPF completo"]
         st.session_state["preset_detalhes"] = "Ligação telefônica perguntando se determinado imóvel tem hipoteca e quem é o dono."
+        st.session_state["atribuicao_ui"] = "Registro de Imóveis"  # os exemplos são de Registro de Imóveis
         st.session_state["trigger_auto"] = True
         st.rerun()
 
@@ -258,21 +262,45 @@ with tab_balcao:
     idx_pedido = opcoes_pedidos.index(default_pedido) if default_pedido in opcoes_pedidos else 0
     idx_solicitante = opcoes_solicitantes.index(default_solicitante) if default_solicitante in opcoes_solicitantes else 1
 
+    def _sim_nao(rotulo: str, chave: str) -> bool | None:
+        resposta = st.radio(rotulo, ["Não sei", "Sim", "Não"], horizontal=True, key=chave)
+        return {"Sim": True, "Não": False}.get(resposta)
+
     with col_form:
         st.markdown("### Dados da Solicitação")
+        atribuicao_ui = st.radio("Atribuição:", ["Registro de Imóveis", "Registro Civil das Pessoas Naturais"],
+                                 horizontal=True, key="atribuicao_ui")
+        rcpn = atribuicao_ui == "Registro Civil das Pessoas Naturais"
+        condicao = dado_sensivel = informacao_vedada = registrado_falecido = None
+        registro_bloqueado = False
 
-        tipo_pedido = st.selectbox("1. Tipo de Solicitação:", options=opcoes_pedidos, index=idx_pedido)
-        solicitante = st.selectbox("2. Perfil do Requerente / Solicitante:", options=opcoes_solicitantes, index=idx_solicitante)
-        dados_sensiveis = st.multiselect("3. Dados Pessoais / Sensíveis Envolvidos:", options=opcoes_dados, default=default_dados)
+        if not rcpn:
+            tipo_pedido = st.selectbox("1. Tipo de Solicitação:", options=opcoes_pedidos, index=idx_pedido)
+            solicitante = st.selectbox("2. Perfil do Requerente / Solicitante:", options=opcoes_solicitantes, index=idx_solicitante)
+            dados_sensiveis = st.multiselect("3. Dados Pessoais / Sensíveis Envolvidos:", options=opcoes_dados, default=default_dados)
 
-        # Casos em que a norma muda o canal conforme um fato: o escrevente confirma antes
-        from src.fase3.regras_ri import Cobertura, decidir
-        regra_previa = decidir(tipo_pedido, solicitante, dados_sensiveis)
-        condicao = None
-        if regra_previa.cobertura == Cobertura.CONDICIONAL:
-            resposta = st.radio(f"4. {regra_previa.pergunta}", ["Não sei", "Sim", "Não"], horizontal=True,
-                                key="condicao_regra")
-            condicao = {"Sim": True, "Não": False}.get(resposta)
+            # Casos em que a norma muda o canal conforme um fato: o escrevente confirma antes
+            from src.fase3.regras_ri import Cobertura, decidir
+            regra_previa = decidir(tipo_pedido, solicitante, dados_sensiveis)
+            if regra_previa.cobertura == Cobertura.CONDICIONAL:
+                condicao = _sim_nao(f"4. {regra_previa.pergunta}", "condicao_regra")
+        else:
+            from src.fase3 import regras_rcpn as rc
+
+            tipo_pedido = st.selectbox("1. Tipo de Solicitação:", options=list(rc.TIPOS_RCPN), key="tipo_rcpn")
+            solicitante = st.selectbox("2. Perfil do Requerente:", options=list(rc.SOLICITANTES_RCPN), index=2,
+                                       key="solicitante_rcpn")
+            dados_sensiveis = []
+            # Só pergunta o que muda o canal (CNJ Arts. 114, 116, 119 e 120; CE Art. 471)
+            terceiro = solicitante != rc.PROPRIO
+            if terceiro and tipo_pedido in (rc.INTEIRO_TEOR, rc.QUESITOS):
+                rotulo = rc.PERGUNTA_SENSIVEL if tipo_pedido == rc.INTEIRO_TEOR else \
+                    "Os dados pedidos são restritos, sensíveis ou sigilosos?"
+                dado_sensivel = _sim_nao(f"3. {rotulo}", "rc_sensivel")
+                informacao_vedada = _sim_nao(f"4. {rc.PERGUNTA_VEDADA}", "rc_vedada")
+            if terceiro and tipo_pedido in (rc.INTEIRO_TEOR, rc.QUESITOS, rc.PROCEDIMENTO):
+                registrado_falecido = _sim_nao(f"5. {rc.PERGUNTA_FALECIDO}", "rc_falecido")
+            registro_bloqueado = st.checkbox("Registro com bloqueio judicial (CE Art. 437)", key="rc_bloqueado")
 
         with st.expander("Detalhes Adicionais e Protocolo (Opcional)", expanded=bool(default_detalhes)):
             protocolo_input = st.text_input("Número do Protocolo:", value="PROT-2026/0842")
@@ -308,6 +336,11 @@ with tab_balcao:
                         detalhes_caso=detalhes_input,
                         protocolo=protocolo_input,
                         condicao_confirmada=condicao,
+                        atribuicao="RCPN" if rcpn else "RI",
+                        dado_sensivel=dado_sensivel,
+                        informacao_vedada=informacao_vedada,
+                        registrado_falecido=registrado_falecido,
+                        registro_bloqueado=registro_bloqueado,
                     )
                     resultado = fase3_pipe.gerar_ato_pronto(pedido)
 
@@ -333,6 +366,8 @@ with tab_balcao:
                         canal_bg = "#fdf2e9"
                         canal_icone = "🔴"
                         canal_titulo = "CANAL VERMELHO — Bloqueio / Nota Devolutiva Obrigatória"
+                        if resultado.regra is not None and resultado.regra.exige_autorizacao_judicial:
+                            canal_titulo = "CANAL VERMELHO — Somente com Autorização Judicial"
 
                     st.markdown(
                         f"""
@@ -356,7 +391,7 @@ with tab_balcao:
                             st.success("Canal definido por regra escrita a partir da norma, não pela IA. "
                                        "A IA apenas redigiu a minuta.")
                         elif regra.cobertura == "CONDICIONAL":
-                            st.info(f"Responda à pergunta do item 4 para aplicar a regra: {regra.pergunta}")
+                            st.info(f"Responda no formulário para aplicar a regra: {regra.pergunta}")
                         else:
                             st.warning("Sem regra determinística para este tipo de pedido: o canal é sugestão da IA "
                                        "e depende de revisão do Oficial.")
@@ -399,13 +434,13 @@ with tab_balcao:
 
                     if resultado.ficha is not None:
                         st.download_button(
-                            "Baixar ficha de identificação e finalidade (.txt)",
+                            f"Baixar {resultado.ficha.titulo.lower()} (.txt)",
                             data=resultado.ficha.texto(),
-                            file_name=f"ficha_{protocolo_input.replace('/', '_')}.txt",
+                            file_name=f"documento_{protocolo_input.replace('/', '_')}.txt",
                             mime="text/plain",
                             use_container_width=True,
                         )
-                        with st.expander("Ficha de identificação e finalidade (CE Art. 1.128, §3º; CNJ Art. 128)"):
+                        with st.expander(f"Documento exigido pela norma: {resultado.ficha.titulo.capitalize()}"):
                             st.code(resultado.ficha.texto(), language="text")
 
                     if resultado.citacoes and resultado.citacoes.nao_verificadas():
