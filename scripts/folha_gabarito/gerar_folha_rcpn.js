@@ -61,16 +61,32 @@ const opcoes = (itens) => itens.map((t) => p(`☐  ${t}`, { after: 40, size: 20 
 
 // ---------------------------------------------------------------- carta de apresentação
 
+const AUTOR = "Idarlan Magalhães";
+const QUALIFICACOES = ["Residente em Inteligência Artificial Aplicada a Ambientes Corporativos · SiDi/Softex",
+                       "Desenvolvedor de sistemas e aplicações web"];
+const CONTATOS = "idarlandias@gmail.com   ·   github.com/idarlandias   ·   linkedin.com/in/idarlandias";
+
+const timbre = [
+  new Paragraph({ spacing: { after: 20 }, children: [
+    new TextRun({ text: AUTOR, bold: true, size: 32, font: FONTE, color: "1F2328" })] }),
+  ...QUALIFICACOES.map((q) => p(q, { size: 19, color: AZUL, after: 0 })),
+  new Paragraph({ spacing: { before: 80, after: 40 },
+                  border: { bottom: { style: BorderStyle.SINGLE, size: 10, color: AZUL, space: 4 } },
+                  children: [new TextRun({ text: "", font: FONTE })] }),
+  p(CONTATOS, { size: 17, color: "595959", after: 320 }),
+];
+
 const carta = [
-  p("______________________ (CE), ____ de ______________ de 2026.", { align: AlignmentType.RIGHT, after: 360 }),
+  ...timbre,
+  p("______________________ (CE), ____ de ______________ de 2026.", { align: AlignmentType.RIGHT, after: 280 }),
   p("Ao(À) Oficial do Registro Civil das Pessoas Naturais", { bold: true, after: 120 }),
-  p("Serventia:  ____________________________________________________________", { after: 120 }),
-  p("Município:  ____________________________________________________________", { after: 360 }),
+  p("Cartório (nome da serventia):  ______________________________________________", { after: 120 }),
+  p("Município:  ____________________________________________________________", { after: 280 }),
   p("Assunto: pedido de colaboração em pesquisa sobre o atendimento de pedidos de certidão", { bold: true,
                                                                                               after: 240 }),
   p("Prezado(a) Oficial,", { after: 200 }),
-  p("Meu nome é Idarlan Magalhães e participo da Residência em Inteligência Artificial da SiDi/Softex. Estudo " +
-    "como funciona, na prática, o atendimento de pedidos de certidão no Registro Civil quando o pedido envolve " +
+  p("Meu nome é Idarlan Magalhães. Sou residente em Inteligência Artificial Aplicada a Ambientes Corporativos " +
+    "pela SiDi/Softex e desenvolvedor de sistemas e aplicações web. Estudo como funciona, na prática, o atendimento de pedidos de certidão no Registro Civil quando o pedido envolve " +
     "dados pessoais: quem pode pedir, o que exigir do requerente e quando a expedição depende de autorização " +
     "judicial."),
   p("Estou desenvolvendo uma ferramenta de apoio ao balcão que mostra ao atendente o que a norma exige para cada " +
@@ -90,11 +106,11 @@ const carta = [
   p("•  Pode responder em partes, deixar itens em branco ou desistir a qualquer momento."),
   p("Agradeço desde já a atenção e fico à disposição para buscar o documento ou para fazer as perguntas " +
     "pessoalmente, se for mais prático.", { before: 120, after: 480 }),
-  p("Atenciosamente,", { after: 600 }),
+  p("Atenciosamente,", { after: 480 }),
   p("_______________________________________", { after: 40 }),
-  p("Idarlan Magalhães", { bold: true, after: 40 }),
-  p("Residência em Inteligência Artificial — SiDi/Softex", { after: 40 }),
-  p("E-mail: idarlandias@gmail.com      Telefone/WhatsApp: ______________________", { after: 40 }),
+  p(AUTOR, { bold: true, after: 20, size: 23 }),
+  ...QUALIFICACOES.map((q) => p(q, { size: 18, color: AZUL, after: 0 })),
+  p(`${CONTATOS}   ·   WhatsApp: ____________________`, { size: 17, color: "595959", before: 40 }),
 ];
 
 // ---------------------------------------------------------------- instruções
@@ -213,7 +229,7 @@ const doc = new Document({
     properties: { page: { size: { width: 11906, height: 16838 },
                           margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } } },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [
-      new TextRun({ text: "Pesquisa — atendimento de pedidos de certidão do Registro Civil · página ", font: FONTE,
+      new TextRun({ text: "Idarlan Magalhães · Pesquisa — atendimento de pedidos de certidão do Registro Civil · página ", font: FONTE,
                     size: 16, color: "808080" }),
       new TextRun({ children: [PageNumber.CURRENT], font: FONTE, size: 16, color: "808080" }),
     ] })] }) },

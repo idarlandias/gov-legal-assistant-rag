@@ -25,6 +25,11 @@ RAIZ = Path(__file__).resolve().parents[2]
 CASOS = RAIZ / "data" / "validacao" / "casos_rcpn.json"
 SAIDA = RAIZ / "data" / "validacao" / "documento_cartorio_registro_civil_preenchivel.pdf"
 
+AUTOR = "Idarlan Magalhães"
+QUALIFICACOES = ("Residente em Inteligência Artificial Aplicada a Ambientes Corporativos · SiDi/Softex",
+                 "Desenvolvedor de sistemas e aplicações web")
+CONTATOS = ("idarlandias@gmail.com", "github.com/idarlandias", "linkedin.com/in/idarlandias")
+
 AZUL = HexColor("#1F4E79")
 CINZA = HexColor("#595959")
 CAMPO = HexColor("#F3F6FA")
@@ -104,6 +109,7 @@ class Doc:
     def _rodape(self):
         self.c.setFont("Helvetica", 7.5)
         self.c.setFillColor(HexColor("#808080"))
+        self.c.drawString(MARGEM, 30, f"{AUTOR} · {CONTATOS[0]}")
         self.c.drawRightString(self.largura - MARGEM, 30, "Pesquisa — atendimento de pedidos de certidão do "
                                                            f"Registro Civil · página {self.pagina}")
         self.c.setFillColor(HexColor("#000000"))
@@ -155,24 +161,58 @@ class Doc:
         self.c.save()
 
 
+def cabecalho(d: Doc):
+    """Papel timbrado: faixa azul, monograma, nome, qualificações e contatos."""
+    c = d.c
+    c.setFillColor(AZUL)
+    c.rect(0, d.altura - 10, d.largura, 10, stroke=0, fill=1)
+    topo = d.altura - 46
+    cx, cy, r = MARGEM + 23, topo - 20, 23
+    c.circle(cx, cy, r, stroke=0, fill=1)
+    c.setFillColor(white)
+    c.setFont("Helvetica-Bold", 17)
+    c.drawCentredString(cx, cy - 6, "IM")
+    x = MARGEM + 58
+    c.setFillColor(HexColor("#1F2328"))
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(x, topo - 10, AUTOR)
+    c.setFillColor(AZUL)
+    c.setFont("Helvetica", 9.5)
+    for i, q in enumerate(QUALIFICACOES):
+        c.drawString(x, topo - 25 - 12 * i, q)
+    c.setStrokeColor(AZUL)
+    c.setLineWidth(1.2)
+    c.line(MARGEM, topo - 52, d.largura - MARGEM, topo - 52)
+    c.setFillColor(CINZA)
+    c.setFont("Helvetica", 8.5)
+    c.drawString(MARGEM, topo - 64, "   ·   ".join(CONTATOS))
+    c.setFillColor(HexColor("#000000"))
+    d.y = topo - 80
+
+
 def carta(d: Doc):
+    cabecalho(d)
     d.c.setFont("Helvetica", 10.5)
     d.c.drawRightString(d.largura - MARGEM - 255, d.y - 13, "Local e data:")
     d.texto_campo("carta_local_data", 18, largura=250, x=d.largura - MARGEM - 250, multilinha=False,
                   tooltip="Município e data, ex.: Russas, 20 de outubro de 2026")
-    d.y -= 40
+    d.y -= 32
     d.par("<b>Ao(À) Oficial do Registro Civil das Pessoas Naturais</b>", depois=8)
-    for rotulo, nome in (("Serventia:", "carta_serventia"), ("Município:", "carta_municipio")):
+    rotulo_x = 158
+    for rotulo, nome, dica in (
+            ("Cartório (nome da serventia):", "carta_serventia",
+             "Nome oficial do cartório, como na placa ou no carimbo. Ex.: Cartório do 1º Ofício de Registro Civil"),
+            ("Município:", "carta_municipio", "Cidade do cartório. Ex.: Russas")):
         d.c.setFont("Helvetica", 10.5)
         d.c.drawString(MARGEM, d.y - 13, rotulo)
-        d.texto_campo(nome, 18, largura=d.util - 70, x=MARGEM + 70, multilinha=False)
-        d.y -= 26
-    d.y -= 8
+        d.texto_campo(nome, 18, largura=d.util - rotulo_x, x=MARGEM + rotulo_x, multilinha=False, tooltip=dica)
+        d.y -= 24
+    d.y -= 4
     d.par("<b>Assunto: pedido de colaboração em pesquisa sobre o atendimento de pedidos de certidão</b>", depois=10)
     for t in [
         "Prezado(a) Oficial,",
-        "Meu nome é Idarlan Magalhães e participo da Residência em Inteligência Artificial da SiDi/Softex. Estudo como "
-        "funciona, na prática, o atendimento de pedidos de certidão no Registro Civil quando o pedido envolve dados "
+        "Meu nome é Idarlan Magalhães. Sou residente em Inteligência Artificial Aplicada a Ambientes Corporativos pela "
+        "SiDi/Softex e desenvolvedor de sistemas e aplicações web. Estudo como funciona, na prática, o atendimento de pedidos de certidão no Registro Civil quando o pedido envolve dados "
         "pessoais: quem pode pedir, o que exigir do requerente e quando a expedição depende de autorização judicial.",
         "Estou desenvolvendo uma ferramenta de apoio ao balcão que mostra ao atendente o que a norma exige para cada "
         "tipo de pedido. Ela não decide nada: a decisão e a responsabilidade continuam sendo do Oficial. Antes de "
@@ -197,13 +237,29 @@ def carta(d: Doc):
     d.y -= 6
     d.par("Agradeço desde já a atenção. Depois de preencher, basta <b>salvar o arquivo</b> e me devolver por e-mail ou "
           "WhatsApp. Se preferir, posso buscar uma via impressa ou fazer as perguntas pessoalmente.", depois=18)
-    d.par("Atenciosamente,", depois=26)
-    d.par("<b>Idarlan Magalhães</b><br/>Residência em Inteligência Artificial — SiDi/Softex<br/>"
-          "E-mail: idarlandias@gmail.com", depois=4)
-    d.c.setFont("Helvetica", 10.5)
-    d.c.drawString(MARGEM, d.y - 13, "Telefone/WhatsApp:")
-    d.texto_campo("carta_telefone", 18, largura=180, x=MARGEM + 105, multilinha=False)
-    d.y -= 26
+    d.par("Atenciosamente,", depois=12)
+    # assinatura no mesmo padrão do cabeçalho
+    d.c.setStrokeColor(AZUL)
+    d.c.setLineWidth(2)
+    d.c.line(MARGEM, d.y, MARGEM, d.y - 58)
+    d.c.setFillColor(HexColor("#1F2328"))
+    d.c.setFont("Helvetica-Bold", 11.5)
+    d.c.drawString(MARGEM + 10, d.y - 11, AUTOR)
+    d.c.setFillColor(AZUL)
+    d.c.setFont("Helvetica", 9)
+    for i, q in enumerate(QUALIFICACOES):
+        d.c.drawString(MARGEM + 10, d.y - 24 - 11 * i, q)
+    d.c.setFillColor(CINZA)
+    d.c.setFont("Helvetica", 8.5)
+    d.c.drawString(MARGEM + 10, d.y - 49, "   ·   ".join(CONTATOS))
+    # WhatsApp na mesma linha dos contatos, à direita
+    d.c.drawRightString(d.largura - MARGEM - 112, d.y - 49, "WhatsApp:")
+    topo_assinatura = d.y
+    d.y = topo_assinatura - 38
+    d.texto_campo("carta_telefone", 16, largura=108, x=d.largura - MARGEM - 108, multilinha=False,
+                  tooltip="Seu telefone/WhatsApp com DDD", tamanho=9)
+    d.c.setFillColor(HexColor("#000000"))
+    d.y = topo_assinatura - 64
 
 
 def instrucoes(d: Doc):
