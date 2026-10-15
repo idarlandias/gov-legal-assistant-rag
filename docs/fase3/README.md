@@ -32,6 +32,7 @@ Recorte candidato: **Registro de Imóveis no Ceará × publicidade registral × 
 | 15 | [14_relatorio_rodada5_fechamento.md](14_relatorio_rodada5_fechamento.md) | 5ª rodada: manifesto e barra lateral, README e doc 06 retificados, fechamento e push |
 | 16 | [15_relatorio_pontuacao_e_renomeacao.md](15_relatorio_pontuacao_e_renomeacao.md) | Pontuação da coleta (bloqueada: sem respostas coletadas) e classificação da renomeação |
 | 17 | [16_relatorio_renomeacao_e_pontuacao.md](16_relatorio_renomeacao_e_pontuacao.md) | Renomeação para Assistente Registral CE e pontuação em duas camadas ([pontuação do RAG](pontuacao_rag_2026-10-13.md)) |
+| 18 | [18_plano_produto_pos_validacao.md](18_plano_produto_pos_validacao.md) | Plano depois da validação de 15/10: mapa de concorrentes, diferenciais D1–D5 e fases ([instrumentos de campo](../../data/validacao/README.md)) |
 
 ## Checklist
 - [ ] Revisar as 25 perguntas com um oficial ou DPO
